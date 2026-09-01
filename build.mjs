@@ -113,6 +113,7 @@ const CATEGORY_EXTRA = {
 <ul class="cards">
 <li><a href="/http/"><b>HTTP status codes</b><span>Every status code, what triggers it and how to fix it.</span></a></li>
 <li><a href="/cron/"><b>Cron schedule examples</b><span>Ready-made cron expressions for every common schedule.</span></a></li>
+<li><a href="/port/"><b>Port number reference</b><span>What runs on each port and how to check what is listening.</span></a></li>
 <li><a href="/convert/css-units/"><b>CSS unit converters</b><span>px, rem, em, pt and more, with an adjustable root font size.</span></a></li>
 <li><a href="/convert/data/"><b>Data size converters</b><span>Bytes, KB, MB, GB, TB and their binary counterparts.</span></a></li>
 </ul>`,
@@ -197,6 +198,7 @@ ${allToolsBody}
 <li><a href="/image/"><b>Image converters</b><span>PNG, JPG, WebP, SVG, AVIF and HEIC-adjacent formats, converted locally.</span></a></li>
 <li><a href="/http/"><b>HTTP status codes</b><span>Every code explained — what triggers it and how to actually fix it.</span></a></li>
 <li><a href="/cron/"><b>Cron schedules</b><span>Ready-made expressions for every common schedule, with next run times.</span></a></li>
+<li><a href="/port/"><b>Port numbers</b><span>What runs on each port, why it matters, and how to see what is listening.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
