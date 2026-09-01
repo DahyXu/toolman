@@ -316,7 +316,11 @@ run();
 // ---------- sitemap + robots ----------
 const now = new Date().toISOString().slice(0, 10);
 const urls = [...new Set(written)];
-const CHUNK = 40000;
+// The spec allows 50,000 URLs per sitemap, but smaller files are processed
+// more reliably and make it obvious in Search Console which section of the
+// site is being indexed. sitemap.xml becomes the index once there is more
+// than one chunk, so the submitted URL never changes.
+const CHUNK = 2000;
 const chunks = [];
 for (let i = 0; i < urls.length; i += CHUNK) chunks.push(urls.slice(i, i + CHUNK));
 
