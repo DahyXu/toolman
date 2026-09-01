@@ -199,6 +199,7 @@ ${allToolsBody}
 <li><a href="/http/"><b>HTTP status codes</b><span>Every code explained — what triggers it and how to actually fix it.</span></a></li>
 <li><a href="/cron/"><b>Cron schedules</b><span>Ready-made expressions for every common schedule, with next run times.</span></a></li>
 <li><a href="/port/"><b>Port numbers</b><span>What runs on each port, why it matters, and how to see what is listening.</span></a></li>
+<li><a href="/file/"><b>File formats</b><span>What each extension is, what opens it, and what catches people out.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
