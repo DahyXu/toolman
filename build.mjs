@@ -323,10 +323,33 @@ const urls = [...new Set(written)];
 // site is being indexed. sitemap.xml becomes the index once there is more
 // than one chunk, so the submitted URL never changes.
 const CHUNK = 2000;
+
+// A new site gets a limited crawl budget, so the order pages appear in matters:
+// Googlebot works through sitemaps roughly in order, and the first chunk should
+// be the pages worth ranking rather than whichever ones sort first
+// alphabetically. Rank by editorial value, then chunk.
+const toolSlugs = new Set(tools.map((t) => `/${t.slug}/`));
+const HUBS = new Set(['/', '/tools/', '/convert/', '/color/', '/http/', '/cron/', '/port/',
+  '/file/', '/cooking/', '/roman/', '/paper/', '/dev/', '/text/', '/image/', '/ai/',
+  '/convert/time-zones/', '/convert/css-units/', '/convert/temperature/', '/about/', '/privacy/']);
+
+function rank(u) {
+  if (u === '/') return 0;                     // home
+  if (toolSlugs.has(u)) return 1;              // interactive tools — the real product
+  if (HUBS.has(u)) return 2;                   // section hubs
+  const depth = u.split('/').filter(Boolean).length;
+  if (depth === 2 && !/\d/.test(u)) return 3;  // category hubs like /convert/length/
+  if (depth === 1) return 4;                   // top-level generated pages
+  return 5;                                    // long-tail leaf pages
+}
+const PRIORITY = ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5'];
+
+urls.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+
 const chunks = [];
 for (let i = 0; i < urls.length; i += CHUNK) chunks.push(urls.slice(i, i + CHUNK));
 
-const prio = (u) => (u === '/' ? '1.0' : u.split('/').filter(Boolean).length === 1 ? '0.8' : '0.6');
+const prio = (u) => PRIORITY[rank(u)];
 chunks.forEach((c, i) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
