@@ -202,6 +202,7 @@ ${allToolsBody}
 <li><a href="/file/"><b>File formats</b><span>What each extension is, what opens it, and what catches people out.</span></a></li>
 <li><a href="/cooking/"><b>Cooking conversions</b><span>Cups to grams per ingredient — a cup of flour and a cup of honey are not the same weight.</span></a></li>
 <li><a href="/roman/"><b>Roman numerals</b><span>Every number broken down symbol by symbol, plus the rules that govern them.</span></a></li>
+<li><a href="/paper/"><b>Paper sizes</b><span>A4, Letter, Legal and the rest — in mm, inches and pixels at any DPI.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
