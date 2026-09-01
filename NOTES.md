@@ -3,6 +3,39 @@
 Running log of what has actually been observed, so decisions are not re-argued
 from memory. Newest first.
 
+## 2026-09-02 (later)
+
+Walked the hub pages through URL inspection. Real state:
+
+| URL | Status |
+|---|---|
+| `/` | **Indexed** |
+| `/dev/` | **Indexed** — also appears in `site:toolman.top` |
+| `/tools/` | **Indexed** — breadcrumb structured data detected |
+| `/color/` | **Indexed** |
+| `/convert/` | Crawled, not yet indexed — 9/1 23:15 |
+| `/http/` | Crawled, not yet indexed — 9/1 23:19 |
+| `/cron/` | Crawled, not yet indexed — 9/1 23:19 |
+
+Four indexed, three crawled and queued, within roughly 24 hours of launch.
+
+`/cron/` reports **referring page: https://toolman.top/** — Googlebot reached
+it by following an internal link from the home page, not through the sitemap.
+The link structure is doing its job independently of the sitemap status.
+
+Request-indexing quota is still exhausted; it is a rolling 24-hour window from
+when each request was made, not a calendar-day reset.
+
+Fixed in this session: category hubs were the thinnest pages on the site
+despite being the crawler's entry point (`/ai/` 68 words, `/text/` 122,
+`/image/` 185, `/dev/` 271 → 339–559). Writing that surfaced a genuine bug:
+`/convert/` was generated twice — once as the category page, once as the unit
+hub — and the second silently overwrote the first, which is why it had 186
+words. `write()` now fails the build on any repeated URL.
+
+`lastmod` is now derived from a content hash rather than the build date, so a
+deploy no longer tells Google that all 6,478 pages changed.
+
 ## 2026-09-02
 
 **Googlebot is crawling the site.** URL inspection on `/convert/` reports:
