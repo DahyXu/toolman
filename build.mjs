@@ -109,6 +109,12 @@ const IMG_PAIRS = ['png-to-jpg','png-to-webp','jpg-to-png','jpg-to-webp','webp-t
   'bmp-to-png','bmp-to-jpg','bmp-to-webp','avif-to-png','avif-to-jpg','avif-to-webp',
   'ico-to-png','ico-to-jpg','ico-to-webp','jpeg-to-png','jpeg-to-webp'];
 const CATEGORY_EXTRA = {
+  dev: `<h2>Developer reference</h2>
+<ul class="cards">
+<li><a href="/http/"><b>HTTP status codes</b><span>Every status code, what triggers it and how to fix it.</span></a></li>
+<li><a href="/convert/css-units/"><b>CSS unit converters</b><span>px, rem, em, pt and more, with an adjustable root font size.</span></a></li>
+<li><a href="/convert/data/"><b>Data size converters</b><span>Bytes, KB, MB, GB, TB and their binary counterparts.</span></a></li>
+</ul>`,
   image: `<h2>Image format converters</h2>
 <p class="muted">Convert between image formats in your browser — no upload, no watermark, no file-size limit.</p>
 <ul class="linklist">${IMG_PAIRS.map((s) => {
@@ -188,6 +194,7 @@ ${allToolsBody}
 <li><a href="/convert/css-units/"><b>CSS units</b><span>px, rem, em, pt and more — with an adjustable root font size.</span></a></li>
 <li><a href="/convert/time-zones/"><b>Time zones</b><span>848 conversions between EST, PST, UTC, CET, IST, JST and more.</span></a></li>
 <li><a href="/image/"><b>Image converters</b><span>PNG, JPG, WebP, SVG, AVIF and HEIC-adjacent formats, converted locally.</span></a></li>
+<li><a href="/http/"><b>HTTP status codes</b><span>Every code explained — what triggers it and how to actually fix it.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
