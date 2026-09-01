@@ -15,10 +15,17 @@ const ORIGIN = `https://${HOST}`;
 const KEY = fs.readFileSync(new URL('../.indexnow-key', import.meta.url), 'utf8').trim();
 const BATCH = 10000;
 
+// sitemap.xml is a sitemap index once the site passes one chunk, so its <loc>
+// entries are other sitemaps rather than pages. Read the chunks in that case.
 function sitemapUrls() {
-  const file = path.join(path.dirname(new URL(import.meta.url).pathname.slice(1)), '..', 'dist', 'sitemap.xml');
-  const xml = fs.readFileSync(file, 'utf8');
-  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const distDir = path.join(path.dirname(new URL(import.meta.url).pathname.slice(1)), '..', 'dist');
+  const read = (f) => fs.readFileSync(path.join(distDir, f), 'utf8');
+  const locs = (xml) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+
+  const root = read('sitemap.xml');
+  if (!root.includes('<sitemapindex')) return locs(root);
+
+  return locs(root).flatMap((u) => locs(read(u.replace(/^https?:\/\/[^/]+\//, ''))));
 }
 
 const args = process.argv.slice(2);
