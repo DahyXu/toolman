@@ -57,6 +57,24 @@ const PAIRS = [
   ['seconds', 'minutes', 'time'], ['days', 'hours', 'time'],
   ['square-feet', 'square-meters', 'small'], ['square-meters', 'square-feet', 'small'],
   ['acres', 'hectares', 'small'], ['hectares', 'acres', 'small'],
+  // within-system conversions people still look up constantly
+  ['inches', 'feet', 'small'], ['feet', 'inches', 'small'],
+  ['meters', 'centimeters', 'small'], ['centimeters', 'meters', 'small'],
+  ['kilometers', 'meters', 'distance'], ['meters', 'kilometers', 'distance'],
+  ['millimeters', 'centimeters', 'small'], ['centimeters', 'millimeters', 'small'],
+  ['kilograms', 'grams', 'weight'], ['grams', 'kilograms', 'small'],
+  ['pounds', 'ounces', 'weight'], ['ounces', 'pounds', 'small'],
+  ['liters', 'milliliters', 'volume'], ['milliliters', 'liters', 'volume'],
+  ['gallons', 'quarts', 'volume'], ['quarts', 'cups', 'volume'],
+  ['tablespoons', 'teaspoons', 'volume'], ['cups', 'tablespoons', 'volume'],
+  ['weeks', 'days', 'time'], ['days', 'weeks', 'time'],
+  ['years', 'days', 'time'], ['months', 'days', 'time'],
+  ['hours', 'minutes', 'time'], ['minutes', 'seconds', 'time'],
+  ['megabytes', 'kilobytes', 'data'], ['terabytes', 'gigabytes', 'data'],
+  ['gigabytes', 'gibibytes', 'data'], ['megabits', 'megabytes', 'data'],
+  ['miles-per-hour', 'knots', 'speed'], ['knots', 'miles-per-hour', 'speed'],
+  ['kilometers-per-hour', 'meters-per-second', 'speed'],
+  ['nautical-miles', 'kilometers', 'distance'],
 ];
 
 // Feet-and-inches values are written as ft.in — 5.11 means 5 ft 11 in, and
