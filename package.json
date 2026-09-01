@@ -8,6 +8,8 @@
     "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
     "build": "npm run clean && node build.mjs",
     "dev": "npm run build && npx serve dist -l 4173",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=toolman --commit-dirty=true"
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=toolman --branch=main --commit-dirty=true",
+    "cf": "node scripts/cf.mjs",
+    "setup": "node scripts/cf.mjs setup"
   }
 }

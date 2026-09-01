@@ -254,6 +254,7 @@ ${samples.map((v) => `<tr><td>${v}${esc(a.sym)}</td><td>${fmt(conv(v))}${esc(b.s
   });
   catIndex.push({ key: 'temperature', name: 'Temperature', count: tPairs.length });
   catIndex.push({ key: 'css-units', name: 'CSS Units', count: 72 });
+  catIndex.push({ key: 'time-zones', name: 'Time Zones', count: 848 });
 
   // ---- master hub ----
   const total = pages.filter((p) => /-to-/.test(p.path)).length;

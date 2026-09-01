@@ -8,7 +8,10 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root, 'dist');
 
 const written = [];
+const pageMeta = [];
 function write(urlPath, html) {
+  const t = /<title>([^<]*)<\/title>/.exec(html);
+  if (t) pageMeta.push({ title: t[1], path: urlPath });
   const rel = urlPath === '/' ? 'index.html' : path.join(urlPath.replace(/^\/|\/$/g, ''), 'index.html');
   const file = path.join(dist, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -226,6 +229,59 @@ fs.writeFileSync(path.join(dist, '404.html'), page({
   path: '/404',
   h1: 'Page not found',
   body: `<p>That page does not exist. Try the <a href="/tools/">full tool list</a> or go back <a href="/">home</a>.</p>`,
+}));
+
+// ---------- search ----------
+const searchIndex = pageMeta.map((m) => [m.title.replace(/\s*[—|]\s*Toolman.*$/, '').trim(), m.path]);
+fs.mkdirSync(dist, { recursive: true });
+fs.writeFileSync(path.join(dist, 'search-index.json'), JSON.stringify(searchIndex));
+
+write('/search/', page({
+  title: `Search — ${SITE.name}`,
+  desc: `Search ${searchIndex.length} tools, converters and reference pages on ${SITE.name}.`,
+  path: '/search/',
+  h1: 'Search',
+  crumbs: [{ name: 'Search', path: '/search/' }],
+  head: '<meta name="robots" content="noindex,follow">',
+  body: `<p class="muted">Search across ${searchIndex.length.toLocaleString()} tools, converters and reference pages.</p>
+<div class="tool">
+  <label for="q">What are you looking for?</label>
+  <input type="search" id="q" placeholder="json, px to rem, pst to est, #ff0000…" autofocus autocomplete="off">
+  <p id="count" class="muted"></p>
+  <ul class="linklist" id="res"></ul>
+</div>
+<h2>Popular starting points</h2>
+<ul class="cards">
+<li><a href="/tools/"><b>All tools</b><span>Every interactive tool on the site.</span></a></li>
+<li><a href="/convert/"><b>Unit converters</b><span>Length, weight, temperature, data, time zones and CSS units.</span></a></li>
+<li><a href="/color/"><b>Color codes</b><span>HEX, RGB, HSL and contrast for hundreds of colors.</span></a></li>
+</ul>`,
+  script: `
+const $=s=>document.querySelector(s);
+let IDX=null;
+fetch('/search-index.json').then(r=>r.json()).then(d=>{IDX=d;run()});
+function run(){
+  const q=$('#q').value.trim().toLowerCase();
+  if(!IDX){$('#count').textContent='Loading index…';return}
+  if(!q){$('#res').innerHTML='';$('#count').textContent='';return}
+  const terms=q.split(/\s+/);
+  const hits=[];
+  for(const [t,u] of IDX){
+    const hay=(t+' '+u).toLowerCase();
+    if(!terms.every(w=>hay.includes(w)))continue;
+    let score=hay.indexOf(q)===0?0:hay.indexOf(q)>=0?1:2;
+    if(u.split('/').filter(Boolean).length===1)score-=0.5;
+    hits.push([score,t,u]);
+    if(hits.length>4000)break;
+  }
+  hits.sort((a,b)=>a[0]-b[0]||a[1].length-b[1].length);
+  $('#count').textContent=hits.length?hits.length.toLocaleString()+' result'+(hits.length===1?'':'s'):'No matches — try a shorter query.';
+  $('#res').innerHTML=hits.slice(0,120).map(h=>'<li><a href="'+h[2]+'">'+h[1].replace(/</g,'&lt;')+'</a></li>').join('');
+}
+$('#q').addEventListener('input',run);
+const p=new URLSearchParams(location.search).get('q');
+if(p){$('#q').value=p}
+`,
 }));
 
 // ---------- sitemap + robots ----------

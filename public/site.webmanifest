@@ -1,0 +1,12 @@
+{
+  "name": "Toolman — free online tools",
+  "short_name": "Toolman",
+  "description": "Fast, free, privacy-first online tools that run entirely in your browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

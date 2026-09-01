@@ -84,6 +84,7 @@ export function page(o) {
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/s.css">
 <script>try{var t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script type="application/ld+json">${JSON.stringify(ld.length === 1 ? ld[0] : ld)}</script>
