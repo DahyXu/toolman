@@ -364,8 +364,15 @@ ${chunks.map((_, i) => `<sitemap><loc>${SITE.origin}/sitemap-${i + 1}.xml</loc><
 </sitemapindex>`);
 }
 
+// Declare the index and every chunk. A crawler only needs the index, but
+// listing the chunks as well gives each one an independent discovery path if
+// the index is slow to be processed.
+const sitemapLines = [`Sitemap: ${SITE.origin}/sitemap.xml`];
+if (chunks.length > 1) {
+  for (let i = 0; i < chunks.length; i++) sitemapLines.push(`Sitemap: ${SITE.origin}/sitemap-${i + 1}.xml`);
+}
 fs.writeFileSync(path.join(dist, 'robots.txt'),
-  `User-agent: *\nAllow: /\n\nSitemap: ${SITE.origin}/sitemap.xml\n`);
+  `User-agent: *\nAllow: /\n\n${sitemapLines.join('\n')}\n`);
 
 copyDir(path.join(root, 'public'), dist);
 
