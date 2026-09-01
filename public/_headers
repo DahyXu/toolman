@@ -5,7 +5,7 @@
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
   Cache-Control: public, max-age=0, must-revalidate
 
-/s.css
+/assets/main.css
   Cache-Control: public, max-age=31536000, immutable
 
 /favicon.svg

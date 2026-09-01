@@ -117,8 +117,8 @@ const cmds = {
     await cmds.addDomain(`www.${DOMAIN}`);
     console.log('---');
     // Pages custom domains resolve through CNAMEs to the pages.dev host.
-    await cmds.dnsUpsert('CNAME', '@', `${PROJECT}.pages.dev`, true);
-    await cmds.dnsUpsert('CNAME', 'www', `${PROJECT}.pages.dev`, true);
+    await cmds.dnsUpsert('CNAME', '@', `toolman-afj.pages.dev`, true);
+    await cmds.dnsUpsert('CNAME', 'www', `toolman-afj.pages.dev`, true);
     console.log('---');
     await cmds.dnsList();
   },

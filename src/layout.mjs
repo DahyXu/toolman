@@ -1,4 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SITE, CATEGORIES } from './site.mjs';
+
+// The stylesheet is inlined into every page rather than linked. It is small
+// (~4 KB), it removes a render-blocking round trip, and — the reason it is not
+// optional — aggressive blocklists that cover the whole .top TLD drop
+// subresource requests, which would leave the site completely unstyled.
+const CSS = (() => {
+  const f = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'main.css');
+  return fs.readFileSync(f, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s*([{}:;,>])\s*/g, '$1')
+    .replace(/;}/g, '}')
+    .replace(/\n\s*/g, '')
+    .trim();
+})();
 
 export const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -85,7 +102,7 @@ export function page(o) {
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="stylesheet" href="/s.css">
+<style>${CSS}</style>
 <script>try{var t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script type="application/ld+json">${JSON.stringify(ld.length === 1 ? ld[0] : ld)}</script>
 ${o.head || ''}

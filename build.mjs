@@ -103,6 +103,20 @@ ${relatedBlock(t.related)}`,
   }));
 }
 
+// Extra sections appended to specific category hubs.
+const IMG_PAIRS = ['png-to-jpg','png-to-webp','jpg-to-png','jpg-to-webp','webp-to-png','webp-to-jpg',
+  'svg-to-png','svg-to-jpg','svg-to-webp','gif-to-png','gif-to-jpg','gif-to-webp',
+  'bmp-to-png','bmp-to-jpg','bmp-to-webp','avif-to-png','avif-to-jpg','avif-to-webp',
+  'ico-to-png','ico-to-jpg','ico-to-webp','jpeg-to-png','jpeg-to-webp'];
+const CATEGORY_EXTRA = {
+  image: `<h2>Image format converters</h2>
+<p class="muted">Convert between image formats in your browser — no upload, no watermark, no file-size limit.</p>
+<ul class="linklist">${IMG_PAIRS.map((s) => {
+    const [a, b] = s.split('-to-');
+    return `<li><a href="/${s}/">${a.toUpperCase()} to ${b.toUpperCase()}</a></li>`;
+  }).join('')}</ul>`,
+};
+
 // ---------- category pages ----------
 for (const c of Object.values(CATEGORIES)) {
   const list = tools.filter((t) => t.cat === c.slug);
@@ -116,7 +130,7 @@ for (const c of Object.values(CATEGORIES)) {
     body: `<p class="muted">${esc(c.desc)} All tools run locally in your browser.</p>
 <ul class="cards">${list
       .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
-      .join('')}</ul>`,
+      .join('')}</ul>${CATEGORY_EXTRA[c.slug] || ''}`,
   }));
 }
 
@@ -172,6 +186,8 @@ ${allToolsBody}
 <li><a href="/convert/"><b>Unit converter</b><span>1,000+ conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
 <li><a href="/color/"><b>Color codes</b><span>600+ HEX colors with RGB, HSL, CMYK, contrast ratios and matching palettes.</span></a></li>
 <li><a href="/convert/css-units/"><b>CSS units</b><span>px, rem, em, pt and more — with an adjustable root font size.</span></a></li>
+<li><a href="/convert/time-zones/"><b>Time zones</b><span>848 conversions between EST, PST, UTC, CET, IST, JST and more.</span></a></li>
+<li><a href="/image/"><b>Image converters</b><span>PNG, JPG, WebP, SVG, AVIF and HEIC-adjacent formats, converted locally.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
@@ -250,6 +266,7 @@ write('/search/', page({
   <p id="count" class="muted"></p>
   <ul class="linklist" id="res"></ul>
 </div>
+<script type="application/json" id="idx">${JSON.stringify(searchIndex).replace(/</g, '\u003c')}</script>
 <h2>Popular starting points</h2>
 <ul class="cards">
 <li><a href="/tools/"><b>All tools</b><span>Every interactive tool on the site.</span></a></li>
@@ -258,11 +275,9 @@ write('/search/', page({
 </ul>`,
   script: `
 const $=s=>document.querySelector(s);
-let IDX=null;
-fetch('/search-index.json').then(r=>r.json()).then(d=>{IDX=d;run()});
+const IDX=JSON.parse(document.getElementById('idx').textContent);
 function run(){
   const q=$('#q').value.trim().toLowerCase();
-  if(!IDX){$('#count').textContent='Loading index…';return}
   if(!q){$('#res').innerHTML='';$('#count').textContent='';return}
   const terms=q.split(/\s+/);
   const hits=[];
@@ -281,6 +296,7 @@ function run(){
 $('#q').addEventListener('input',run);
 const p=new URLSearchParams(location.search).get('q');
 if(p){$('#q').value=p}
+run();
 `,
 }));
 
