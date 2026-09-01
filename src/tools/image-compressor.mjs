@@ -13,7 +13,7 @@ export default {
   <div id="drop" style="border:2px dashed var(--line);border-radius:12px;padding:36px;text-align:center;cursor:pointer">
     <p style="margin:0"><strong>Drop images here</strong> or click to choose files</p>
     <p class="muted" style="margin:6px 0 0;font-size:.9rem">JPG, PNG, WebP, GIF (first frame) · multiple files supported</p>
-    <input type="file" id="file" accept="image/*" multiple hidden>
+    <input type="file" id="file" accept="image/*" aria-label="Choose images to compress" multiple hidden>
   </div>
   <div class="row">
     <label style="margin:0;flex:1">Quality: <output id="qOut">80</output>%

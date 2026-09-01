@@ -10,15 +10,15 @@ export default {
   intro: 'Enter a color in any format — HEX, RGB, HSL or a CSS name — and get every other representation, plus shades and contrast ratios.',
   body: `<div class="tool">
   <div class="row">
-    <input type="color" id="pick" value="#2563eb" style="width:64px;height:44px;padding:2px">
-    <input type="text" id="in" value="#2563eb" spellcheck="false" style="flex:1;min-width:160px;font-family:var(--mono)">
+    <input type="color" id="pick" aria-label="Pick a color" value="#2563eb" style="width:64px;height:44px;padding:2px">
+    <input type="text" id="in" aria-label="Color value in any format" value="#2563eb" spellcheck="false" style="flex:1;min-width:160px;font-family:var(--mono)">
     <span id="bad" class="err"></span>
   </div>
   <div id="swatch" style="height:90px;border-radius:12px;border:1px solid var(--line);margin:12px 0"></div>
   <table><tbody id="out"></tbody></table>
-  <h3>Tints and shades</h3>
+  <h2>Tints and shades</h2>
   <div id="scale" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-  <h3>Contrast check (WCAG)</h3>
+  <h2>Contrast check (WCAG)</h2>
   <table><tbody id="contrast"></tbody></table>
 </div>`,
   about: `<h2>The color models</h2>

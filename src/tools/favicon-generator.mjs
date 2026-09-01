@@ -18,7 +18,7 @@ export default {
     <div id="drop" style="border:2px dashed var(--line);border-radius:12px;padding:30px;text-align:center;cursor:pointer">
       <p style="margin:0"><strong>Drop an image here</strong> or click to choose</p>
       <p class="muted" style="margin:6px 0 0;font-size:.88rem">Square PNG or SVG works best — at least 512×512</p>
-      <input type="file" id="file" accept="image/*" hidden>
+      <input type="file" id="file" accept="image/*" aria-label="Choose a source image" hidden>
     </div>
   </div>
   <div id="pane-text" style="display:none">
@@ -42,10 +42,10 @@ export default {
       <label style="margin:0"><input type="checkbox" id="bold" checked style="width:auto"> bold</label>
     </div>
   </div>
-  <h3>Preview</h3>
+  <h2>Preview</h2>
   <div id="prev" style="display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin:12px 0"></div>
   <div class="row"><button class="primary" data-act="dl">Download all sizes</button><button data-act="ico">Download 32×32 PNG</button></div>
-  <h3>HTML to add to your &lt;head&gt;</h3>
+  <h2>HTML to add to your &lt;head&gt;</h2>
   <pre><code id="code"></code></pre>
   <div class="row"><button data-act="copy">Copy HTML</button></div>
 </div>`,

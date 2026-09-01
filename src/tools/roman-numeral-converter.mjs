@@ -15,7 +15,7 @@ export default {
   </div>
   <p id="err" class="err"></p>
   <div class="row"><label style="margin:0"><input type="checkbox" id="vinculum" style="width:auto"> use overline notation for 4,000+</label></div>
-  <h3>How it breaks down</h3>
+  <h2>How it breaks down</h2>
   <table><tbody id="work"></tbody></table>
 </div>`,
   about: `<h2>The seven symbols</h2>

@@ -29,7 +29,7 @@ export default {
     <label style="margin:0"><input type="checkbox" id="amb" style="width:auto"> exclude look-alikes (0O1lI)</label>
   </div>
   <hr style="margin:20px 0">
-  <h3>Passphrase</h3>
+  <h2>Passphrase</h2>
   <div class="row">
     <label style="margin:0">Words <input type="number" id="words" value="5" min="3" max="12" style="width:80px"></label>
     <label style="margin:0">Separator <input type="text" id="sep" value="-" maxlength="3" style="width:70px"></label>

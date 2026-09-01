@@ -16,9 +16,9 @@ export default {
   <div class="row"><button data-act="today">Reset to today</button><span id="err" class="err"></span></div>
   <p class="big" id="main"></p>
   <table><tbody id="rows"></tbody></table>
-  <h3>Next birthday</h3>
+  <h2>Next birthday</h2>
   <p id="next" class="muted"></p>
-  <h3>Milestones</h3>
+  <h2>Milestones</h2>
   <table><tbody id="miles"></tbody></table>
 </div>`,
   about: `<h2>How age is actually calculated</h2>

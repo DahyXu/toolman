@@ -15,10 +15,10 @@ export default {
     <span class="muted" style="font-family:var(--mono);font-size:1.1rem">/</span>
     <input type="text" id="re" value="(\\w+)@(\\w+)\\.(\\w+)" spellcheck="false" style="font-family:var(--mono)">
     <span class="muted" style="font-family:var(--mono);font-size:1.1rem">/</span>
-    <input type="text" id="flags" value="g" spellcheck="false" style="width:70px;font-family:var(--mono)">
+    <input type="text" id="flags" aria-label="Regex flags" value="g" spellcheck="false" style="width:70px;font-family:var(--mono)">
   </div>
   <div class="row">
-    ${['g', 'i', 'm', 's', 'u', 'y'].map((f) => `<label style="margin:0"><input type="checkbox" data-flag="${f}" style="width:auto"> ${f}</label>`).join('')}
+    ${['g', 'i', 'm', 's', 'u', 'y'].map((f) => `<label style="margin:0"><input type="checkbox" data-flag="${f}" aria-label="Flag ${f}" style="width:auto"> ${f}</label>`).join('')}
     <span id="err" class="err"></span>
   </div>
   <label for="text">Test string</label>
@@ -29,7 +29,7 @@ Invalid: not-an-email, @nope, test@localhost</textarea>
   <label for="rep">Replace with <span class="muted">(use $1, $2 or $&lt;name&gt; for groups)</span></label>
   <input type="text" id="rep" placeholder="$1 at $2 dot $3">
   <div id="repout" class="out" style="border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0;background:var(--bg);min-height:44px"></div>
-  <h3>Matches</h3>
+  <h2>Matches</h2>
   <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Match</th><th>Index</th><th>Groups</th></tr></thead><tbody id="rows"></tbody></table></div>
 </div>`,
   head: `<style>#hl mark{background:rgba(96,165,250,.35);color:inherit;border-radius:3px;padding:1px 0}

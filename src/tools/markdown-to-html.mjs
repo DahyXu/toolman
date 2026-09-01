@@ -20,7 +20,7 @@ export default {
     <div><label for="in">Markdown</label><textarea id="in" spellcheck="false" style="min-height:420px"></textarea></div>
     <div><label>Output</label>
       <div id="preview" class="md" style="border:1px solid var(--line);border-radius:10px;padding:14px;min-height:420px;overflow:auto;background:var(--bg)"></div>
-      <textarea id="html" spellcheck="false" readonly style="min-height:420px;display:none"></textarea>
+      <textarea id="html" aria-label="Generated HTML" spellcheck="false" readonly style="min-height:420px;display:none"></textarea>
     </div>
   </div>
 </div>`,

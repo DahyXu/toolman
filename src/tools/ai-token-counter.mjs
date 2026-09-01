@@ -21,7 +21,7 @@ export default {
     <div><div class="muted">Characters</div><div class="big" id="chars">0</div></div>
     <div><div class="muted">Words</div><div class="big" id="words">0</div></div>
   </div>
-  <h3>Estimated tokens by model</h3>
+  <h2>Estimated tokens by model</h2>
   <table>
     <thead><tr><th>Model</th><th>Tokens</th><th>Chars / token</th><th>Est. cost</th></tr></thead>
     <tbody id="rows"></tbody>

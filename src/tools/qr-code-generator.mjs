@@ -11,7 +11,7 @@ export default {
     'Generate a QR code that never expires. It is drawn in your browser, so no tracking redirect is inserted and nothing is stored — the code encodes exactly what you type.',
   body: `<div class="tool">
   <div class="row">
-    <select id="type" style="width:auto">
+    <select id="type" aria-label="QR code content type" style="width:auto">
       <option value="text">URL or text</option>
       <option value="wifi">Wi-Fi network</option>
       <option value="mailto">Email</option>

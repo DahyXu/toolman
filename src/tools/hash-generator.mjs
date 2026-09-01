@@ -16,8 +16,8 @@ export default {
   <label style="margin:0"><input type="checkbox" id="upper" style="width:auto"> uppercase hex</label></div>
   <table><thead><tr><th>Algorithm</th><th>Digest</th></tr></thead><tbody id="out"></tbody></table>
   <hr style="margin:20px 0">
-  <h3>File checksum</h3>
-  <div class="row"><input type="file" id="file" style="width:auto"><span id="finfo" class="muted"></span></div>
+  <h2>File checksum</h2>
+  <div class="row"><input type="file" id="file" aria-label="Choose a file to hash" style="width:auto"><span id="finfo" class="muted"></span></div>
   <table><tbody id="fout"></tbody></table>
   <div class="row"><label style="margin:0;flex:1">Compare with a published checksum
     <input type="text" id="expect" placeholder="Paste the expected hash here" spellcheck="false"></label></div>

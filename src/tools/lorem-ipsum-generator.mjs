@@ -11,11 +11,11 @@ export default {
   body: `<div class="tool">
   <div class="row">
     <label style="margin:0">Generate <input type="number" id="n" value="4" min="1" max="200" style="width:80px"></label>
-    <select id="unit" style="width:auto">
+    <select id="unit" aria-label="Unit" style="width:auto">
       <option value="p">paragraphs</option><option value="s">sentences</option>
       <option value="w">words</option><option value="l">list items</option>
     </select>
-    <select id="style" style="width:auto">
+    <select id="style" aria-label="Text style" style="width:auto">
       <option value="lorem">Classic Latin</option>
       <option value="hipster">Hipster</option>
       <option value="tech">Tech jargon</option>
@@ -26,7 +26,7 @@ export default {
     <button class="primary" data-act="gen">Generate</button>
     <button data-act="copy">Copy</button>
   </div>
-  <textarea id="out" style="min-height:320px" spellcheck="false"></textarea>
+  <textarea id="out" aria-label="Generated text" style="min-height:320px" spellcheck="false"></textarea>
   <p id="stat" class="muted"></p>
 </div>`,
   about: `<h2>Why placeholder text exists</h2>

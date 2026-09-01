@@ -17,10 +17,10 @@ export default {
   </div>
   <div class="row">
     <label style="margin:0">Custom base <input type="number" id="cb" value="36" min="2" max="36" style="width:80px"></label>
-    <input type="text" id="bx" data-base="36" spellcheck="false" style="flex:1;min-width:140px;font-family:var(--mono)">
+    <input type="text" id="bx" data-base="36" aria-label="Value in the custom base" spellcheck="false" style="flex:1;min-width:140px;font-family:var(--mono)">
     <span id="err" class="err"></span>
   </div>
-  <h3>Bit breakdown</h3>
+  <h2>Bit breakdown</h2>
   <div id="bits" class="out" style="line-height:2.2"></div>
   <table><tbody id="info"></tbody></table>
 </div>`,

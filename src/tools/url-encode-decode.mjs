@@ -21,8 +21,8 @@ export default {
   </div>
   <p id="msg" class="muted"></p>
   <hr style="margin:20px 0">
-  <h3>URL parser</h3>
-  <input type="text" id="url" placeholder="https://example.com/path?utm_source=news&q=hello+world#top">
+  <h2>URL parser</h2>
+  <input type="text" id="url" aria-label="URL to parse" placeholder="https://example.com/path?utm_source=news&q=hello+world#top">
   <div id="parts" style="margin-top:12px"></div>
 </div>`,
   about: `<h2>What percent encoding is for</h2>

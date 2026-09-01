@@ -15,7 +15,7 @@ export default {
   <p id="desc" class="big" style="font-size:1.1rem"></p>
   <p id="err" class="err"></p>
   <div class="row">
-    <select id="preset" style="width:auto">
+    <select id="preset" aria-label="Common schedules" style="width:auto">
       <option value="">Common schedules…</option>
       <option value="* * * * *">Every minute</option>
       <option value="*/5 * * * *">Every 5 minutes</option>
@@ -37,7 +37,7 @@ export default {
     <button data-act="copy">Copy</button>
   </div>
   <table style="margin-top:6px"><thead><tr><th>Field</th><th>Value</th><th>Meaning</th></tr></thead><tbody id="fields"></tbody></table>
-  <h3>Next 10 runs <span class="muted" style="font-weight:400;font-size:.85rem">(your local time zone)</span></h3>
+  <h2>Next 10 runs <span class="muted" style="font-weight:400;font-size:.85rem">(your local time zone)</span></h2>
   <ul id="next" class="linklist"></ul>
 </div>`,
   about: `<h2>Cron field reference</h2>

@@ -15,12 +15,12 @@ export default {
   <div class="row"><button data-act="sample">Load sample</button><button data-act="clear">Clear</button><span id="err" class="err"></span></div>
   <div id="parts"></div>
   <div class="grid2">
-    <div><h3>Header</h3><pre><code id="head" class="out">—</code></pre></div>
-    <div><h3>Payload</h3><pre><code id="body" class="out">—</code></pre></div>
+    <div><h2>Header</h2><pre><code id="head" class="out">—</code></pre></div>
+    <div><h2>Payload</h2><pre><code id="body" class="out">—</code></pre></div>
   </div>
-  <h3>Claims</h3>
+  <h2>Claims</h2>
   <table><tbody id="claims"><tr><td colspan="2" class="muted">Paste a token above.</td></tr></tbody></table>
-  <h3>Signature</h3>
+  <h2>Signature</h2>
   <p class="out" id="sig" style="word-break:break-all">—</p>
   <p class="muted">This tool decodes only. Verifying a signature requires the secret or public key, which should never be pasted into a web page.</p>
 </div>`,

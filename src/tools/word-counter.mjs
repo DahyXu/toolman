@@ -21,9 +21,9 @@ export default {
     <div><div class="muted">Paragraphs</div><div class="big" id="p">0</div></div>
   </div>
   <table style="margin-top:16px"><tbody id="more"></tbody></table>
-  <h3>Length limits</h3>
+  <h2>Length limits</h2>
   <table><tbody id="limits"></tbody></table>
-  <h3>Top keywords</h3>
+  <h2>Top keywords</h2>
   <table><thead><tr><th>Word</th><th>Count</th><th>Density</th></tr></thead><tbody id="kw"></tbody></table>
 </div>`,
   about: `<h2>How words are counted</h2>

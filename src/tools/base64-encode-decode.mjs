@@ -25,10 +25,10 @@ export default {
   </div>
   <p id="msg" class="muted" role="status" aria-live="polite"></p>
   <hr style="margin:20px 0">
-  <h3>File to Base64 / data URL</h3>
-  <div class="row"><input type="file" id="file" style="width:auto"></div>
+  <h2>File to Base64 / data URL</h2>
+  <div class="row"><input type="file" id="file" aria-label="Choose a file to encode" style="width:auto"></div>
   <p class="muted" id="finfo"></p>
-  <textarea id="fout" spellcheck="false" readonly placeholder="data:image/png;base64,…"></textarea>
+  <textarea id="fout" aria-label="File as a data URL" spellcheck="false" readonly placeholder="data:image/png;base64,…"></textarea>
   <div class="row"><button data-act="fcopy">Copy data URL</button><button data-act="fraw">Copy Base64 only</button></div>
   <div id="prev"></div>
 </div>`,

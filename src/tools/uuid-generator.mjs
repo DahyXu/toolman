@@ -29,7 +29,7 @@ export default {
     <label style="margin:0"><input type="checkbox" id="nodash" style="width:auto"> remove dashes</label>
     <label style="margin:0"><input type="checkbox" id="quote" style="width:auto"> quote &amp; comma</label>
   </div>
-  <textarea id="out" spellcheck="false" readonly style="min-height:260px"></textarea>
+  <textarea id="out" aria-label="Generated identifiers" spellcheck="false" readonly style="min-height:260px"></textarea>
 </div>`,
   about: `<h2>Which UUID version should you use?</h2>
 <table>

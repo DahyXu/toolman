@@ -29,7 +29,7 @@ function widget(fromKey, toKey) {
   <div id="drop" style="border:2px dashed var(--line);border-radius:12px;padding:34px;text-align:center;cursor:pointer">
     <p style="margin:0"><strong>Drop ${esc(F[fromKey].name)} files here</strong> or click to choose</p>
     <p class="muted" style="margin:6px 0 0;font-size:.88rem">Multiple files supported · nothing is uploaded</p>
-    <input type="file" id="file" accept="${F[fromKey].mime},image/*" multiple hidden>
+    <input type="file" id="file" accept="${F[fromKey].mime},image/*" aria-label="Choose ${esc(F[fromKey].name)} files to convert" multiple hidden>
   </div>
   <div class="row">
     ${to.lossy ? `<label style="margin:0;flex:1">Quality: <output id="qOut">85</output>%<input type="range" id="q" min="30" max="100" value="85" style="width:100%"></label>` : '<span class="muted">PNG is lossless — no quality setting needed.</span>'}

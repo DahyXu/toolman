@@ -9,57 +9,57 @@ export default {
     'Free online percentage calculator. Find what percent one number is of another, add or subtract a percentage, calculate percentage change, discounts, tips and reverse percentages — with the working shown.',
   intro: 'Six percentage calculations, each with the formula and the working shown.',
   body: `<div class="tool">
-  <h3>What is X% of Y?</h3>
+  <h2>What is X% of Y?</h2>
   <div class="row">
-    <input type="number" id="a1" value="15" style="width:110px"> % of
-    <input type="number" id="a2" value="200" style="width:130px">
+    <input type="number" id="a1" aria-label="Percentage" value="15" style="width:110px"> % of
+    <input type="number" id="a2" aria-label="Of this number" value="200" style="width:130px">
     <strong id="ar" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="aw"></p>
 </div>
 <div class="tool">
-  <h3>X is what percent of Y?</h3>
+  <h2>X is what percent of Y?</h2>
   <div class="row">
-    <input type="number" id="b1" value="30" style="width:130px"> is what % of
-    <input type="number" id="b2" value="200" style="width:130px">
+    <input type="number" id="b1" aria-label="This number" value="30" style="width:130px"> is what % of
+    <input type="number" id="b2" aria-label="Is what percent of" value="200" style="width:130px">
     <strong id="br" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="bw"></p>
 </div>
 <div class="tool">
-  <h3>Percentage increase or decrease</h3>
+  <h2>Percentage increase or decrease</h2>
   <div class="row">
-    From <input type="number" id="c1" value="80" style="width:130px">
-    to <input type="number" id="c2" value="100" style="width:130px">
+    From <input type="number" id="c1" aria-label="From value" value="80" style="width:130px">
+    to <input type="number" id="c2" aria-label="To value" value="100" style="width:130px">
     <strong id="cr" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="cw"></p>
 </div>
 <div class="tool">
-  <h3>Add or subtract a percentage</h3>
+  <h2>Add or subtract a percentage</h2>
   <div class="row">
-    <input type="number" id="d1" value="250" style="width:130px">
-    <select id="dop" style="width:auto"><option value="+">increased by</option><option value="-">decreased by</option></select>
-    <input type="number" id="d2" value="20" style="width:110px"> %
+    <input type="number" id="d1" aria-label="Starting value" value="250" style="width:130px">
+    <select id="dop" aria-label="Increase or decrease" style="width:auto"><option value="+">increased by</option><option value="-">decreased by</option></select>
+    <input type="number" id="d2" aria-label="By this percentage" value="20" style="width:110px"> %
     <strong id="dr" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="dw"></p>
 </div>
 <div class="tool">
-  <h3>Discount and sale price</h3>
+  <h2>Discount and sale price</h2>
   <div class="row">
-    Original price <input type="number" id="e1" value="89.99" step="0.01" style="width:130px">
-    Discount <input type="number" id="e2" value="30" style="width:100px"> %
+    Original price <input type="number" id="e1" aria-label="Original price" value="89.99" step="0.01" style="width:130px">
+    Discount <input type="number" id="e2" aria-label="Discount percentage" value="30" style="width:100px"> %
     <strong id="er" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="ew"></p>
 </div>
 <div class="tool">
-  <h3>Tip calculator</h3>
+  <h2>Tip calculator</h2>
   <div class="row">
-    Bill <input type="number" id="f1" value="64.50" step="0.01" style="width:120px">
-    Tip <input type="number" id="f2" value="18" style="width:90px"> %
-    Split <input type="number" id="f3" value="2" min="1" style="width:80px"> ways
+    Bill <input type="number" id="f1" aria-label="Bill amount" value="64.50" step="0.01" style="width:120px">
+    Tip <input type="number" id="f2" aria-label="Tip percentage" value="18" style="width:90px"> %
+    Split <input type="number" id="f3" aria-label="Split between how many people" value="2" min="1" style="width:80px"> ways
     <strong id="fr" class="big" style="font-size:1.2rem"></strong>
   </div>
   <p class="muted" id="fw"></p>

@@ -16,7 +16,7 @@ export default {
     <button data-act="sort">Sort keys</button>
     <button data-act="escape">Escape</button>
     <button data-act="unescape">Unescape</button>
-    <select id="ind" style="width:auto"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="\t">Tab</option></select>
+    <select id="ind" aria-label="Indentation" style="width:auto"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="\t">Tab</option></select>
     <button data-act="copy">Copy</button>
     <button data-act="sample">Sample</button>
     <button data-act="clear">Clear</button>
