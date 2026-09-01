@@ -63,7 +63,8 @@ const PAIRS = [
 // 5.2 means 5 ft 2 in. Parse the decimal part as a literal inch count from the
 // string rather than as a fraction, which would turn 5.2 into 20 inches.
 function feetValue(v, fromId) {
-  if (fromId !== 'feet' || Number.isInteger(v)) return { num: v, label: v + (v === 1 ? ' foot' : ' feet') };
+  if (fromId !== 'feet') return { num: v, label: null };
+  if (Number.isInteger(v)) return { num: v, label: v + (v === 1 ? ' foot' : ' feet') };
   const [ftS, inS = '0'] = String(v).split('.');
   const ft = parseInt(ftS, 10);
   const inch = parseInt(inS, 10);
@@ -164,7 +165,7 @@ function valuePage(from, to, raw, all) {
 </div>
 
 <h2>Convert other values</h2>
-<ul class="linklist">${all.slice(0, 24).map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
+<ul class="linklist">${all.map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
 <p><a href="/convert/${from.id}-to-${to.id}/">Full ${fromP} to ${toP} converter</a> · <a href="/convert/${from.catKey}/">All ${from.catName.toLowerCase()} converters</a></p>`,
   };
 }
@@ -221,7 +222,7 @@ function tempPage(a, b, raw, all) {
     })()}</p>
 </div>
 <h2>Convert other temperatures</h2>
-<ul class="linklist">${all.slice(0, 24).map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
+<ul class="linklist">${all.map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
 <p><a href="/convert/${a.id}-to-${b.id}/">Full ${a.name} to ${b.name} converter</a></p>`,
   };
 }

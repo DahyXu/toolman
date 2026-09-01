@@ -78,7 +78,8 @@ function pairPage(a, b, all) {
     ? `Standard 9–5 working hours overlap for <strong>${overlap.length} hour${overlap.length === 1 ? '' : 's'}</strong>: ${clock(overlap[0])}–${clock(overlap[overlap.length - 1] + 1)} ${a.ab} (${clock(shift(overlap[0], 0, d).h)}–${clock(shift(overlap[overlap.length - 1] + 1, 0, d).h)} ${b.ab}). Schedule meetings inside that window.`
     : `Standard 9–5 working hours do <strong>not overlap</strong> at all between ${a.ab} and ${b.ab}. Someone has to take an early or late call — or use asynchronous communication instead.`;
 
-  const siblings = all.filter((z) => z !== a && z !== b).slice(0, 16)
+  // Pairs that share an offset have no page — skip them or the link 404s.
+  const siblings = all.filter((z) => z !== a && z !== b && z.off !== a.off).slice(0, 16)
     .map((z) => `<li><a href="/convert/${a.id}-to-${z.id}/">${a.ab} to ${z.ab}</a></li>`).join('');
 
   return {

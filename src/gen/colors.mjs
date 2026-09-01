@@ -99,12 +99,19 @@ function nearestNamed(hex) {
   return best;
 }
 
+// Pages exist only for the seed colors. A swatch links out only when the
+// target page actually exists; everything else renders as a plain swatch, so
+// crawlers never meet a dead link.
+let EXISTS = new Set();
+
 function swatchRow(list) {
   return `<div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0">${list
-    .map(
-      (c) =>
-        `<a href="/color/${c.hex}/" style="flex:1;min-width:88px;text-decoration:none"><div style="height:56px;border-radius:9px;border:1px solid var(--line);background:#${c.hex}"></div><small class="muted" style="font-family:var(--mono);font-size:.72rem">${c.label || '#' + c.hex.toUpperCase()}</small></a>`
-    )
+    .map((c) => {
+      const inner = `<div style="height:56px;border-radius:9px;border:1px solid var(--line);background:#${c.hex}"></div><small class="muted" style="font-family:var(--mono);font-size:.72rem">${c.label || '#' + c.hex.toUpperCase()}</small>`;
+      return EXISTS.has(c.hex)
+        ? `<a href="/color/${c.hex}/" style="flex:1;min-width:88px;text-decoration:none">${inner}</a>`
+        : `<div style="flex:1;min-width:88px">${inner}</div>`;
+    })
     .join('')}</div>`;
 }
 
@@ -212,7 +219,7 @@ $brand: ${H};</code></pre>
 <h3>Should text on ${H} be white or black?</h3>
 <p><strong>${cw > cb ? 'White' : 'Black'}</strong> gives the better contrast ratio (${Math.max(cw, cb).toFixed(2)}:1 versus ${Math.min(cw, cb).toFixed(2)}:1).</p>
 <h3>What is the complementary color of ${H}?</h3>
-<p><a href="/color/${harmony[0].hex}/">#${harmony[0].hex.toUpperCase()}</a> — the hue directly opposite ${H} on the color wheel.</p>
+<p>${EXISTS.has(harmony[0].hex) ? `<a href="/color/${harmony[0].hex}/">#${harmony[0].hex.toUpperCase()}</a>` : `<strong>#${harmony[0].hex.toUpperCase()}</strong>`} — the hue directly opposite ${H} on the color wheel.</p>
 </div>
 
 <p><a href="/color-converter/">Convert any color →</a> · <a href="/color/">Browse all colors</a></p>`,
@@ -223,12 +230,14 @@ export default async function () {
   const pages = [];
   const done = new Set();
 
-  // 1) every CSS named color
+  // Work out the full seed set first so swatch links can be resolved against
+  // pages that will actually exist.
+  const seeds = [];
   const namedList = [];
   for (const [name, hex] of Object.entries(NAMED)) {
     if (done.has(hex)) continue;
     done.add(hex);
-    pages.push(colorPage(hex, name));
+    seeds.push([hex, name]);
     namedList.push({ hex, label: name });
   }
 
@@ -243,7 +252,7 @@ export default async function () {
   for (const hex of POPULAR) {
     if (done.has(hex)) continue;
     done.add(hex);
-    pages.push(colorPage(hex, null));
+    seeds.push([hex, null]);
   }
 
   // 3) a systematic grid across the hue/saturation/lightness space
@@ -254,7 +263,7 @@ export default async function () {
         const hex = rgb2hex(c.r, c.g, c.b);
         if (done.has(hex)) continue;
         done.add(hex);
-        pages.push(colorPage(hex, null));
+        seeds.push([hex, null]);
       }
     }
   }
@@ -263,8 +272,11 @@ export default async function () {
     const hex = rgb2hex(v, v, v);
     if (done.has(hex)) continue;
     done.add(hex);
-    pages.push(colorPage(hex, null));
+    seeds.push([hex, null]);
   }
+
+  EXISTS = done;
+  for (const [hex, name] of seeds) pages.push(colorPage(hex, name));
 
   const all = [...done];
   pages.push({

@@ -38,9 +38,30 @@ const navHtml = () =>
  * @param {object[]} [o.jsonld] - extra JSON-LD objects
  * @param {string} [o.h1]
  */
+const SUFFIX = ` | ${SITE.name}`;
+
+// Google truncates around 60 characters. When a title is over budget, drop the
+// brand suffix rather than the descriptive part — Google appends the site name
+// itself anyway.
+function fitTitle(t) {
+  if (t.length <= 60 || !t.endsWith(SUFFIX)) return t;
+  const trimmed = t.slice(0, -SUFFIX.length);
+  return trimmed.length >= 20 ? trimmed : t;
+}
+
+// Google shows roughly 155 characters of a description. Anything past that is
+// truncated mid-sentence, so trim at a sentence boundary instead.
+function fitDesc(d) {
+  if (!d || d.length <= 160) return d;
+  const cut = d.slice(0, 158);
+  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  return stop > 90 ? cut.slice(0, stop + 1) : cut.replace(/\s+\S*$/, '') + '…';
+}
+
 export function page(o) {
   const url = SITE.origin + o.path;
   const crumbs = o.crumbs || [];
+  o = { ...o, title: fitTitle(o.title), desc: fitDesc(o.desc) };
 
   const ld = [
     {
@@ -123,7 +144,7 @@ ${o.body}
 <footer class="site">
   <div class="wrap">
     <p><strong>${SITE.name}</strong> — ${SITE.tagline}. Everything runs locally in your browser; your data never leaves your device.</p>
-    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/convert/">Converters</a><a href="/color/">Colors</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
+    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/convert/">Converters</a><a href="/color/">Colors</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
   </div>
 </footer>
 <script>(function(){var k='tm-theme';document.addEventListener('click',function(e){var b=e.target.closest('[data-theme-toggle]');if(!b)return;var d=document.documentElement,n=d.dataset.theme==='dark'?'light':'dark';d.dataset.theme=n;try{localStorage.setItem(k,n)}catch(_){}});})();</script>
