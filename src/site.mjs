@@ -3,7 +3,7 @@ export const SITE = {
   domain: 'toolman.top',
   origin: 'https://toolman.top',
   name: 'Toolman',
-  tagline: 'Fast, free, private online tools',
+  tagline: 'Fast, free, privacy-first online tools',
   description:
     'A collection of fast, free online tools that run entirely in your browser. No uploads, no sign-up, no tracking.',
   author: 'Toolman',

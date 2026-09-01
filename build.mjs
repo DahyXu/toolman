@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SITE, CATEGORIES } from './src/site.mjs';
@@ -318,6 +319,39 @@ run();
 // ---------- sitemap + robots ----------
 const now = new Date().toISOString().slice(0, 10);
 const urls = [...new Set(written)];
+
+// `lastmod` must reflect when a page's content actually changed. Stamping
+// every page with the build date tells Google the whole site changed on every
+// deploy, which makes it re-crawl pages it already has — spending crawl budget
+// that a new site needs for the pages it has *not* seen yet. Hash the rendered
+// body and keep the date from the last build whose hash matched.
+const STAMP_FILE = path.join(root, '.lastmod.json');
+const prevStamps = fs.existsSync(STAMP_FILE)
+  ? JSON.parse(fs.readFileSync(STAMP_FILE, 'utf8'))
+  : {};
+const stamps = {};
+let unchanged = 0;
+for (const u of urls) {
+  const file = path.join(dist, u === '/' ? 'index.html' : u.replace(/^\/|\/$/g, '') + '/index.html');
+  let hash = '';
+  try {
+    // Hash the body only: the <head> carries the shared inline stylesheet, so
+    // a CSS tweak would otherwise mark all 6,000 pages as modified.
+    const html = fs.readFileSync(file, 'utf8');
+    const body = html.slice(html.indexOf('<body>'));
+    hash = crypto.createHash('sha1').update(body).digest('hex').slice(0, 16);
+  } catch { /* page written outside dist, fall through to today's date */ }
+  const prev = prevStamps[u];
+  if (prev && prev.hash === hash) {
+    stamps[u] = prev;
+    unchanged++;
+  } else {
+    stamps[u] = { hash, date: now };
+  }
+}
+fs.writeFileSync(STAMP_FILE, JSON.stringify(stamps, null, 0));
+const lastmodOf = (u) => (stamps[u] ? stamps[u].date : now);
+console.log(`lastmod: ${urls.length - unchanged} changed, ${unchanged} unchanged`);
 // The spec allows 50,000 URLs per sitemap, but smaller files are processed
 // more reliably and make it obvious in Search Console which section of the
 // site is being indexed. sitemap.xml becomes the index once there is more
