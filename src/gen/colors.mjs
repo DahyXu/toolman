@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // 148 CSS named colors — the canonical list every browser ships.
 const NAMED = {
@@ -147,6 +147,19 @@ function colorPage(hex, name) {
     ? `${name.charAt(0).toUpperCase() + name.slice(1)} Color — ${H} Hex, RGB & HSL | Toolman`
     : `${H} Hex Color — RGB, HSL, CMYK & Shades | Toolman`;
 
+  const FAQ = faq([
+    { q: `What color is ${H}?`,
+      a: `${H} is a ${desc}${near.exact ? `, which CSS calls <code>${near.name}</code>` : ''}. Its hue sits at ${hsl.h}° on the color wheel, with ${hsl.s}% saturation and ${hsl.l}% lightness.` },
+    { q: `What is ${H} in RGB?`,
+      a: `${H} converts to <strong>rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</strong> — ${rgb.r} red, ${rgb.g} green and ${rgb.b} blue.` },
+    { q: `What is ${H} in CMYK?`,
+      a: `Approximately <strong>cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)</strong>. Print output depends on the ICC profile of the press and paper, so treat this as a starting point rather than an exact match.` },
+    { q: `Should text on ${H} be white or black?`,
+      a: `<strong>${cw > cb ? 'White' : 'Black'}</strong> gives the better contrast ratio (${Math.max(cw, cb).toFixed(2)}:1 versus ${Math.min(cw, cb).toFixed(2)}:1).` },
+    { q: `What is the complementary color of ${H}?`,
+      a: `${EXISTS.has(harmony[0].hex) ? `<a href="/color/${harmony[0].hex}/">#${harmony[0].hex.toUpperCase()}</a>` : `<strong>#${harmony[0].hex.toUpperCase()}</strong>`} — the hue directly opposite ${H} on the color wheel.` },
+  ]);
+
   const badge = (r, need) => (r >= need ? '<span class="ok">pass</span>' : '<span class="err">fail</span>');
 
   return {
@@ -155,14 +168,7 @@ function colorPage(hex, name) {
     desc: `${H} is a ${desc}. See its RGB (${rgb.r}, ${rgb.g}, ${rgb.b}), HSL, CMYK values, WCAG contrast ratios, tints, shades and a matching color palette.`,
     h1: name ? `${name.charAt(0).toUpperCase() + name.slice(1)} — ${H}` : `${H} color`,
     crumbs: [{ name: 'Colors', path: '/color/' }, { name: H, path: `/color/${hex}/` }],
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        { '@type': 'Question', name: `What is the RGB value of ${H}?`, acceptedAnswer: { '@type': 'Answer', text: `${H} is rgb(${rgb.r}, ${rgb.g}, ${rgb.b}).` } },
-        { '@type': 'Question', name: `What color is ${H}?`, acceptedAnswer: { '@type': 'Answer', text: `${H} is a ${desc}${near.exact ? `, known in CSS as ${near.name}` : ''}.` } },
-      ],
-    }],
+    jsonld: [FAQ.schema],
     body: `<div style="height:150px;border-radius:14px;border:1px solid var(--line);background:${H};display:flex;align-items:center;justify-content:center;gap:20px">
   <span style="color:#fff;font:600 20px var(--mono)">${H}</span><span style="color:#000;font:600 20px var(--mono)">${H}</span>
 </div>
@@ -208,19 +214,7 @@ ${swatchRow(harmony)}
 /* SCSS variable */
 $brand: ${H};</code></pre>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What color is ${H}?</h3>
-<p>${H} is a ${desc}${near.exact ? `, which CSS calls <code>${near.name}</code>` : ''}. Its hue sits at ${hsl.h}° on the color wheel, with ${hsl.s}% saturation and ${hsl.l}% lightness.</p>
-<h3>What is ${H} in RGB?</h3>
-<p>${H} converts to <strong>rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</strong> — ${rgb.r} red, ${rgb.g} green and ${rgb.b} blue.</p>
-<h3>What is ${H} in CMYK?</h3>
-<p>Approximately <strong>cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)</strong>. Print output depends on the ICC profile of the press and paper, so treat this as a starting point rather than an exact match.</p>
-<h3>Should text on ${H} be white or black?</h3>
-<p><strong>${cw > cb ? 'White' : 'Black'}</strong> gives the better contrast ratio (${Math.max(cw, cb).toFixed(2)}:1 versus ${Math.min(cw, cb).toFixed(2)}:1).</p>
-<h3>What is the complementary color of ${H}?</h3>
-<p>${EXISTS.has(harmony[0].hex) ? `<a href="/color/${harmony[0].hex}/">#${harmony[0].hex.toUpperCase()}</a>` : `<strong>#${harmony[0].hex.toUpperCase()}</strong>`} — the hue directly opposite ${H} on the color wheel.</p>
-</div>
+${FAQ.html}
 
 <p><a href="/color-converter/">Convert any color →</a> · <a href="/color/">Browse all colors</a></p>`,
   };

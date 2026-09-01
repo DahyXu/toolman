@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // port, service, protocol, what it is, security note
 const P = [
@@ -63,6 +63,17 @@ export default async function () {
 
   for (const [port, service, proto, what, security] of P) {
     const related = P.filter((x) => x[0] !== port).slice(0, 18);
+
+    const FAQ = faq([
+      { q: `What is port ${port} used for?`, a: what },
+      { q: `Is it safe to open port ${port}?`, a: security },
+      { q: `How do I check if port ${port} is open?`,
+        a: `Locally, <code>sudo lsof -i :${port}</code> on macOS or Linux, or <code>netstat -ano | findstr :${port}</code> on Windows. From outside, <code>nc -zv host ${port}</code> tells you whether anything answers.` },
+      { q: `Why do I get "address already in use" on port ${port}?`,
+        a: `Another process is bound to it — often a previous run of your own program that did not exit cleanly. Find it with <code>lsof -ti :${port}</code> and stop it, or configure your application to use a different port.` },
+      { q: 'Can I change the port this service uses?',
+        a: "Almost always yes, in the service's configuration. Moving off a default port reduces automated scan noise, but it is obfuscation rather than security — a real attacker scans all 65,535." },
+    ]);
     pages.push({
       path: `/port/${port}/`,
       title: `Port ${port} — ${service} (${proto})`,
@@ -72,16 +83,7 @@ export default async function () {
         { name: 'Port numbers', path: '/port/' },
         { name: `Port ${port}`, path: `/port/${port}/` },
       ],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          { '@type': 'Question', name: `What is port ${port} used for?`,
-            acceptedAnswer: { '@type': 'Answer', text: `Port ${port} is used by ${service} over ${proto}. ${what.replace(/<[^>]+>/g, '')}` } },
-          { '@type': 'Question', name: `Is it safe to open port ${port}?`,
-            acceptedAnswer: { '@type': 'Answer', text: security.replace(/<[^>]+>/g, '') } },
-        ],
-      }],
+      jsonld: [FAQ.schema],
       body: `<p><span class="pill">${proto}</span> <span class="pill">${port < 1024 ? 'well-known' : port < 49152 ? 'registered' : 'dynamic'}</span></p>
 <h2>What runs on port ${port}</h2>
 <p>${what}</p>
@@ -123,17 +125,7 @@ taskkill /PID &lt;pid&gt; /F                    # Windows</code></pre>
 <tr><td>Range</td><td>${port < 1024 ? 'Well-known (0–1023) — binding requires root on Unix' : port < 49152 ? 'Registered (1024–49151) — any user process may bind' : 'Dynamic (49152–65535) — normally assigned automatically'}</td></tr>
 </tbody></table>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is port ${port} used for?</h3>
-<p>${what}</p>
-<h3>How do I check if port ${port} is open?</h3>
-<p>Locally, <code>sudo lsof -i :${port}</code> on macOS or Linux, or <code>netstat -ano | findstr :${port}</code> on Windows. From outside, <code>nc -zv host ${port}</code> tells you whether anything answers.</p>
-<h3>Why do I get "address already in use" on port ${port}?</h3>
-<p>Another process is bound to it — often a previous run of your own program that did not exit cleanly. Find it with <code>lsof -ti :${port}</code> and stop it, or configure your application to use a different port.</p>
-<h3>Can I change the port this service uses?</h3>
-<p>Almost always yes, in the service's configuration. Moving off a default port reduces automated scan noise, but it is obfuscation rather than security — a real attacker scans all 65,535.</p>
-</div>
+${FAQ.html}
 
 <h2>Other common ports</h2>
 <ul class="linklist">${related.map((x) => `<li><a href="/port/${x[0]}/">Port ${x[0]} — ${esc(x[1])}</a></li>`).join('')}</ul>

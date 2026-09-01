@@ -1,5 +1,5 @@
 import { INGREDIENTS, VOL, WT, AMOUNTS } from '../data/ingredients.mjs';
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 const round = (n) => (n >= 100 ? Math.round(n) : n >= 10 ? +n.toFixed(1) : +n.toFixed(2));
 const fmt = (n) => round(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -53,6 +53,17 @@ export default async function () {
 
       const siblings = amountIndex.filter((x) => x.path !== entry.path).slice(0, 26);
 
+      const FAQ = faq([
+        { q: `How many grams is ${label}?`,
+          a: `About <strong>${fmt(grams)} grams</strong>, or ${fmt(oz)} ounces.` },
+        { q: `How many grams in a cup of ${ing.name}?`,
+          a: `Roughly <strong>${gPerCup} grams</strong> per US cup.` },
+        { q: 'Is a US cup the same as a metric cup?',
+          a: `No. A US customary cup is 236.6 ml; a metric cup — used in Australia, New Zealand and much of Europe — is 250 ml, about 6% larger. An imperial cup, still seen in older British recipes, is 284 ml. For a cup of ${ing.name} that is a difference of roughly ${fmt(gPerCup * 0.0567)} g between US and metric.` },
+        { q: 'Should I sift before or after measuring?',
+          a: 'It matters, and recipes are often ambiguous. "1 cup sifted flour" means sift first, then measure — which gives less flour than "1 cup flour, sifted", where you measure first. When in doubt, weigh.' },
+      ]);
+
       pages.push({
         path: entry.path,
         title: `${a.label} ${unitWord} of ${ing.name} in grams — ${fmt(grams)} g`,
@@ -63,15 +74,7 @@ export default async function () {
           { name: ing.name, path: `/cooking/${ing.id}/` },
           { name: `${a.label} ${unitWord}`, path: entry.path },
         ],
-        jsonld: [{
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: [{
-            '@type': 'Question',
-            name: `How many grams is ${label}?`,
-            acceptedAnswer: { '@type': 'Answer', text: `${label} weighs approximately ${fmt(grams)} grams, or ${fmt(oz)} ounces.` },
-          }],
-        }],
+        jsonld: [FAQ.schema],
         body: `<p class="big" style="font-size:1.5rem;margin:.4em 0">${label} ≈ <strong>${fmt(grams)} grams</strong></p>
 <p class="muted">That is about ${fmt(oz)} ounces. ${ing.alt ? `Also sold as <strong>${esc(ing.alt)}</strong>. ` : ''}One US cup of ${ing.name} weighs ${gPerCup} g.</p>
 
@@ -88,17 +91,7 @@ ${AMOUNTS.map((x) => `<tr${x.v === a.v && vol.id === 'cups' ? ' style="font-weig
 <h2>Weigh it if you can</h2>
 <p>Volume measures are convenient but imprecise — the same cup can hold noticeably different amounts depending on how the ingredient is packed, how humid the room is, and whether it was sifted. A digital kitchen scale removes the variable entirely, which is why professional and European recipes give weights. If you bake regularly, a scale is the cheapest accuracy upgrade available.</p>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>How many grams is ${label}?</h3>
-<p>About <strong>${fmt(grams)} grams</strong>, or ${fmt(oz)} ounces.</p>
-<h3>How many grams in a cup of ${ing.name}?</h3>
-<p>Roughly <strong>${gPerCup} grams</strong> per US cup.</p>
-<h3>Is a US cup the same as a metric cup?</h3>
-<p>No. A US customary cup is 236.6 ml; a metric cup — used in Australia, New Zealand and much of Europe — is 250 ml, about 6% larger. An imperial cup, still seen in older British recipes, is 284 ml. For a cup of ${ing.name} that is a difference of roughly ${fmt(gPerCup * 0.0567)} g between US and metric.</p>
-<h3>Should I sift before or after measuring?</h3>
-<p>It matters, and recipes are often ambiguous. "1 cup sifted flour" means sift first, then measure — which gives less flour than "1 cup flour, sifted", where you measure first. When in doubt, weigh.</p>
-</div>
+${FAQ.html}
 
 <h2>Other amounts</h2>
 <ul class="linklist">${siblings.map((s) => `<li><a href="${s.path}">${esc(s.label)}</a></li>`).join('')}</ul>

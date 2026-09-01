@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // All factors expressed in CSS pixels, at the CSS reference of 96 dpi
 // and the browser default root font size of 16 px.
@@ -53,6 +53,21 @@ function pairPage(a, b, all) {
       .map((u) => `<li><a href="/convert/${u.id}-to-${b.id}/">${u.id === 'px' ? 'PX' : u.id.toUpperCase()} to ${titleB}</a></li>`)
       .join('');
 
+  const FAQ = faq([
+    { q: `What is 16${A} in ${B}?`, a: `16${A} equals <strong>${fmt(16 * k)}${B}</strong> at a 16&nbsp;px root font size.` },
+    { q: `How do I convert ${A} to ${B}?`,
+      a: `Multiply the ${A} value by ${fmt(k)}. Going the other way, multiply the ${B} value by ${fmt(1 / k)}.` },
+    anyRel
+      ? { q: 'Does the root font size change the result?',
+          a: a.rel && b.rel
+            ? 'Yes. Both units are relative, so the ratio between them is stable, but their pixel values move together with the root size.'
+            : 'Yes. One of these units is relative to the root font size, so changing it changes the conversion. Use the base control above to match your project.' }
+      : { q: 'Does browser zoom change the result?',
+          a: 'No. Both units are absolute in CSS and keep the same ratio at any zoom level, though the rendered size on screen changes.' },
+    { q: 'Why does CSS use 96 pixels per inch?',
+      a: "It is a historical convention from early desktop displays that became the fixed CSS reference. It has nothing to do with your monitor's real pixel density — the browser scales CSS pixels to physical ones for you." },
+  ]);
+
   return {
     path,
     title: `${titleA} to ${titleB} Converter — CSS Unit Calculator | Toolman`,
@@ -63,15 +78,7 @@ function pairPage(a, b, all) {
       { name: 'CSS units', path: '/convert/css-units/' },
       { name: `${titleA} to ${titleB}`, path },
     ],
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [{
-        '@type': 'Question',
-        name: `How do you convert ${A} to ${B} in CSS?`,
-        acceptedAnswer: { '@type': 'Answer', text: `Divide or multiply by the ratio between the two units. At the default 16 px root font size, 1${A} = ${fmt(k)}${B}.` },
-      }],
-    }],
+    jsonld: [FAQ.schema],
     body: `<p class="muted">At the browser default root font size of 16&nbsp;px, <strong>1${A} = ${fmt(k)}${B}</strong>. Change the base below if your project uses a different root size.</p>
 <div class="tool">
   <div class="grid2">
@@ -122,18 +129,7 @@ ${anyRel ? `<p>Because ${a.rel && b.rel ? 'both units are' : (a.rel ? a.sym : b.
 <tr><td>Print stylesheets</td><td><code>pt</code>, <code>cm</code>, <code>mm</code></td><td>These map to real physical measurements on paper.</td></tr>
 </table>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is 16${A} in ${B}?</h3>
-<p>16${A} equals <strong>${fmt(16 * k)}${B}</strong> at a 16&nbsp;px root font size.</p>
-<h3>How do I convert ${A} to ${B}?</h3>
-<p>Multiply the ${A} value by ${fmt(k)}. Going the other way, multiply the ${B} value by ${fmt(1 / k)}.</p>
-${anyRel ? `<h3>Does the root font size change the result?</h3>
-<p>Yes. ${a.rel && b.rel ? 'Both units are relative, so the ratio between them is stable, but their pixel values move together with the root size.' : 'One of these units is relative to the root font size, so changing it changes the conversion. Use the base control above to match your project.'}</p>` : `<h3>Does browser zoom change the result?</h3>
-<p>No. Both units are absolute in CSS and keep the same ratio at any zoom level, though the rendered size on screen changes.</p>`}
-<h3>Why does CSS use 96 pixels per inch?</h3>
-<p>It is a historical convention from early desktop displays that became the fixed CSS reference. It has nothing to do with your monitor's real pixel density — the browser scales CSS pixels to physical ones for you.</p>
-</div>
+${FAQ.html}
 
 <h2>Related CSS unit conversions</h2>
 <ul class="linklist">${siblings}</ul>

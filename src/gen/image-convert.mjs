@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 const F = {
   png: { name: 'PNG', full: 'Portable Network Graphics', mime: 'image/png', lossy: false, alpha: true,
@@ -122,6 +122,23 @@ function page(fromKey, toKey, all) {
     .slice(0, 18)
     .map(([x, y]) => `<li><a href="/${x}-to-${y}/">${F[x].name} to ${F[y].name}</a></li>`).join('');
 
+  const FAQ = faq([
+    { q: `How do I convert ${a.name} to ${b.name}?`,
+      a: 'Drop the file on the converter above, adjust the quality or size if you want, and download the result. No account, no email, no upload.' },
+    { q: 'Are my files uploaded to a server?',
+      a: "No. The file is read with the browser's FileReader API, drawn to a canvas and re-encoded locally. You can disconnect from the network after the page loads and the converter still works." },
+    { q: 'Is there a file size limit?',
+      a: "Only your device's memory. There is no server-side cap, no queue and no daily limit. Very large images — beyond roughly 50 megapixels — may fail on mobile browsers, which limit canvas dimensions." },
+    { q: 'Will the quality drop?',
+      a: b.lossy
+        ? `${b.name} is lossy, so some detail is discarded. At quality 85 the difference is invisible at normal viewing size; below about 60 it becomes noticeable in flat areas and around sharp edges.`
+        : `${b.name} is lossless, so nothing is lost in this step — although detail already discarded by ${a.name} cannot be recovered.` },
+    { q: 'Can I convert several files at once?',
+      a: 'Yes. Drop as many as you like and use "Download all". Each file is converted independently in your browser.' },
+    { q: 'Is there a watermark?',
+      a: 'No. The output is exactly the converted image, nothing added.' },
+  ]);
+
   return {
     path,
     title: `${a.name} to ${b.name} Converter — Free, No Upload | Toolman`,
@@ -141,16 +158,7 @@ function page(fromKey, toKey, all) {
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         url: `https://toolman.top${path}`,
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          { '@type': 'Question', name: `How do I convert ${a.name} to ${b.name}?`,
-            acceptedAnswer: { '@type': 'Answer', text: `Drop the ${a.name} file onto the converter above and download the ${b.name} result. The conversion runs in your browser, so the file is never uploaded.` } },
-          { '@type': 'Question', name: `Is the ${a.name} to ${b.name} converter free?`,
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes — free, with no account, no watermark, no daily limit and no file-size cap beyond your own device memory.' } },
-        ],
-      },
+      FAQ.schema,
     ],
     body: `<p class="muted">Drop one or more ${a.name} files below to get ${b.name} back. Conversion happens inside your browser using a canvas — the files never leave your device, so there is no upload wait, no queue and no privacy question.</p>
 ${widget(fromKey, toKey)}
@@ -179,21 +187,7 @@ ${a.lossy && b.lossy ? `<li><strong>Two generations of lossy compression.</stron
 <h2>About ${a.name}</h2><p>${a.d}</p>
 <h2>About ${b.name}</h2><p>${b.d}</p>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>How do I convert ${a.name} to ${b.name}?</h3>
-<p>Drop the file on the converter above, adjust the quality or size if you want, and download the result. No account, no email, no upload.</p>
-<h3>Are my files uploaded to a server?</h3>
-<p>No. The file is read with the browser's FileReader API, drawn to a canvas and re-encoded locally. You can disconnect from the network after the page loads and the converter still works.</p>
-<h3>Is there a file size limit?</h3>
-<p>Only your device's memory. There is no server-side cap, no queue and no daily limit. Very large images — beyond roughly 50 megapixels — may fail on mobile browsers, which limit canvas dimensions.</p>
-<h3>Will the quality drop?</h3>
-<p>${b.lossy ? `${b.name} is lossy, so some detail is discarded. At quality 85 the difference is invisible at normal viewing size; below about 60 it becomes noticeable in flat areas and around sharp edges.` : `${b.name} is lossless, so nothing is lost in this step — although detail already discarded by ${a.name} cannot be recovered.`}</p>
-<h3>Can I convert several files at once?</h3>
-<p>Yes. Drop as many as you like and use "Download all". Each file is converted independently in your browser.</p>
-<h3>Is there a watermark?</h3>
-<p>No. The output is exactly the converted image, nothing added.</p>
-</div>
+${FAQ.html}
 
 <h2>Other image conversions</h2>
 <ul class="linklist">${siblings}</ul>

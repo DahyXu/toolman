@@ -1,5 +1,5 @@
 import { CATS, TEMPS, toK, fromK, plural } from '../data/units.mjs';
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const title = (s) => s.split(' ').map((w) => (w.length > 2 || w === 'to' ? cap(w) : w)).join(' ');
@@ -73,6 +73,16 @@ function pairPage({ catKey, catName, from, to, factorText, formula, inverseFormu
 
   const widget = converterWidget(fromP, toP, jsFwd, jsBack).replace('PAIR_REVERSE', `${to.id}-to-${from.id}`);
 
+  const FAQ = faq([
+    { q: `How many ${toP} are in a ${from.name}?`,
+      a: `There are <strong>${fmtG(one)} ${toP}</strong> in one ${from.name}.` },
+    { q: `How many ${fromP} are in a ${to.name}?`,
+      a: `There are <strong>${fmtG(invert(1))} ${fromP}</strong> in one ${to.name}.` },
+    { q: 'Is this conversion exact?', a: factorText },
+    { q: `What is 10 ${fromP} in ${toP}?`,
+      a: `10 ${fromP} equals ${fmtG(convert(10))} ${toP}.` },
+  ]);
+
   return {
     path,
     title: `${title(fromP)} to ${title(toP)} Converter (${from.sym} to ${to.sym}) | Toolman`,
@@ -83,24 +93,7 @@ function pairPage({ catKey, catName, from, to, factorText, formula, inverseFormu
       { name: catName, path: `/convert/${catKey}/` },
       { name: `${title(fromP)} to ${title(toP)}`, path },
     ],
-    jsonld: [
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: `How many ${toP} are in a ${from.name}?`,
-            acceptedAnswer: { '@type': 'Answer', text: `One ${from.name} equals ${fmt(one)} ${toP}.` },
-          },
-          {
-            '@type': 'Question',
-            name: `How do you convert ${fromP} to ${toP}?`,
-            acceptedAnswer: { '@type': 'Answer', text: formula.text },
-          },
-        ],
-      },
-    ],
+    jsonld: [FAQ.schema],
     body: `<p class="muted">1 ${from.name} = <strong>${fmtG(one)} ${one === 1 ? to.name : toP}</strong>. Type any value below to convert in either direction — the calculation happens in your browser.</p>
 ${widget}
 
@@ -121,17 +114,7 @@ ${widget}
 <h2>About the ${to.name}</h2>
 <p>${bDesc}</p>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>How many ${toP} are in a ${from.name}?</h3>
-<p>There are <strong>${fmtG(one)} ${toP}</strong> in one ${from.name}.</p>
-<h3>How many ${fromP} are in a ${to.name}?</h3>
-<p>There are <strong>${fmtG(invert(1))} ${fromP}</strong> in one ${to.name}.</p>
-<h3>Is this conversion exact?</h3>
-<p>${factorText}</p>
-<h3>What is 10 ${fromP} in ${toP}?</h3>
-<p>10 ${fromP} equals ${fmtG(convert(10))} ${toP}.</p>
-</div>
+${FAQ.html}
 
 <h2>Related ${catName.toLowerCase()} conversions</h2>
 <ul class="linklist">${sib}</ul>
@@ -233,11 +216,14 @@ ${samples.map((v) => `<tr><td>${v}${esc(a.sym)}</td><td>${fmt(conv(v))}${esc(b.s
 </tbody></table>
 <h2>About ${a.name}</h2><p>${a.d}</p>
 <h2>About ${b.name}</h2><p>${b.d}</p>
-<h2>Frequently asked questions</h2><div class="faq">
-<h3>What is 0${a.sym} in ${b.name}?</h3><p>0${a.sym} equals ${fmt(conv(0))}${b.sym}.</p>
-<h3>What is normal body temperature?</h3><p>37${'°C'} — about ${fmt(fromK[b.id](toK.celsius(37)))}${b.sym}.</p>
-<h3>At what temperature do the two scales meet?</h3><p>${a.id === 'celsius' && b.id === 'fahrenheit' ? 'Celsius and Fahrenheit read the same at −40°: −40°C = −40°F.' : 'Only Celsius and Fahrenheit cross, at −40°. Kelvin and Rankine both start at absolute zero and never go negative.'}</p>
-</div>
+${faq([
+      { q: `What is 0${a.sym} in ${b.name}?`, a: `0${a.sym} equals ${fmt(conv(0))}${b.sym}.` },
+      { q: 'What is normal body temperature?', a: `37°C — about ${fmt(fromK[b.id](toK.celsius(37)))}${b.sym}.` },
+      { q: 'At what temperature do the two scales meet?',
+        a: a.id === 'celsius' && b.id === 'fahrenheit'
+          ? 'Celsius and Fahrenheit read the same at −40°: −40°C = −40°F.'
+          : 'Only Celsius and Fahrenheit cross, at −40°. Kelvin and Rankine both start at absolute zero and never go negative.' },
+    ]).html}
 <h2>Other temperature conversions</h2>
 <ul class="linklist">${tPairs.filter(([x, y]) => !(x === a && y === b)).map(([x, y]) => `<li><a href="/convert/${x.id}-to-${y.id}/">${x.name} to ${y.name}</a></li>`).join('')}</ul>`,
     });

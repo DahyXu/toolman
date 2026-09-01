@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // Fixed-offset zone abbreviations. Each abbreviation denotes one specific
 // offset, so these conversions are exact — no daylight-saving ambiguity.
@@ -82,6 +82,15 @@ function pairPage(a, b, all) {
   const siblings = all.filter((z) => z !== a && z !== b && z.off !== a.off).slice(0, 16)
     .map((z) => `<li><a href="/convert/${a.id}-to-${z.id}/">${a.ab} to ${z.ab}</a></li>`).join('');
 
+  const t9 = shift(9, 0, d);
+  const FAQ = faq([
+    { q: `What time is ${clock(9)} ${a.ab} in ${b.ab}?`,
+      a: `${clock(9)} ${a.ab} is <strong>${clock(t9.h, t9.m)} ${b.ab}</strong>${dayNoteT(t9.day)}.` },
+    { q: `Is ${b.ab} ahead of ${a.ab}?`, a: `${b.ab} is ${dirWord} ${a.ab}.` },
+    { q: 'Which time zone does this use?',
+      a: `${a.ab} is ${offStr(a.off)} and ${b.ab} is ${offStr(b.off)}. Both abbreviations denote a single fixed offset, so this conversion never shifts with daylight saving — what changes is which abbreviation a place is using at the time.` },
+  ]);
+
   return {
     path,
     title: `${a.ab} to ${b.ab} Converter — Time Zone Conversion | Toolman`,
@@ -92,16 +101,7 @@ function pairPage(a, b, all) {
       { name: 'Time zones', path: '/convert/time-zones/' },
       { name: `${a.ab} to ${b.ab}`, path },
     ],
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        { '@type': 'Question', name: `What time is ${clock(9)} ${a.ab} in ${b.ab}?`,
-          acceptedAnswer: { '@type': 'Answer', text: `${clock(9)} ${a.ab} is ${clock(shift(9, 0, d).h, shift(9, 0, d).m)} ${b.ab}${dayNoteT(shift(9, 0, d).day)}.` } },
-        { '@type': 'Question', name: `Is ${b.ab} ahead of ${a.ab}?`,
-          acceptedAnswer: { '@type': 'Answer', text: `${b.ab} is ${dirWord} ${a.ab}.` } },
-      ],
-    }],
+    jsonld: [FAQ.schema],
     body: `<p class="muted"><strong>${b.ab} is ${dirWord} ${a.ab}.</strong> ${a.ab} is ${offStr(a.off)} and ${b.ab} is ${offStr(b.off)}.</p>
 
 <div class="tool">
@@ -161,6 +161,8 @@ function pairPage(a, b, all) {
 
 <h2>A warning about daylight saving</h2>
 <p>The abbreviations on this page each denote a single fixed offset, so every figure here is exact. What changes is <em>which</em> abbreviation a place uses. New York is on ${'EST'} in January and EDT in July, so "New York time" moves by an hour twice a year while EST and EDT themselves never move. When you schedule across zones, name the city rather than the abbreviation, or use UTC — that is what calendar software does internally.</p>
+
+${FAQ.html}
 
 <h2>Other ${a.ab} conversions</h2>
 <ul class="linklist">${siblings}</ul>

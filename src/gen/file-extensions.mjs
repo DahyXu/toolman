@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // ext, name, category, mime, what it is, how to open, notes
 const E = [
@@ -183,6 +183,23 @@ export default async function () {
   for (const [ext, name, cat, mime, what, open, note] of E) {
     const related = E.filter((x) => x[2] === cat && x[0] !== ext);
     const others = E.filter((x) => x[2] !== cat).slice(0, 12);
+
+    const FAQ = faq([
+      { q: `What is a .${ext} file?`, a: what },
+      { q: `How do I open a .${ext} file?`, a: open },
+      { q: `Is .${ext} safe to open?`,
+        a: ['exe', 'apk', 'dmg'].includes(ext)
+          ? `No — not from an untrusted source. A .${ext} file is executable code, and opening one runs it. Check the digital signature first, and prefer official distribution channels.`
+          : ext === 'svg'
+          ? 'Usually, but with one caveat: SVG is XML that can contain JavaScript, so an SVG from an untrusted source should be sanitised before being rendered on a web page. Opening one in an image viewer is fine.'
+          : ['zip', '7z', 'tar', 'iso'].includes(ext)
+          ? `The archive itself is inert, but its contents may not be. Extracting a .${ext} from an unknown sender is how a lot of malware arrives — check what is inside before running anything.`
+          : ['docx', 'pdf'].includes(ext)
+          ? 'Generally yes, though both formats can carry active content — macros in Office documents, JavaScript in PDFs. Modern readers disable these by default; leave it that way for files from strangers.'
+          : `Yes. A .${ext} file is data, not code — opening one cannot execute anything by itself.` },
+      { q: "Can I change a file's extension to convert it?",
+        a: 'No. Renaming changes the label, not the bytes. The one place it appears to work is between formats that genuinely share a container — renaming <code>.docx</code> to <code>.zip</code> works because a DOCX <em>is</em> a ZIP. Everything else needs a real converter.' },
+    ]);
     pages.push({
       path: `/file/${ext}/`,
       title: `.${ext} File — What It Is and How to Open It`,
@@ -192,16 +209,7 @@ export default async function () {
         { name: 'File formats', path: '/file/' },
         { name: `.${ext}`, path: `/file/${ext}/` },
       ],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          { '@type': 'Question', name: `What is a .${ext} file?`,
-            acceptedAnswer: { '@type': 'Answer', text: `A .${ext} file is a ${name}. ${what.replace(/<[^>]+>/g, '')}` } },
-          { '@type': 'Question', name: `How do I open a .${ext} file?`,
-            acceptedAnswer: { '@type': 'Answer', text: open.replace(/<[^>]+>/g, '') } },
-        ],
-      }],
+      jsonld: [FAQ.schema],
       body: `<p><span class="pill">${cat}</span> <span class="pill">${esc(mime)}</span></p>
 <h2>What a .${ext} file is</h2>
 <p>${what}</p>
@@ -237,25 +245,7 @@ ${ext === 'heic' ? `<h2>Converting it</h2>
 <li><strong>On Windows 11:</strong> install the HEIF Image Extensions from the Microsoft Store, then open in Photos and Save as.</li>
 <li><strong>On the command line:</strong> <code>heif-convert photo.heic photo.jpg</code>, or <code>magick photo.heic photo.jpg</code> with a HEIF-enabled ImageMagick.</li>
 </ul>` : ''}
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is a .${ext} file?</h3>
-<p>${what}</p>
-<h3>How do I open a .${ext} file?</h3>
-<p>${open}</p>
-<h3>Is .${ext} safe to open?</h3>
-<p>${['exe', 'apk', 'dmg'].includes(ext)
-  ? `No — not from an untrusted source. A .${ext} file is executable code, and opening one runs it. Check the digital signature first, and prefer official distribution channels.`
-  : ext === 'svg'
-  ? 'Usually, but with one caveat: SVG is XML that can contain JavaScript, so an SVG from an untrusted source should be sanitised before being rendered on a web page. Opening one in an image viewer is fine.'
-  : ['zip', '7z', 'tar', 'iso'].includes(ext)
-  ? `The archive itself is inert, but its contents may not be. Extracting a .${ext} from an unknown sender is how a lot of malware arrives — check what is inside before running anything.`
-  : ['docx', 'pdf'].includes(ext)
-  ? `Generally yes, though both formats can carry active content — macros in Office documents, JavaScript in PDFs. Modern readers disable these by default; leave it that way for files from strangers.`
-  : `Yes. A .${ext} file is data, not code — opening one cannot execute anything by itself.`}</p>
-<h3>Can I change a file's extension to convert it?</h3>
-<p>No. Renaming changes the label, not the bytes. The one place it appears to work is between formats that genuinely share a container — renaming <code>.docx</code> to <code>.zip</code> works because a DOCX <em>is</em> a ZIP. Everything else needs a real converter.</p>
-</div>
+${FAQ.html}
 
 <h2>Other ${cat.toLowerCase()} formats</h2>
 <ul class="linklist">${related.map((x) => `<li><a href="/file/${x[0]}/">.${x[0]} — ${esc(x[1])}</a></li>`).join('') || '<li class="muted">None yet.</li>'}</ul>

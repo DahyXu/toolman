@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -122,6 +122,16 @@ export default async function () {
 
   for (const s of all) {
     const runs = nextRuns(s.expr, 6);
+
+    const FAQ = faq([
+      { q: `What is the cron expression to run a job ${s.title}?`, a: `<code>${s.expr}</code> — ${s.blurb}` },
+      { q: 'Which time zone does cron use?',
+        a: "The server's local time zone, unless the scheduler says otherwise. GitHub Actions always uses UTC. Kubernetes CronJobs use UTC unless you set <code>spec.timeZone</code>. Running servers in UTC and converting only for display avoids an entire class of daylight-saving bugs." },
+      { q: 'What happens if the previous run is still going?',
+        a: 'Standard cron starts a new one regardless, so long-running jobs can pile up. Wrap the command in <code>flock -n /var/lock/my-job.lock</code>, or set <code>concurrencyPolicy: Forbid</code> on a Kubernetes CronJob.' },
+      { q: 'Why did my cron job not run at all?',
+        a: 'The three usual causes: the script is not executable, the command relies on a <code>PATH</code> or environment variable that cron does not set, or output went nowhere because no mail transport is configured. Redirect stdout and stderr to a log file and the reason usually becomes obvious.' },
+    ]);
     const others = all.filter((x) => x.slug !== s.slug).slice(0, 20);
     pages.push({
       path: `/cron/${s.slug}/`,
@@ -132,15 +142,7 @@ export default async function () {
         { name: 'Cron schedules', path: '/cron/' },
         { name: s.title, path: `/cron/${s.slug}/` },
       ],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [{
-          '@type': 'Question',
-          name: `What is the cron expression to run ${s.title}?`,
-          acceptedAnswer: { '@type': 'Answer', text: `${s.expr} — ${s.blurb}` },
-        }],
-      }],
+      jsonld: [FAQ.schema],
       body: `<pre style="font-size:1.35rem;text-align:center;padding:22px"><code>${s.expr}</code></pre>
 <p class="muted">${s.blurb}</p>
 
@@ -182,17 +184,7 @@ cron(${(() => {
         return `${p[0]} ${p[1]} ${p[4] === '*' ? p[2] : '?'} ${p[3]} ${p[4] === '*' ? '?' : p[4] === '1-5' ? 'MON-FRI' : p[4]} *`;
       })()})</code></pre>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is the cron expression to run a job ${s.title}?</h3>
-<p><code>${s.expr}</code></p>
-<h3>Which time zone does cron use?</h3>
-<p>The server's local time zone, unless the scheduler says otherwise. GitHub Actions always uses UTC. Kubernetes CronJobs use UTC unless you set <code>spec.timeZone</code>. Running servers in UTC and converting only for display avoids an entire class of daylight-saving bugs.</p>
-<h3>What happens if the previous run is still going?</h3>
-<p>Standard cron starts a new one regardless, so long-running jobs can pile up. Wrap the command in <code>flock -n /var/lock/my-job.lock</code>, or set <code>concurrencyPolicy: Forbid</code> on a Kubernetes CronJob.</p>
-<h3>Why did my cron job not run at all?</h3>
-<p>The three usual causes: the script is not executable, the command relies on a <code>PATH</code> or environment variable that cron does not set, or output went nowhere because no mail transport is configured. Redirect stdout and stderr to a log file and the reason usually becomes obvious.</p>
-</div>
+${FAQ.html}
 
 <h2>Other schedules</h2>
 <ul class="linklist">${others.map((o) => `<li><a href="/cron/${o.slug}/">${esc(o.title)}</a></li>`).join('')}</ul>

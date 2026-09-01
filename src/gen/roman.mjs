@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 const MAP = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'],
   [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
@@ -76,6 +76,15 @@ export default async function () {
 
     const isYear = n >= 1900 && n <= 2050;
 
+    const FAQ = faq([
+      { q: `What is ${n.toLocaleString()} in Roman numerals?`, a: `<strong>${r}</strong>` },
+      { q: `How do you read ${r}?`,
+        a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${val.split(' = ').pop()}`).join(', ')}${rows.length > 1 ? `, giving ${n.toLocaleString()} in total` : ''}.` },
+      { q: `How do you write ${n.toLocaleString()} in words?`, a: `${spell(n)}.` },
+      { q: 'Why is there no zero?',
+        a: 'Roman numerals have no symbol for zero. The concept reached Europe only with Hindu-Arabic numerals, centuries after the system was in use — which is a large part of why it was eventually replaced for arithmetic.' },
+    ]);
+
     pages.push({
       path: `/roman/${n}/`,
       title: `${n.toLocaleString()} in Roman Numerals — ${r}`,
@@ -85,15 +94,7 @@ export default async function () {
         { name: 'Roman numerals', path: '/roman/' },
         { name: String(n), path: `/roman/${n}/` },
       ],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [{
-          '@type': 'Question',
-          name: `What is ${n} in Roman numerals?`,
-          acceptedAnswer: { '@type': 'Answer', text: `${n} is written as ${r} in Roman numerals.` },
-        }],
-      }],
+      jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:2.2rem;font-family:var(--mono);margin:.3em 0"><strong>${r}</strong></p>
 <p class="muted">The number <strong>${n.toLocaleString()}</strong> is written <strong>${r}</strong> in Roman numerals.${isYear ? ` As a year it appears in copyright lines and cornerstones written this way.` : ''}</p>
 
@@ -131,15 +132,7 @@ ${rows.some(([s]) => /^(IV|IX|XL|XC|CD|CM)$/.test(s))
 <pre><code>${steps(n).join('\n')}</code></pre>
 <p>The result reads <strong>${r}</strong> — ${r.length} character${r.length === 1 ? '' : 's'}, against ${String(n).length} digit${String(n).length === 1 ? '' : 's'} in Arabic numerals.${r.length > String(n).length * 2 ? ' The verbosity at numbers like this is precisely why positional notation replaced the system for arithmetic.' : ''}</p>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is ${n.toLocaleString()} in Roman numerals?</h3>
-<p><strong>${r}</strong></p>
-<h3>How do you read ${r}?</h3>
-<p>Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${val.split(' = ').pop()}`).join(', ')}${rows.length > 1 ? `, giving ${n.toLocaleString()} in total` : ''}.</p>
-<h3>Why is there no zero?</h3>
-<p>Roman numerals have no symbol for zero. The concept reached Europe only with Hindu-Arabic numerals, centuries after the system was in use — which is a large part of why it was eventually replaced for arithmetic.</p>
-</div>
+${FAQ.html}
 
 <p><a href="/roman-numeral-converter/">Convert any number →</a> · <a href="/roman/">Browse Roman numerals</a></p>`,
     });

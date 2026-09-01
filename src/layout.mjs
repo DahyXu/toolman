@@ -20,6 +20,43 @@ const CSS = (() => {
 export const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/**
+ * Render a FAQ section and its structured data from one source.
+ *
+ * Google requires that every answer in FAQPage markup appear verbatim in the
+ * visible page. Writing the prose twice — once for the HTML, once for the
+ * JSON-LD — drifts immediately and silently costs the rich result, so both
+ * come from the same array here.
+ *
+ * @param {{q: string, a: string}[]} faq  answers may contain inline HTML
+ * @returns {{html: string, schema: object|null}}
+ */
+export function faq(list) {
+  const items = (list || []).filter((x) => x && x.q && x.a);
+  if (!items.length) return { html: '', schema: null };
+
+  const html = `<h2>Frequently asked questions</h2><div class="faq">${items
+    .map((x) => `<h3>${esc(x.q)}</h3><p>${x.a}</p>`)
+    .join('')}</div>`;
+
+  const text = (s) =>
+    String(s).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+
+  return {
+    html,
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map((x) => ({
+        '@type': 'Question',
+        name: x.q,
+        acceptedAnswer: { '@type': 'Answer', text: text(x.a) },
+      })),
+    },
+  };
+}
+
 const navHtml = () =>
   Object.values(CATEGORIES)
     .map((c) => `<a href="/${c.slug}/">${esc(c.name.replace(' Tools', '').replace('Converters', 'Convert'))}</a>`)

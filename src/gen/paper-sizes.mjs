@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // name, id, width mm, height mm, series, note
 const SIZES = [
@@ -63,21 +63,20 @@ export default async function () {
     const others = SIZES.filter((s) => s[4] !== series).slice(0, 14);
     const ratio = r2(h / w);
 
+    const FAQ = faq([
+      { q: `What size is ${name} in mm?`, a: `<strong>${w} × ${h} mm</strong>.` },
+      { q: `What size is ${name} in inches?`, a: `<strong>${r2(IN(w))} × ${r2(IN(h))} inches</strong>.` },
+      { q: `What size is ${name} in pixels?`,
+        a: `There is no single answer — it depends on resolution. At the print standard of 300 DPI it is <strong>${px(w, 300)} × ${px(h, 300)} pixels</strong>; at 72 DPI it is only ${px(w, 72)} × ${px(h, 72)}.` },
+    ]);
+
     pages.push({
       path: `/paper/${id}/`,
       title: `${name} Paper Size — ${w} × ${h} mm`,
       desc: `${name} measures ${w} × ${h} mm (${r2(IN(w))} × ${r2(IN(h))} in). Dimensions in millimetres, centimetres, inches and pixels at 72, 150 and 300 DPI, plus what it is used for.`,
       h1: `${name} paper size`,
       crumbs: [{ name: 'Paper sizes', path: '/paper/' }, { name, path: `/paper/${id}/` }],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [{
-          '@type': 'Question',
-          name: `What size is ${name} paper?`,
-          acceptedAnswer: { '@type': 'Answer', text: `${name} is ${w} × ${h} mm, or ${r2(IN(w))} × ${r2(IN(h))} inches.` },
-        }],
-      }],
+      jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${w} × ${h} mm</strong></p>
 <p class="muted">${r2(IN(w))} × ${r2(IN(h))} inches · ${r2(w / 10)} × ${r2(h / 10)} cm · aspect ratio 1:${ratio}</p>
 
@@ -111,15 +110,7 @@ ${series === 'US' ? `<h2>Letter vs A4</h2>
 ${siblings.map(([n2, i2, w2, h2]) => `<tr><td><a href="/paper/${i2}/">${esc(n2)}</a></td><td>${w2} × ${h2} mm</td><td>${r2(IN(w2))} × ${r2(IN(h2))} in</td></tr>`).join('')}
 </tbody></table>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What size is ${name} in mm?</h3>
-<p><strong>${w} × ${h} mm</strong>.</p>
-<h3>What size is ${name} in inches?</h3>
-<p><strong>${r2(IN(w))} × ${r2(IN(h))} inches</strong>.</p>
-<h3>What size is ${name} in pixels?</h3>
-<p>There is no single answer — it depends on resolution. At the print standard of 300 DPI it is <strong>${px(w, 300)} × ${px(h, 300)} pixels</strong>; at 72 DPI it is only ${px(w, 72)} × ${px(h, 72)}.</p>
-</div>
+${FAQ.html}
 
 <h2>Other paper sizes</h2>
 <ul class="linklist">${others.map(([n2, i2]) => `<li><a href="/paper/${i2}/">${esc(n2)}</a></li>`).join('')}</ul>

@@ -1,4 +1,4 @@
-import { esc } from '../layout.mjs';
+import { esc, faq } from '../layout.mjs';
 
 // code, name, category, when it happens, how to fix / what to do
 const CODES = [
@@ -55,6 +55,16 @@ export default async function () {
 
   for (const [code, name, cat, when, fix] of CODES) {
     const related = CODES.filter((c) => c[2] === cat && c[0] !== code).slice(0, 12);
+
+    const FAQ = faq([
+      { q: `What does HTTP ${code} mean?`, a: when },
+      { q: `How do I fix a ${code} error?`, a: fix },
+      { q: `Is ${code} a client or server problem?`,
+        a: cat === '4xx' ? 'A client problem by definition — the request needs to change. That said, a 4xx can still be the server\u2019s fault if it is misconfigured and rejecting valid requests.'
+          : cat === '5xx' ? 'A server problem. The request was valid; the server failed to fulfil it. Nothing the client changes will help.'
+          : cat === '3xx' ? 'Neither — it is an instruction to look somewhere else, and clients normally follow it automatically.'
+          : 'Neither — it indicates success or progress.' },
+    ]);
     const [catName, catDesc] = CATS[cat];
     pages.push({
       path: `/http/${code}/`,
@@ -65,16 +75,7 @@ export default async function () {
         { name: 'HTTP status codes', path: '/http/' },
         { name: `${code} ${name}`, path: `/http/${code}/` },
       ],
-      jsonld: [{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          { '@type': 'Question', name: `What does HTTP ${code} mean?`,
-            acceptedAnswer: { '@type': 'Answer', text: `HTTP ${code} ${name} — ${when.replace(/<[^>]+>/g, '')}` } },
-          { '@type': 'Question', name: `How do I fix a ${code} error?`,
-            acceptedAnswer: { '@type': 'Answer', text: fix.replace(/<[^>]+>/g, '') } },
-        ],
-      }],
+      jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.15rem"><span class="pill">${cat} ${catName}</span></p>
 <h2>What it means</h2>
 <p>${when}</p>
@@ -120,18 +121,7 @@ w.WriteHeader(${code})
 # Python (Flask)
 return ${[204, 304].includes(code) ? "'', " + code : "jsonify(error='" + name + "'), " + code};</code></pre>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What does HTTP ${code} mean?</h3>
-<p>${when}</p>
-<h3>How do I fix a ${code} error?</h3>
-<p>${fix}</p>
-<h3>Is ${code} a client or server problem?</h3>
-<p>${cat === '4xx' ? 'A client problem by definition — the request needs to change. That said, a 4xx can still be the server’s fault if it is misconfigured and rejecting valid requests.'
-  : cat === '5xx' ? 'A server problem. The request was valid; the server failed to fulfil it. Nothing the client changes will help.'
-  : cat === '3xx' ? 'Neither — it is an instruction to look somewhere else, and clients normally follow it automatically.'
-  : 'Neither — it indicates success or progress.'}</p>
-</div>
+${FAQ.html}
 
 <h2>Other ${cat} codes</h2>
 <ul class="linklist">${related.map((c) => `<li><a href="/http/${c[0]}/">${c[0]} ${esc(c[1])}</a></li>`).join('')}</ul>

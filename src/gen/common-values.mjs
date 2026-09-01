@@ -1,4 +1,5 @@
 import { CATS, TEMPS, toK, fromK, plural } from '../data/units.mjs';
+import { faq } from '../layout.mjs';
 
 const byId = new Map();
 for (const [catKey, cat] of Object.entries(CATS))
@@ -115,6 +116,15 @@ function valuePage(from, to, raw, all) {
 
   const h1 = `${valLabel} to ${toP}`;
 
+  const FAQ = faq([
+    { q: `How many ${toP} is ${valLabel}?`,
+      a: `${valLabel} is <strong>${fmtG(result)} ${toP}</strong>.` },
+    { q: `How do I convert ${fromP} to ${toP} myself?`,
+      a: `Multiply by ${fmt(k)}. To go back, divide by ${fmt(k)} — or multiply by ${fmt(1 / k)}.` },
+    { q: 'Is this figure exact?',
+      a: `The conversion factor between the ${from.name} and the ${to.name} is fixed by definition. The figure above is rounded for readability; the converter carries full precision.` },
+  ]);
+
   return {
     path: slug,
     title: `${valLabel} to ${title(toP)} — ${fmt(result)} ${to.sym} | Toolman`,
@@ -126,15 +136,7 @@ function valuePage(from, to, raw, all) {
       { name: `${title(fromP)} to ${title(toP)}`, path: `/convert/${from.id}-to-${to.id}/` },
       { name: valLabel, path: slug },
     ],
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [{
-        '@type': 'Question',
-        name: `How many ${toP} is ${valLabel}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${valLabel} is ${fmt(result)} ${toP}.` },
-      }],
-    }],
+    jsonld: [FAQ.schema],
     body: `<p class="big" style="font-size:1.5rem;margin:.4em 0">${valLabel} = <strong>${fmtG(result)} ${result === 1 ? to.name : toP}</strong></p>
 <p class="muted">Rounded to a practical precision: <strong>${fmtG(+result.toFixed(result < 10 ? 2 : result < 1000 ? 1 : 0))} ${to.sym}</strong>.</p>
 
@@ -172,15 +174,7 @@ function valuePage(from, to, raw, all) {
 <p><strong>${cap(from.name)} (${from.sym})</strong> — ${from.d}</p>
 <p><strong>${cap(to.name)} (${to.sym})</strong> — ${to.d}</p>
 
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>How many ${toP} is ${valLabel}?</h3>
-<p>${valLabel} is <strong>${fmtG(result)} ${toP}</strong>.</p>
-<h3>How do I convert ${fromP} to ${toP} myself?</h3>
-<p>Multiply by ${fmt(k)}. To go back, divide by ${fmt(k)} — or multiply by ${fmt(1 / k)}.</p>
-<h3>Is this figure exact?</h3>
-<p>The conversion factor between the ${from.name} and the ${to.name} is fixed by definition. The figure above is rounded for readability; the converter carries full precision.</p>
-</div>
+${FAQ.html}
 
 <h2>Convert other values</h2>
 <ul class="linklist">${all.map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
@@ -199,6 +193,16 @@ function tempPage(a, b, raw, all) {
     const x = +(raw + i).toFixed(2);
     near.push(`<tr${i === 0 ? ' style="font-weight:600"' : ''}><td>${x}${a.sym}</td><td>${fmt(conv(x))}${b.sym}</td></tr>`);
   }
+  const celsius = fromK.celsius(toK[a.id](raw));
+  const TFAQ = faq([
+    { q: `What is ${label} in ${b.name}?`, a: `${label} is <strong>${fmt(result)}${b.sym}</strong>.` },
+    { q: `Is ${label} hot or cold?`,
+      a: celsius < -10 ? 'Very cold — well below freezing.' : celsius < 5 ? 'Cold — around or below freezing.'
+        : celsius < 16 ? 'Cool — jacket weather.' : celsius < 24 ? 'Mild and comfortable for most people.'
+        : celsius < 30 ? 'Warm.' : celsius < 40 ? 'Hot.' : celsius < 100 ? 'Very hot — above safe ambient temperature.'
+        : 'Far above the boiling point of water — an oven or industrial temperature.' },
+  ]);
+
   return {
     path,
     title: `${label} to ${b.name} — ${fmt(result)}${b.sym} | Toolman`,
@@ -210,12 +214,7 @@ function tempPage(a, b, raw, all) {
       { name: `${a.name} to ${b.name}`, path: `/convert/${a.id}-to-${b.id}/` },
       { name: label, path },
     ],
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [{ '@type': 'Question', name: `What is ${label} in ${b.name}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${label} is ${fmt(result)}${b.sym}.` } }],
-    }],
+    jsonld: [TFAQ.schema],
     body: `<p class="big" style="font-size:1.5rem;margin:.4em 0">${label} = <strong>${fmt(result)}${b.sym}</strong></p>
 <h2>Nearby temperatures</h2>
 <table><thead><tr><th>${a.name}</th><th>${b.name}</th></tr></thead><tbody>${near.join('')}</tbody></table>
@@ -227,18 +226,7 @@ function tempPage(a, b, raw, all) {
 <h2>About the scales</h2>
 <p><strong>${a.name}</strong> — ${a.d}</p>
 <p><strong>${b.name}</strong> — ${b.d}</p>
-<h2>Frequently asked questions</h2>
-<div class="faq">
-<h3>What is ${label} in ${b.name}?</h3><p>${label} is <strong>${fmt(result)}${b.sym}</strong>.</p>
-<h3>Is ${label} hot or cold?</h3>
-<p>${(() => {
-      const c = fromK.celsius(toK[a.id](raw));
-      return c < -10 ? 'Very cold — well below freezing.' : c < 5 ? 'Cold — around or below freezing.'
-        : c < 16 ? 'Cool — jacket weather.' : c < 24 ? 'Mild and comfortable for most people.'
-        : c < 30 ? 'Warm.' : c < 40 ? 'Hot.' : c < 100 ? 'Very hot — above safe ambient temperature.'
-        : 'Far above the boiling point of water — an oven or industrial temperature.';
-    })()}</p>
-</div>
+${TFAQ.html}
 <h2>Convert other temperatures</h2>
 <ul class="linklist">${all.map((p) => `<li><a href="${p.path}">${p.label}</a></li>`).join('')}</ul>
 <p><a href="/convert/${a.id}-to-${b.id}/">Full ${a.name} to ${b.name} converter</a></p>`,
