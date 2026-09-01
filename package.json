@@ -1,0 +1,13 @@
+{
+  "name": "toolman",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "toolman.top — fast, free, privacy-first online tools",
+  "scripts": {
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && node build.mjs",
+    "dev": "npm run build && npx serve dist -l 4173",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=toolman --commit-dirty=true"
+  }
+}
