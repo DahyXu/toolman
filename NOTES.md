@@ -3,6 +3,18 @@
 Running log of what has actually been observed, so decisions are not re-argued
 from memory. Newest first.
 
+## 2026-09-02 (sitemap resolved)
+
+`sitemap.xml` now reads **Success**, type "Sitemap index", last read 2026-09-02.
+It sat on "Couldn't fetch" for roughly 24 hours after submission while Google
+worked through the queue for a new property — exactly as the evidence
+suggested, and nothing on the site needed changing. The four chunks still show
+the older 9/1 status; Google follows the index to reach them.
+
+Worth keeping in mind next time: for a new property, "Couldn't fetch" on a
+freshly submitted sitemap is not diagnostic. Verify the file directly
+(Googlebot UA fetch, protocol validation, live URL test) and then wait.
+
 ## 2026-09-02 (later)
 
 Walked the hub pages through URL inspection. Real state:
