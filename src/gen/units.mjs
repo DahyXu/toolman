@@ -122,7 +122,7 @@ ${FAQ.html}
   };
 }
 
-export default async function () {
+export default async function ({ categorySection = {} } = {}) {
   const pages = [];
   const catIndex = [];
 
@@ -248,9 +248,13 @@ ${faq([
     path: '/convert/',
     title: `Unit Converter — ${total}+ Free Online Conversions | Toolman`,
     desc: `Free unit converter covering length, weight, temperature, volume, area, speed, data, time, pressure, energy and more — ${total} direct conversions with formulas and tables.`,
-    h1: 'Unit converters',
+    h1: 'Converters',
     crumbs: [{ name: 'Converters', path: '/convert/' }],
-    body: `<p class="muted">${total} conversions across ${catIndex.length} categories. Each page has a live two-way converter, the exact formula and a printable conversion table.</p>
+    // This URL is both the Converters category and the unit-conversion hub.
+    // build.mjs hands over the category half so neither overwrites the other.
+    body: `${categorySection.convert || ''}
+<h2>Unit converters</h2>
+<p class="muted">${total} conversions across ${catIndex.length} categories. Each page has a live two-way converter, the exact formula and a printable conversion table.</p>
 <ul class="cards">${catIndex
       .map((c) => `<li><a href="/convert/${c.key}/"><b>${esc(c.name)}</b><span>${c.count} conversions</span></a></li>`)
       .join('')}</ul>

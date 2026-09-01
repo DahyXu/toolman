@@ -10,7 +10,12 @@ const dist = path.join(root, 'dist');
 
 const written = [];
 const pageMeta = [];
+const collisions = [];
 function write(urlPath, html) {
+  // Two generators writing the same URL silently loses one of them, and the
+  // built output looks fine — the only symptom is a page that is thinner than
+  // the code says it should be. Surface it instead.
+  if (written.includes(urlPath)) collisions.push(urlPath);
   const t = /<title>([^<]*)<\/title>/.exec(html);
   if (t) pageMeta.push({ title: t[1], path: urlPath });
   const rel = urlPath === '/' ? 'index.html' : path.join(urlPath.replace(/^\/|\/$/g, ''), 'index.html');
@@ -109,6 +114,108 @@ const IMG_PAIRS = ['png-to-jpg','png-to-webp','jpg-to-png','jpg-to-webp','webp-t
   'svg-to-png','svg-to-jpg','svg-to-webp','gif-to-png','gif-to-jpg','gif-to-webp',
   'bmp-to-png','bmp-to-jpg','bmp-to-webp','avif-to-png','avif-to-jpg','avif-to-webp',
   'ico-to-png','ico-to-jpg','ico-to-webp','jpeg-to-png','jpeg-to-webp'];
+const CATEGORY_BODY = {
+  dev: `<h2>What these tools have in common</h2>
+<p>Every tool here runs as plain JavaScript inside your browser. That matters more for developer tools than for most software, because the things you paste into them are rarely harmless: production API responses, JWTs from a staging environment, config files with connection strings, log excerpts containing customer data. None of it is transmitted, because there is no server to transmit it to. You can load any of these pages, disconnect from the network, and keep working.</p>
+
+<h2>Choosing between similar tools</h2>
+<table>
+<thead><tr><th>If you need to</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td>Read a minified API response</td><td><a href="/json-formatter/">JSON formatter</a> — it also reports the line and column of a syntax error</td></tr>
+<tr><td>Compare two config files or responses</td><td><a href="/text-diff-checker/">Diff checker</a>, ideally after sorting keys in the JSON formatter first</td></tr>
+<tr><td>See what is inside a token</td><td><a href="/jwt-decoder/">JWT decoder</a> — it decodes only, and deliberately never asks for your signing key</td></tr>
+<tr><td>Verify a downloaded file</td><td><a href="/hash-generator/">Hash generator</a> — SHA-256 in the browser, no upload</td></tr>
+<tr><td>Work out a cron schedule</td><td><a href="/cron-expression-generator/">Cron generator</a> for a custom one, or <a href="/cron/">the schedule library</a> for a ready-made expression</td></tr>
+<tr><td>Debug a regular expression</td><td><a href="/regex-tester/">Regex tester</a> with live match highlighting and capture groups</td></tr>
+</tbody>
+</table>
+
+<h2>A note on what these tools will not do</h2>
+<p>Some things genuinely cannot be done well in a browser, and we would rather say so than ship something that half works. The JWT decoder does not verify signatures, because that would mean asking you to paste a secret into a web page. There is no HEIC converter, because Chrome and Firefox cannot decode HEIC and the alternatives are either uploading your photo or shipping a megabyte of WebAssembly. Where a tool is missing, the reference pages usually explain the platform-native way to do it instead.</p>`,
+  text: `<h2>Working with text in the browser</h2>
+<p>Text tools get used on drafts, contracts, transcripts and anything else that has not been published yet — which is exactly the material you would rather not paste into a server you do not control. Everything here is computed locally, so the document never leaves your machine.</p>
+
+<h2>Which tool for which job</h2>
+<table>
+<thead><tr><th>Task</th><th>Tool</th></tr></thead>
+<tbody>
+<tr><td>Check a draft against a length limit</td><td><a href="/word-counter/">Word counter</a> — it shows the remaining budget for title tags, meta descriptions, posts and SMS</td></tr>
+<tr><td>See what changed between two versions</td><td><a href="/text-diff-checker/">Diff checker</a>, with word-level highlighting inside changed lines</td></tr>
+<tr><td>Convert naming conventions</td><td><a href="/case-converter/">Case converter</a> — it detects word boundaries from case changes, so <code>userAccountId</code> converts cleanly</td></tr>
+<tr><td>Turn Markdown into HTML</td><td><a href="/markdown-to-html/">Markdown converter</a> with a live preview</td></tr>
+<tr><td>Fill a layout with placeholder copy</td><td><a href="/lorem-ipsum-generator/">Lorem ipsum generator</a></td></tr>
+</tbody>
+</table>
+
+<h2>Counting is less obvious than it looks</h2>
+<p>A "word" has no single definition. Word processors, editors and academic style guides all count slightly differently — hyphenated compounds, numbers, and standalone symbols are handled inconsistently between them. Characters are worse: an emoji is one character to a reader, one code point to a linguist, and two UTF-16 units to naive JavaScript. Our counters iterate over code points, so an emoji or a Chinese character counts as one, which is what social platforms do too.</p>`,
+  convert: `<h2>Converters that show their working</h2>
+<p>A conversion result on its own is easy to mistrust. Every converter here shows the exact factor it used, the formula in both directions, and a table of nearby values — so you can check the answer rather than take it on faith.</p>
+
+<h2>What is covered</h2>
+<ul>
+<li><strong><a href="/convert/">Units</a></strong> — length, weight, temperature, volume, area, speed, data, time, pressure, energy, power, angle and frequency, with every pair of units in each category.</li>
+<li><strong><a href="/convert/time-zones/">Time zones</a></strong> — conversions between fixed-offset abbreviations, each with a 24-hour table and the working-hours overlap between the two zones.</li>
+<li><strong><a href="/convert/css-units/">CSS units</a></strong> — px, rem, em, pt and the rest, with a root font size you can set to match your project.</li>
+<li><strong><a href="/cooking/">Cooking</a></strong> — cups to grams per ingredient, because a cup of flour is 125 g and a cup of honey is 340 g.</li>
+<li><strong><a href="/color/">Colors</a></strong> — HEX, RGB, HSL and CMYK with WCAG contrast ratios.</li>
+<li><strong><a href="/paper/">Paper sizes</a></strong> — A4, Letter and the rest in millimetres, inches and pixels at any DPI.</li>
+</ul>
+
+<h2>Where conversions get subtle</h2>
+<p>Most unit conversions are a single fixed factor and cannot go wrong. A few genuinely can:</p>
+<ul>
+<li><strong>Temperature</strong> needs an offset as well as a factor, because the scales have different zero points.</li>
+<li><strong>Digital storage</strong> has two competing definitions — a manufacturer's "1 TB" is 10¹² bytes, while your operating system displays 2⁴⁰, which is why a new drive shows as 931 GB.</li>
+<li><strong>US and imperial volumes differ.</strong> A US gallon is 3.785 L; an imperial gallon is 4.546 L. Recipes and fuel figures cross this boundary constantly.</li>
+<li><strong>Cooking measures are not a unit conversion at all</strong> — they depend on the density of the ingredient, which is why those live on their own pages.</li>
+</ul>`,
+  image: `<h2>Image processing without the upload</h2>
+<p>Most online image tools work by uploading your file to a server, processing it there and giving you a link back. That means your photo sits on someone else's disk, for an unspecified period, under a privacy policy you did not read. These tools use a canvas in your own browser instead — the file never travels, there is no queue, no size cap beyond your device's memory, and no watermark.</p>
+
+<h2>What to reach for</h2>
+<table>
+<thead><tr><th>Task</th><th>Tool</th></tr></thead>
+<tbody>
+<tr><td>Make a photo smaller for the web</td><td><a href="/image-compressor/">Image compressor</a> — resize first, then compress; the dimensional saving is usually far larger</td></tr>
+<tr><td>Change format</td><td>The <a href="/png-to-jpg/">format converters</a> — WebP for the web, JPEG for compatibility, PNG for transparency</td></tr>
+<tr><td>Build a site icon</td><td><a href="/favicon-generator/">Favicon generator</a>, from an image or just a letter</td></tr>
+<tr><td>Make a QR code</td><td><a href="/qr-code-generator/">QR generator</a> — static codes that never expire and track nothing</td></tr>
+</tbody>
+</table>
+
+<h2>Two things worth knowing</h2>
+<p><strong>Re-encoding strips metadata.</strong> Running a photo through any of these tools discards its EXIF data, including GPS coordinates, camera model and timestamp. That is usually what you want before sharing an image publicly.</p>
+<p><strong>Lossy compression is one-way.</strong> Re-saving an already-compressed JPEG at high quality does not restore lost detail; it adds a second generation of artefacts on top. Always work from the original when you have it.</p>`,
+  ai: `<h2>Tools for working with language models</h2>
+<p>Building anything on top of an LLM means dealing in tokens: they determine the cost of every API call, whether a prompt fits the context window, and how long a response takes to start. But tokens are invisible — you cannot count them by looking at text, and the relationship to characters shifts with the language and content type.</p>
+
+<h2>What the token counter is for</h2>
+<p>The <a href="/ai-token-counter/">AI token counter</a> estimates how many tokens a piece of text costs across GPT, Claude, Gemini and Llama, and what that works out to per API call. It is useful when you are:</p>
+<ul>
+<li><strong>Trimming a system prompt.</strong> A prompt that runs on every single request is where cost savings compound fastest.</li>
+<li><strong>Debugging a context-length error.</strong> The number in the error message means nothing until you can measure your own input against it.</li>
+<li><strong>Sizing chunks for retrieval.</strong> Knowing the character-to-token ratio for your actual content lets you pick a chunk size that fits.</li>
+<li><strong>Estimating a bill before you run a batch.</strong> Multiplying one document's token count by the batch size is a five-second sanity check that has saved a lot of surprises.</li>
+</ul>
+
+<h2>Rules of thumb</h2>
+<table>
+<thead><tr><th>Content</th><th>Approximate ratio</th></tr></thead>
+<tbody>
+<tr><td>English prose</td><td>~4 characters per token</td></tr>
+<tr><td>Source code</td><td>~3–3.5 characters per token</td></tr>
+<tr><td>Chinese, Japanese, Korean</td><td>~1–1.5 characters per token</td></tr>
+<tr><td>Base64 or random strings</td><td>close to 1 token per 2 characters</td></tr>
+</tbody>
+</table>
+<p>Output tokens usually cost several times more than input tokens, which is why capping response length is often the fastest way to cut a bill. Note that images and audio count too — a vision model converts an image into a block of tokens based on its resolution.</p>
+
+<h2>Related</h2>
+<p>For counting plain words and characters rather than tokens, use the <a href="/word-counter/">word counter</a>. To inspect the JSON going in and out of an API, the <a href="/json-formatter/">JSON formatter</a> reports the exact position of a syntax error.</p>`,
+};
+
 const CATEGORY_EXTRA = {
   dev: `<h2>Developer reference</h2>
 <ul class="cards">
@@ -127,19 +234,31 @@ const CATEGORY_EXTRA = {
 };
 
 // ---------- category pages ----------
+// `/convert/` is also the unit-converter hub produced by src/gen/units.mjs.
+// Rather than have one silently overwrite the other, the category half is
+// handed to that generator, which splices it into the page it builds.
+const categorySection = {};
+
 for (const c of Object.values(CATEGORIES)) {
   const list = tools.filter((t) => t.cat === c.slug);
   if (!list.length) continue;
+  const section = `<p class="muted">${esc(c.desc)} All tools run locally in your browser.</p>
+<ul class="cards">${list
+    .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
+    .join('')}</ul>${CATEGORY_BODY[c.slug] || ''}${CATEGORY_EXTRA[c.slug] || ''}`;
+
+  if (c.slug === 'convert') {
+    categorySection.convert = section;
+    continue;
+  }
+
   write(`/${c.slug}/`, page({
     title: `${c.name} — Free Online ${c.name} | ${SITE.name}`,
     desc: `${c.desc} ${list.length} free tools that run in your browser — no upload, no sign-up.`,
     path: `/${c.slug}/`,
     h1: c.name,
     crumbs: [{ name: c.name, path: `/${c.slug}/` }],
-    body: `<p class="muted">${esc(c.desc)} All tools run locally in your browser.</p>
-<ul class="cards">${list
-      .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
-      .join('')}</ul>${CATEGORY_EXTRA[c.slug] || ''}`,
+    body: section,
   }));
 }
 
@@ -149,7 +268,7 @@ let genPages = [];
 if (fs.existsSync(genDir)) {
   for (const f of fs.readdirSync(genDir).filter((f) => f.endsWith('.mjs')).sort()) {
     const mod = await import(pathToFileURL(path.join(genDir, f)).href);
-    const out = await mod.default();
+    const out = await mod.default({ categorySection, tools });
     genPages = genPages.concat(out);
   }
 }
@@ -410,4 +529,9 @@ fs.writeFileSync(path.join(dist, 'robots.txt'),
 
 copyDir(path.join(root, 'public'), dist);
 
+if (collisions.length) {
+  console.error('\n✗ URL written more than once — one generator is overwriting another:');
+  for (const c of [...new Set(collisions)]) console.error('    ' + c);
+  process.exitCode = 1;
+}
 console.log(`built ${urls.length} pages (${tools.length} tools, ${genPages.length} generated)`);
