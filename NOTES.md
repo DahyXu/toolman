@@ -3,6 +3,23 @@
 Running log of what has actually been observed, so decisions are not re-argued
 from memory. Newest first.
 
+## 2026-09-02 (backlink)
+
+Repo made public: **github.com/DahyXu/toolman**, homepage field set to the
+site, README opens with six links into it. Verified clean before publishing —
+the only hits from a credential scan were the substring `sk-` inside time zone
+URLs like `/convert/msk-to-utc/`, and `.env` is untracked.
+
+**Caveat, verified not assumed:** every outbound link on a GitHub repo page
+carries `rel="nofollow"`, including the homepage field. So this is a
+*discovery* channel, not a source of link equity — Google has treated nofollow
+as a hint rather than a directive since 2019 and will still follow it, and
+GitHub is crawled constantly, but it does not pass authority.
+
+Attempted the community route first. Hacker News, Reddit and V2EX are all
+logged out in this browser, and creating accounts is off-limits, so posting
+there is blocked at the first step regardless of intent.
+
 ## 2026-09-02 (sitemap resolved)
 
 `sitemap.xml` now reads **Success**, type "Sitemap index", last read 2026-09-02.
