@@ -309,6 +309,41 @@ write('/', page({
     .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
     .join('')}</ul>
 ${allToolsBody}
+<h2>Popular lookups</h2>
+<p class="muted">The specific answers people search for most often.</p>
+<ul class="linklist">
+<li><a href="/convert/5-feet-to-centimeters/">5 feet in cm</a></li>
+<li><a href="/convert/180-pounds-to-kilograms/">180 lbs in kg</a></li>
+<li><a href="/convert/1-kilograms-to-pounds/">1 kg in lbs</a></li>
+<li><a href="/convert/inches-to-centimeters/">Inches to cm</a></li>
+<li><a href="/convert/kilometers-to-miles/">Kilometres to miles</a></li>
+<li><a href="/convert/celsius-to-fahrenheit/">Celsius to Fahrenheit</a></li>
+<li><a href="/convert/100-celsius-to-fahrenheit/">100°C in °F</a></li>
+<li><a href="/convert/gigabytes-to-megabytes/">GB to MB</a></li>
+<li><a href="/convert/minutes-to-hours/">Minutes to hours</a></li>
+<li><a href="/convert/px-to-rem/">px to rem</a></li>
+<li><a href="/convert/pst-to-est/">PST to EST</a></li>
+<li><a href="/convert/utc-to-est/">UTC to EST</a></li>
+<li><a href="/cooking/1-cups-all-purpose-flour-to-grams/">1 cup flour in grams</a></li>
+<li><a href="/cooking/1-cups-granulated-sugar-to-grams/">1 cup sugar in grams</a></li>
+<li><a href="/color/ff0000/">#FF0000</a></li>
+<li><a href="/color/000000/">#000000</a></li>
+<li><a href="/http/404/">HTTP 404</a></li>
+<li><a href="/http/301/">HTTP 301</a></li>
+<li><a href="/http/500/">HTTP 500</a></li>
+<li><a href="/port/3306/">Port 3306</a></li>
+<li><a href="/port/8080/">Port 8080</a></li>
+<li><a href="/port/443/">Port 443</a></li>
+<li><a href="/roman/2026/">2026 in Roman numerals</a></li>
+<li><a href="/roman/4/">4 in Roman numerals</a></li>
+<li><a href="/paper/a4/">A4 paper size</a></li>
+<li><a href="/paper/letter/">Letter paper size</a></li>
+<li><a href="/file/heic/">.heic files</a></li>
+<li><a href="/file/webp/">.webp files</a></li>
+<li><a href="/png-to-jpg/">PNG to JPG</a></li>
+<li><a href="/webp-to-png/">WebP to PNG</a></li>
+<li><a href="/cron/every-5-minutes/">Cron: every 5 minutes</a></li>
+</ul>
 <h2>Reference libraries</h2>
 <ul class="cards">
 <li><a href="/convert/"><b>Unit converter</b><span>1,000+ conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
