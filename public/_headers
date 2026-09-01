@@ -1,8 +1,17 @@
+# Cloudflare Pages merges every matching rule rather than letting the most
+# specific one win, so a Cache-Control on /* would be concatenated onto the
+# per-path ones below and produce a malformed doubled header. Security headers
+# are safe to apply globally; caching is set per path only.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*/
   Cache-Control: public, max-age=0, must-revalidate
 
 /assets/main.css
@@ -14,5 +23,11 @@
 /og.jpg
   Cache-Control: public, max-age=604800
 
+/site.webmanifest
+  Cache-Control: public, max-age=604800
+
 /sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
   Cache-Control: public, max-age=3600
