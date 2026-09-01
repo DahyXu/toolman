@@ -104,6 +104,37 @@ curl -v telnet://example.com:${port}</code></pre>
 sudo lsof -ti :${port} | xargs kill        # Linux / macOS
 netstat -ano | findstr :${port}            # note the PID, then:
 taskkill /PID &lt;pid&gt; /F                    # Windows</code></pre>
+<h2>Should this port be open to the internet?</h2>
+<p>${[23, 445, 2375, 3306, 3389, 5432, 6379, 9200, 27017, 11211, 1433, 1521, 2049, 9000].includes(port)
+  ? `<strong>No.</strong> Port ${port} should never be reachable from a public address. Bind it to localhost or a private network, and reach it through a VPN or bastion host if remote access is genuinely needed. Internet-wide scanners find newly exposed instances of this service within minutes.`
+  : [80, 443, 8080, 8443].includes(port)
+  ? `<strong>Yes</strong> — that is what it is for. Make sure whatever is listening is something you intend to expose, and that ${port === 80 ? 'it does nothing but redirect to HTTPS' : 'TLS is configured properly'}.`
+  : [22].includes(port)
+  ? `<strong>Only with care.</strong> SSH is designed to be exposed, but it is also the most brute-forced port on the internet. Keys only, no password authentication, and rate limiting.`
+  : [25, 587, 465, 993, 995, 143, 110].includes(port)
+  ? `<strong>Only on a mail server.</strong> If this port is open on something that is not intentionally handling mail, you may be running an open relay — which will get the IP blacklisted quickly.`
+  : `<strong>Usually not.</strong> Expose it only if a specific external client needs it, and restrict by source address where you can.`}</p>
+
+<h2>Quick reference</h2>
+<table><tbody>
+<tr><td>Port</td><td class="out">${port}</td></tr>
+<tr><td>Protocol</td><td>${proto}</td></tr>
+<tr><td>Service</td><td>${esc(service)}</td></tr>
+<tr><td>Range</td><td>${port < 1024 ? 'Well-known (0–1023) — binding requires root on Unix' : port < 49152 ? 'Registered (1024–49151) — any user process may bind' : 'Dynamic (49152–65535) — normally assigned automatically'}</td></tr>
+</tbody></table>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<h3>What is port ${port} used for?</h3>
+<p>${what}</p>
+<h3>How do I check if port ${port} is open?</h3>
+<p>Locally, <code>sudo lsof -i :${port}</code> on macOS or Linux, or <code>netstat -ano | findstr :${port}</code> on Windows. From outside, <code>nc -zv host ${port}</code> tells you whether anything answers.</p>
+<h3>Why do I get "address already in use" on port ${port}?</h3>
+<p>Another process is bound to it — often a previous run of your own program that did not exit cleanly. Find it with <code>lsof -ti :${port}</code> and stop it, or configure your application to use a different port.</p>
+<h3>Can I change the port this service uses?</h3>
+<p>Almost always yes, in the service's configuration. Moving off a default port reduces automated scan noise, but it is obfuscation rather than security — a real attacker scans all 65,535.</p>
+</div>
+
 <h2>Other common ports</h2>
 <ul class="linklist">${related.map((x) => `<li><a href="/port/${x[0]}/">Port ${x[0]} — ${esc(x[1])}</a></li>`).join('')}</ul>
 <p><a href="/port/">All port numbers</a></p>`,

@@ -9,6 +9,33 @@ function toRoman(n) {
   return out;
 }
 
+
+// Spell out the number, which is what "how do you say MCMXCIV" is really asking.
+const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+function spell(n) {
+  if (n < 20) return ONES[n];
+  if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+  if (n < 1000) return ONES[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' and ' + spell(n % 100) : '');
+  return spell(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? (n % 1000 < 100 ? ' and ' : ' ') + spell(n % 1000) : '');
+}
+
+// The greedy algorithm, written out as the steps a person would follow.
+function steps(n) {
+  let x = n;
+  const out = [];
+  for (const [v, sym] of MAP) {
+    let c = 0;
+    while (x >= v) { x -= v; c++; }
+    if (c) {
+      const taken = (c > 1 ? `${c} × ${sym}` : sym).padEnd(8);
+      out.push(`${taken} = ${String(c * v).padStart(5)}    remaining: ${x}`);
+    }
+  }
+  return out;
+}
+
 function breakdown(n) {
   let x = n; const rows = [];
   for (const [v, s] of MAP) {
@@ -89,6 +116,20 @@ ${rows.some(([s]) => /^(IV|IX|XL|XC|CD|CM)$/.test(s))
 <tr><td><code>X</code></td><td>10</td><td><code>M</code></td><td>1,000</td></tr>
 <tr><td><code>L</code></td><td>50</td><td></td><td></td></tr>
 </tbody></table>
+
+<h2>${n.toLocaleString()} in other notations</h2>
+<table><tbody>
+<tr><td>Roman</td><td class="out">${r}</td></tr>
+<tr><td>Binary</td><td class="out">${n.toString(2)}</td></tr>
+<tr><td>Hexadecimal</td><td class="out">${n.toString(16).toUpperCase()}</td></tr>
+<tr><td>Octal</td><td class="out">${n.toString(8)}</td></tr>
+<tr><td>Written out</td><td>${spell(n)}</td></tr>
+</tbody></table>
+
+<h2>Writing it by hand</h2>
+<p>Work down through the symbol values, taking as many of each as will fit before moving to the next. For ${n.toLocaleString()}:</p>
+<pre><code>${steps(n).join('\n')}</code></pre>
+<p>The result reads <strong>${r}</strong> — ${r.length} character${r.length === 1 ? '' : 's'}, against ${String(n).length} digit${String(n).length === 1 ? '' : 's'} in Arabic numerals.${r.length > String(n).length * 2 ? ' The verbosity at numbers like this is precisely why positional notation replaced the system for arithmetic.' : ''}</p>
 
 <h2>Frequently asked questions</h2>
 <div class="faq">

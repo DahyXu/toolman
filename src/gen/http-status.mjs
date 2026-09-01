@@ -93,6 +93,46 @@ curl -sIL -o /dev/null -w "%{http_code} %{url_effective}\\n" https://example.com
 # JavaScript
 const r = await fetch(url);
 console.log(r.status, r.statusText);</code></pre>
+<h2>How this code behaves</h2>
+<table><tbody>
+<tr><td>Cacheable by default</td><td>${[200, 203, 204, 206, 300, 301, 308, 404, 405, 410, 414, 501].includes(code) ? 'Yes — per RFC 9110, this status is cacheable unless headers say otherwise.' : 'No — caches must not store this response unless explicit cache headers permit it.'}</td></tr>
+<tr><td>Safe to retry</td><td>${cat === '5xx' || code === 429 || code === 408 ? 'Yes, with backoff. This is a transient condition; retrying the same request is reasonable.' : cat === '4xx' ? 'No. Retrying an identical request will produce the same result — the request itself must change.' : 'Not applicable.'}</td></tr>
+<tr><td>Effect on search indexing</td><td>${code === 404 ? 'Google drops the URL from its index after repeated 404s, but slowly — weeks rather than days.'
+  : code === 410 ? 'Google removes the URL faster than for a 404, because 410 asserts the removal is deliberate.'
+  : code === 301 ? 'Ranking signals transfer to the target URL. This is the correct status for a permanent move.'
+  : code === 302 ? 'Google keeps indexing the original URL and does not transfer ranking signals. Use 301 for permanent moves.'
+  : code === 503 ? 'Treated as temporary. A short 503 with a Retry-After header will not cost you your ranking; a long one will.'
+  : code === 200 ? 'Normal — the page is eligible for indexing.'
+  : cat === '5xx' ? 'Repeated server errors reduce crawl rate and eventually drop pages from the index.'
+  : 'No direct effect.'}</td></tr>
+</tbody></table>
+
+<h2>Returning ${code} correctly</h2>
+<pre><code># nginx
+return ${code};
+
+# Express
+res.status(${code})${[204, 304].includes(code) ? '.end()' : ".json({ error: '" + name + "' })"};
+
+# Go
+w.WriteHeader(${code})
+
+# Python (Flask)
+return ${[204, 304].includes(code) ? "'', " + code : "jsonify(error='" + name + "'), " + code};</code></pre>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<h3>What does HTTP ${code} mean?</h3>
+<p>${when}</p>
+<h3>How do I fix a ${code} error?</h3>
+<p>${fix}</p>
+<h3>Is ${code} a client or server problem?</h3>
+<p>${cat === '4xx' ? 'A client problem by definition — the request needs to change. That said, a 4xx can still be the server’s fault if it is misconfigured and rejecting valid requests.'
+  : cat === '5xx' ? 'A server problem. The request was valid; the server failed to fulfil it. Nothing the client changes will help.'
+  : cat === '3xx' ? 'Neither — it is an instruction to look somewhere else, and clients normally follow it automatically.'
+  : 'Neither — it indicates success or progress.'}</p>
+</div>
+
 <h2>Other ${cat} codes</h2>
 <ul class="linklist">${related.map((c) => `<li><a href="/http/${c[0]}/">${c[0]} ${esc(c[1])}</a></li>`).join('')}</ul>
 <p><a href="/http/">All HTTP status codes</a></p>`,

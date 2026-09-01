@@ -136,6 +136,45 @@ const E = [
     'A .env file almost always contains secrets. It must be in .gitignore, and if one has ever been committed, rotate every credential in it — deleting the file does not remove it from git history.'],
 ];
 
+
+// The first bytes of the file — what `file(1)`, browsers and upload validators
+// actually use to identify a format, since the extension can be anything.
+const MAGIC = {
+  heic: ['ftypheic / ftypheix at offset 4', 'An ISO base media container, same family as MP4.'],
+  webp: ['52 49 46 46 .. .. .. .. 57 45 42 50', 'RIFF container with "WEBP" at offset 8.'],
+  avif: ['ftypavif at offset 4', 'Also an ISO base media container.'],
+  svg:  ['3C 3F 78 6D 6C  or  3C 73 76 67', 'Plain text — starts with <?xml or <svg. No binary signature.'],
+  psd:  ['38 42 50 53', 'ASCII "8BPS".'],
+  ai:   ['25 50 44 46', 'Modern .ai files are PDFs — the signature is "%PDF".'],
+  raw:  ['varies by manufacturer', 'CR2 starts "II*\0", NEF and ARW are TIFF-based, DNG uses the TIFF signature.'],
+  pdf:  ['25 50 44 46 2D', 'ASCII "%PDF-" followed by the version.'],
+  docx: ['50 4B 03 04', 'ASCII "PK" — it is a ZIP archive.'],
+  epub: ['50 4B 03 04', 'Also a ZIP, with "mimetype" as the first stored entry.'],
+  csv:  ['none', 'Plain text with no signature, which is why CSV detection is guesswork.'],
+  json: ['none', 'Plain text. Usually starts with { or [ but that is convention, not a signature.'],
+  yaml: ['none', 'Plain text. May start with --- but need not.'],
+  sql:  ['none', 'Plain text.'],
+  parquet: ['50 41 52 31', 'ASCII "PAR1" at both the start and the end of the file.'],
+  zip:  ['50 4B 03 04', 'ASCII "PK", after Phil Katz who created the format.'],
+  '7z': ['37 7A BC AF 27 1C', 'ASCII "7z" followed by a fixed byte sequence.'],
+  tar:  ['75 73 74 61 72 at offset 257', 'ASCII "ustar" — unusually, not at the start of the file.'],
+  mp4:  ['ftyp at offset 4', 'ISO base media container; the brand that follows says which flavour.'],
+  mov:  ['ftypqt at offset 4', 'Same container family as MP4, with a QuickTime brand.'],
+  mkv:  ['1A 45 DF A3', 'An EBML header — shared with WebM.'],
+  webm: ['1A 45 DF A3', 'Identical EBML header to MKV; the difference is which codecs are allowed inside.'],
+  mp3:  ['49 44 33  or  FF FB', '"ID3" when there is a metadata tag, otherwise a raw frame header.'],
+  flac: ['66 4C 61 43', 'ASCII "fLaC".'],
+  wav:  ['52 49 46 46 .. .. .. .. 57 41 56 45', 'RIFF container with "WAVE" at offset 8.'],
+  ttf:  ['00 01 00 00', 'A version number rather than text.'],
+  woff2:['77 4F 46 32', 'ASCII "wOF2".'],
+  exe:  ['4D 5A', 'ASCII "MZ" — the initials of Mark Zbikowski, who designed the format in 1981.'],
+  dmg:  ['koly trailer at end of file', 'Unusually, the signature is at the end, not the beginning.'],
+  apk:  ['50 4B 03 04', 'A ZIP again — Android packages are ZIP archives.'],
+  iso:  ['43 44 30 30 31 at offset 32769', 'ASCII "CD001", after the 32 KB system area.'],
+  log:  ['none', 'Plain text.'],
+  env:  ['none', 'Plain text.'],
+};
+
 const CATS = ['Image', 'Document', 'Data', 'Archive', 'Video', 'Audio', 'Font', 'Executable', 'Text'];
 
 export default async function () {
@@ -170,6 +209,24 @@ export default async function () {
 <p>${open}</p>
 <h2>Worth knowing</h2>
 <p>${note}</p>
+
+<h2>How to identify a .${ext} file</h2>
+<p>A file's extension is only its name — renaming <code>a.png</code> to <code>a.${ext}</code> changes nothing inside. What software actually reads is the <strong>magic number</strong>, the first few bytes of the file.</p>
+<table><tbody>
+<tr><td>Signature</td><td class="out">${esc((MAGIC[ext] || ['—', ''])[0])}</td></tr>
+<tr><td>MIME type</td><td class="out">${esc(mime)}</td></tr>
+<tr><td>Category</td><td>${cat}</td></tr>
+</tbody></table>
+<p>${esc((MAGIC[ext] || ['', ''])[1])}</p>
+<pre><code># what is this file really?
+file mystery.${ext}
+
+# look at the first bytes yourself
+xxd mystery.${ext} | head -2
+head -c 16 mystery.${ext} | xxd
+
+# Windows PowerShell
+Get-Content mystery.${ext} -AsByteStream -TotalCount 16 | Format-Hex</code></pre>
 ${['webp', 'avif', 'svg'].includes(ext) ? `<h2>Converting it</h2>
 <p>You can convert ${ext.toUpperCase()} in your browser without uploading it anywhere: <a href="/${ext}-to-png/">${ext.toUpperCase()} to PNG</a>, <a href="/${ext}-to-jpg/">${ext.toUpperCase()} to JPG</a>${ext !== 'webp' ? `, <a href="/${ext}-to-webp/">${ext.toUpperCase()} to WebP</a>` : ''}.</p>` : ''}
 ${ext === 'heic' ? `<h2>Converting it</h2>
@@ -180,6 +237,26 @@ ${ext === 'heic' ? `<h2>Converting it</h2>
 <li><strong>On Windows 11:</strong> install the HEIF Image Extensions from the Microsoft Store, then open in Photos and Save as.</li>
 <li><strong>On the command line:</strong> <code>heif-convert photo.heic photo.jpg</code>, or <code>magick photo.heic photo.jpg</code> with a HEIF-enabled ImageMagick.</li>
 </ul>` : ''}
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<h3>What is a .${ext} file?</h3>
+<p>${what}</p>
+<h3>How do I open a .${ext} file?</h3>
+<p>${open}</p>
+<h3>Is .${ext} safe to open?</h3>
+<p>${['exe', 'apk', 'dmg'].includes(ext)
+  ? `No — not from an untrusted source. A .${ext} file is executable code, and opening one runs it. Check the digital signature first, and prefer official distribution channels.`
+  : ext === 'svg'
+  ? 'Usually, but with one caveat: SVG is XML that can contain JavaScript, so an SVG from an untrusted source should be sanitised before being rendered on a web page. Opening one in an image viewer is fine.'
+  : ['zip', '7z', 'tar', 'iso'].includes(ext)
+  ? `The archive itself is inert, but its contents may not be. Extracting a .${ext} from an unknown sender is how a lot of malware arrives — check what is inside before running anything.`
+  : ['docx', 'pdf'].includes(ext)
+  ? `Generally yes, though both formats can carry active content — macros in Office documents, JavaScript in PDFs. Modern readers disable these by default; leave it that way for files from strangers.`
+  : `Yes. A .${ext} file is data, not code — opening one cannot execute anything by itself.`}</p>
+<h3>Can I change a file's extension to convert it?</h3>
+<p>No. Renaming changes the label, not the bytes. The one place it appears to work is between formats that genuinely share a container — renaming <code>.docx</code> to <code>.zip</code> works because a DOCX <em>is</em> a ZIP. Everything else needs a real converter.</p>
+</div>
+
 <h2>Other ${cat.toLowerCase()} formats</h2>
 <ul class="linklist">${related.map((x) => `<li><a href="/file/${x[0]}/">.${x[0]} — ${esc(x[1])}</a></li>`).join('') || '<li class="muted">None yet.</li>'}</ul>
 <h2>Other formats</h2>
