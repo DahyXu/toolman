@@ -81,7 +81,11 @@ const contrast = (a, b) => {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 function hueName(h, s, l) {
-  if (s < 8) return l > 90 ? 'near-white grey' : l < 10 ? 'near-black grey' : 'grey';
+  if (s < 8) {
+    if (l >= 100) return 'pure white';
+    if (l <= 0) return 'pure black';
+    return l > 90 ? 'near-white grey' : l < 10 ? 'near-black grey' : 'grey';
+  }
   for (const [max, name] of HUE_NAMES) if (h <= max) return name;
   return 'red';
 }
@@ -124,7 +128,10 @@ function colorPage(hex, name) {
   const cw = contrast(rgb, { r: 255, g: 255, b: 255 });
   const cb = contrast(rgb, { r: 0, g: 0, b: 0 });
   const family = hueName(hsl.h, hsl.s, hsl.l);
-  const desc = `${lightName(hsl.l)}, ${satName(hsl.s)} ${family}`;
+  const article = (d) => (d.startsWith('pure ') ? '' : 'a ');
+  const desc = family === 'pure white' || family === 'pure black'
+    ? family
+    : `${lightName(hsl.l)}, ${satName(hsl.s)} ${family}`;
 
   const shades = [95, 85, 75, 65, 55, 45, 35, 25, 15].map((l) => {
     const c = hsl2rgb(hsl.h, hsl.s, l);
@@ -149,7 +156,7 @@ function colorPage(hex, name) {
 
   const FAQ = faq([
     { q: `What color is ${H}?`,
-      a: `${H} is a ${desc}${near.exact ? `, which CSS calls <code>${near.name}</code>` : ''}. Its hue sits at ${hsl.h}° on the color wheel, with ${hsl.s}% saturation and ${hsl.l}% lightness.` },
+      a: `${H} is ${article(desc)}${desc}${near.exact ? `, which CSS calls <code>${near.name}</code>` : ''}. Its hue sits at ${hsl.h}° on the color wheel, with ${hsl.s}% saturation and ${hsl.l}% lightness.` },
     { q: `What is ${H} in RGB?`,
       a: `${H} converts to <strong>rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</strong> — ${rgb.r} red, ${rgb.g} green and ${rgb.b} blue.` },
     { q: `What is ${H} in CMYK?`,
@@ -165,7 +172,7 @@ function colorPage(hex, name) {
   return {
     path: `/color/${hex}/`,
     title,
-    desc: `${H} is a ${desc}. Its RGB is (${rgb.r}, ${rgb.g}, ${rgb.b}). See HSL, CMYK, WCAG contrast, tints, shades and a matching palette.`,
+    desc: `${H} is ${article(desc)}${desc}. Its RGB is (${rgb.r}, ${rgb.g}, ${rgb.b}). See HSL, CMYK, WCAG contrast, tints, shades and a matching palette.`,
     h1: name ? `${name.charAt(0).toUpperCase() + name.slice(1)} — ${H}` : `${H} color`,
     crumbs: [{ name: 'Colors', path: '/color/' }, { name: H, path: `/color/${hex}/` }],
     jsonld: [FAQ.schema],

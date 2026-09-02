@@ -1,3 +1,32 @@
+## 2026-09-02 — #000000 was described as a near-black grey
+
+Kept reading at the boundaries, this time the 682 colour pages. The two most
+searched hex codes there are were both wrong:
+
+- **`#000000`** — "a very dark, desaturated **near-black grey**"
+- **`#FFFFFF`** — "a very light, desaturated **near-white grey**"
+
+Pure black is not an approximation of itself. Worse, each page contradicted its
+own heading: the H1 said "Black — #000000" while the sentence underneath called
+it a near-black grey.
+
+The cause is a threshold with no endpoint case: `l < 10 ? 'near-black grey'`
+catches 0 along with everything else dark. Added the exact endpoints, and
+dropped the lightness and saturation adjectives there — "a very light,
+desaturated pure white" is no better than what it replaced.
+
+Then a second pass for the grammar: the sentence template is `${H} is a
+${desc}`, which gives "is a pure black". One `article()` helper now decides,
+used by both places that build this sentence so they cannot drift.
+
+Verified the neighbours still read correctly: `#111111` is still a near-black
+grey and `#F5F5F5` a near-white one, which is accurate for both.
+
+That is four rounds now of finding real defects by reading generated output at
+the edges of its ranges, after the audit reported everything clean. The checks
+are worth having — they catch what they were built for — but every one of these
+was a sentence that satisfied all of them and that nobody would have written.
+
 ## 2026-09-02 — read the FAQ edge cases, found three grammar bugs
 
 Continued reading rather than measuring, this time sampling FAQ answers at the
