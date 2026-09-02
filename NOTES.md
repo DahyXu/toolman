@@ -1,3 +1,37 @@
+## 2026-09-03 — the GIF converter quietly dropped the animation
+
+Read the 23 image-conversion pages, which I had never checked. The phrasing is
+uniform and correct, but the tool has a limit none of them stated.
+
+The conversion is `createImageBitmap` then `drawImage`, which takes **one
+frame**. Feed it an animated GIF and you get a still picture back, with no
+warning. The GIF page made it worse: its "About WebP" paragraph notes that WebP
+supports animation, so a reader could reasonably expect an animated WebP out and
+get a single frame instead.
+
+Pages whose source format can animate — GIF, WebP, AVIF — now say so before the
+format descriptions, and say why: assembling an animation needs an encoder for
+the target format, which is a megabyte of WebAssembly and defeats the point of a
+page that loads instantly. They point at `ffmpeg -i in.gif out.webp`, which does
+the job locally and uploads nothing either, so the alternative keeps the property
+the site is built on.
+
+The sentence adapts to the target: on `gif-to-webp` it adds "even though WebP can
+itself store animation", because that is exactly the expectation the rest of the
+page sets up. On `gif-to-jpg` it does not, because JPEG cannot animate and
+raising it would be noise.
+
+**The condition did not fire on the first build**, and the pages came out
+unchanged. The format objects live in an `F` map keyed by id and carry no `id`
+property of their own, so `a.id` was undefined and the check silently matched
+nothing. Caught by verifying which pages had the new text rather than assuming
+the edit had landed — the same habit that caught the planted-contradiction test
+doing nothing yesterday.
+
+This is the third time this session that a change appeared to apply and did not.
+The tell each time was identical: a result too clean to be true, from a step
+whose success I had not confirmed separately from its output.
+
 ## 2026-09-03 — the token counter named no models in its HTML
 
 The two query-driven gaps so far (password length, uuidv7) shared a shape: a

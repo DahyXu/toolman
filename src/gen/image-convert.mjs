@@ -184,6 +184,9 @@ ${a.lossy && b.lossy ? `<li><strong>Two generations of lossy compression.</stron
 <li><strong>Metadata is dropped.</strong> EXIF data — including GPS coordinates, camera model and timestamps — does not survive the canvas. That is a useful privacy side effect before sharing photos.</li>
 </ul>
 
+${['gif', 'webp', 'avif'].includes(fromKey) ? `<h2>Animated ${a.name} files</h2>
+<p><strong>Only the first frame is converted.</strong> This runs on a canvas, which holds one image at a time, so an animated ${a.name} comes back as a single still picture rather than an animation${['webp', 'gif'].includes(toKey) ? ` — even though ${b.name} can itself store animation` : ''}. That is a limit of doing the work in the browser, not a choice: assembling an animation needs an encoder for the target format, which is a megabyte or more of WebAssembly and defeats the point of a page that loads instantly.</p>
+<p>If you need to keep the animation, use <code>ffmpeg</code> locally — <code>ffmpeg -i in.${fromKey} out.${toKey}</code> handles animated formats properly and never uploads anything either.</p>` : ''}
 <h2>About ${a.name}</h2><p>${a.d}</p>
 <h2>About ${b.name}</h2><p>${b.d}</p>
 
