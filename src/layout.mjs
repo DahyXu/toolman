@@ -196,7 +196,7 @@ ${o.body}
   <div class="wrap">
     <p><strong>${SITE.name}</strong> — ${SITE.tagline}. Everything runs locally in your browser; your data never leaves your device.</p>
     <nav class="links" aria-label="Reference sections">
-      <a href="/convert/">Converters</a><a href="/cooking/">Cooking</a><a href="/color/">Colors</a><a href="/http/">HTTP codes</a><a href="/port/">Ports</a><a href="/cron/">Cron</a><a href="/chmod/">Permissions</a><a href="/cidr/">CIDR</a><a href="/file/">File formats</a><a href="/paper/">Paper sizes</a><a href="/roman/">Roman numerals</a>
+      <a href="/convert/">Converters</a><a href="/cooking/">Cooking</a><a href="/color/">Colors</a><a href="/http/">HTTP codes</a><a href="/port/">Ports</a><a href="/cron/">Cron</a><a href="/chmod/">Permissions</a><a href="/cidr/">CIDR</a><a href="/ascii/">ASCII</a><a href="/file/">File formats</a><a href="/paper/">Paper sizes</a><a href="/roman/">Roman numerals</a>
     </nav>
     <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
   </div>

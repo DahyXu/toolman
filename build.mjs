@@ -379,6 +379,9 @@ ${allToolsBody}
 <li><a href="/cidr/24/">/24 subnet</a></li>
 <li><a href="/cidr/16/">/16 subnet</a></li>
 <li><a href="/cidr/30/">/30 subnet</a></li>
+<li><a href="/ascii/65/">ASCII 65 (A)</a></li>
+<li><a href="/ascii/10/">ASCII 10 (LF)</a></li>
+<li><a href="/ascii/0/">ASCII 0 (NUL)</a></li>
 </ul>
 <h2>Reference libraries</h2>
 <ul class="cards">
@@ -393,6 +396,7 @@ ${allToolsBody}
 <li><a href="/file/"><b>File formats</b><span>What each extension is, what opens it, and what catches people out.</span></a></li>
 <li><a href="/chmod/"><b>File permissions</b><span>What every chmod value grants, and which one is actually right.</span></a></li>
 <li><a href="/cidr/"><b>CIDR prefixes</b><span>Every subnet size from /0 to /32 with masks and host counts.</span></a></li>
+<li><a href="/ascii/"><b>ASCII table</b><span>All 128 codes, with the control characters explained rather than blank.</span></a></li>
 <li><a href="/cooking/"><b>Cooking conversions</b><span>Cups to grams per ingredient — a cup of flour and a cup of honey are not the same weight.</span></a></li>
 <li><a href="/roman/"><b>Roman numerals</b><span>Every number broken down symbol by symbol, plus the rules that govern them.</span></a></li>
 <li><a href="/paper/"><b>Paper sizes</b><span>A4, Letter, Legal and the rest — in mm, inches and pixels at any DPI.</span></a></li>

@@ -22,6 +22,19 @@ function walk(dir, out = []) {
   return out;
 }
 
+// Both sides of the comparison have to be normalised identically. The visible
+// text carries &lt; where the JSON-LD carries a literal <, so a page about the
+// less-than sign looked like a mismatch when its wording was in fact the same.
+// &amp; is decoded last so an already-escaped entity is not decoded twice.
+function decodeEntities(s) {
+  return s
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&');
+}
+
 const problems = { parse: [], missingType: [], faqNoAnswer: [], faqNotOnPage: [], breadcrumbBad: [], emptyName: [] };
 const typeCount = {};
 let blocks = 0;
@@ -32,9 +45,9 @@ for (const f of walk(dist)) {
   // Whitespace is removed on both sides of the comparison: stripping inline
   // tags such as <strong> leaves stray spaces around punctuation, which is a
   // rendering artefact rather than a difference in wording.
-  const visible = html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, ' ')
-    .replace(/\s+/g, '').toLowerCase();
+  const visible = decodeEntities(
+    html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
+  ).replace(/\s+/g, '').toLowerCase();
 
   for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     blocks++;
@@ -58,7 +71,7 @@ for (const f of walk(dist)) {
           // Compare with whitespace removed on both sides: stripping inline
           // tags such as <strong> leaves spaces around punctuation that are a
           // rendering artefact, not a difference in wording.
-          const probe = ans.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ')
+          const probe = decodeEntities(ans.replace(/<[^>]+>/g, ''))
             .replace(/\s+/g, '').toLowerCase().slice(0, 40);
           if (probe.length > 15 && !visible.includes(probe)) {
             problems.faqNotOnPage.push(`${url} — answer not in page text: "${probe}"`);

@@ -1,3 +1,36 @@
+## 2026-09-02 — ASCII reference, 129 pages
+
+Third target picked the same way as chmod and CIDR: check who currently ranks
+before writing anything. For "ascii table" the top results are ascii-code.com,
+asciitable.com, theasciicode.com and commfront.com — single-purpose sites with
+no authority behind them, the same profile chmod-calculator.com had. Regex was
+checked at the same time and rejected: regex101, regexr and Stack Overflow hold
+that ground.
+
+Built `/ascii/` plus a page per code point. The angle that makes it worth having
+rather than a 129th copy of the same table: **most tables render the control
+characters as an empty cell**, and those get searched as much as the letters —
+"what is ascii 13", "null character", "what does ctrl+d send". Every one of the
+33 control characters gets a real explanation, including why Ctrl+C interrupts a
+program (C is 67, Ctrl clears the top two bits, giving 3 = ETX, end of text) and
+why DEL sits at 127 rather than with the other controls (all seven holes punched
+on paper tape, and a hole cannot be un-punched).
+
+Verified all 128 pages by computation rather than by eye: hex, octal, binary and
+Unicode code point correct on every one.
+
+**A false positive in my own checker, and the discipline that caught it.** The
+structured-data check flagged six pages — ASCII 34, 60 and 62, the HTML-special
+characters. The content was fine. The checker decoded `&amp;` and `&nbsp;` on
+the visible side but not `&lt;`, while the JSON-LD carried a literal `<`, so the
+two normalisations disagreed for exactly the characters the pages are about.
+Both sides now go through one `decodeEntities`.
+
+The important part: after changing a checker so an error goes away, I planted a
+real mismatch to confirm it still fails. It did, and cleared on restore. Without
+that step "fixed the checker" and "broke the checker" look identical from the
+output.
+
 ## 2026-09-02 — improved the pages that can actually earn an impression
 
 Only eight pages are indexed, so those eight are the only pages capable of
