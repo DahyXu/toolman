@@ -373,6 +373,9 @@ ${allToolsBody}
 <li><a href="/png-to-jpg/">PNG to JPG</a></li>
 <li><a href="/webp-to-png/">WebP to PNG</a></li>
 <li><a href="/cron/every-5-minutes/">Cron: every 5 minutes</a></li>
+<li><a href="/chmod/755/">chmod 755</a></li>
+<li><a href="/chmod/644/">chmod 644</a></li>
+<li><a href="/chmod/777/">chmod 777</a></li>
 </ul>
 <h2>Reference libraries</h2>
 <ul class="cards">
@@ -385,6 +388,7 @@ ${allToolsBody}
 <li><a href="/cron/"><b>Cron schedules</b><span>Ready-made expressions for every common schedule, with next run times.</span></a></li>
 <li><a href="/port/"><b>Port numbers</b><span>What runs on each port, why it matters, and how to see what is listening.</span></a></li>
 <li><a href="/file/"><b>File formats</b><span>What each extension is, what opens it, and what catches people out.</span></a></li>
+<li><a href="/chmod/"><b>File permissions</b><span>What every chmod value grants, and which one is actually right.</span></a></li>
 <li><a href="/cooking/"><b>Cooking conversions</b><span>Cups to grams per ingredient — a cup of flour and a cup of honey are not the same weight.</span></a></li>
 <li><a href="/roman/"><b>Roman numerals</b><span>Every number broken down symbol by symbol, plus the rules that govern them.</span></a></li>
 <li><a href="/paper/"><b>Paper sizes</b><span>A4, Letter, Legal and the rest — in mm, inches and pixels at any DPI.</span></a></li>

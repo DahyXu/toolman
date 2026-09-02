@@ -1,3 +1,38 @@
+## 2026-09-02 — researched what to build, and built it
+
+The user's original brief included researching which tools to make. I had never
+actually done that. The signal that made it worth doing now: of the 8 pages
+Google has indexed, none is a generated conversion page. What got in was the
+home page, four category hubs, a colour page and a *tool* page. Google is
+taking the tools and the hubs, not the bulk matrices.
+
+Searched candidate queries and looked at who ranks:
+
+| query | who holds the top results | verdict |
+|---|---|---|
+| chmod calculator | chmod-calculator.com, chmodcommand.com, nettools.club, kbmisc.com | all tiny single-purpose domains — winnable |
+| cidr subnet calculator | mxtoolbox, jodies.de, cidr.xyz | mixed; two of the three are small |
+| sql formatter online | codebeautify, sqlformat.org, poorsql | established tool sites |
+| yaml to json | onlineyamltools, jsonformatter.org, it-tools, codebeautify | crowded |
+
+chmod wins on three counts: low-authority incumbents, a natural long-tail
+matrix that Google's own "people also ask" spells out ("What is chmod 755 or
+777?", "What chmod is drwxrwxrwx?"), and it sits under /dev/, which is one of
+the four hubs already indexed.
+
+Built `chmod-calculator` (checkboxes ↔ octal ↔ symbolic, including setuid,
+setgid and sticky) and a 30-page `/chmod/` reference. Verified both against
+canonical values rather than trusting the code: 1777→rwxrwxrwt, 2775→rwxrwsr-x,
+4755→rwsr-xr-x, 6755→rwsr-sr-x and 10 others all correct, and the symbolic
+input round-trips (rwxrwxrwt→1777).
+
+**The reachability check earned its keep immediately.** The first build had all
+30 chmod pages unreachable, because the only links to them were rendered by
+script. Static markup instead, plus links from the home page. Unreachable is
+back to 1 (the 404 page).
+
+6,509 URLs pushed to IndexNow.
+
 ## 2026-09-02 (later still) — drove all 25 tools in a browser
 
 Never verified anything but the QR encoder. Loaded each tool against a local
