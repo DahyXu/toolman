@@ -1,3 +1,40 @@
+## 2026-09-02 — turned the observation into a check, and it found 561 pages
+
+Last round I wrote that self-contradiction seems to be the characteristic
+failure of generated prose and that no checker looks for it. So I built one:
+`scripts/contradiction.mjs`, covering the two forms that are mechanically
+detectable — the same number written two ways in one page's prose, and a title
+that repeats a phrase.
+
+It found **561 pages**, and every one was real:
+
+- Value pages read "1 kilogram = **1,000** grams" in the headline and "One
+  kilogram is **1000** grams" three lines down. The prose used the plain
+  formatter while the headline used the grouped one.
+- Unit-pair pages: "1 acre = **43,560** square feet" then "Multiply the number
+  of acres by **43560**".
+- Roman year pages: "**1900** in Roman numerals" at the top, "**1,900** in other
+  notations" further down — **my own fix from earlier today, incomplete.** I had
+  changed the title, H1, intro and questions and missed two other places.
+
+Code blocks and tables are excluded, because a formula legitimately writes 1000
+and a numeric column legitimately groups. Down to zero after fixing all four
+sources. While reading the flagged output I also caught "returns 1 **kilograms**"
+in the reverse-conversion sentence, which no check would have found.
+
+**The self-test failed, and the checker was innocent.** I planted "1,900" into
+`/roman/1900/` and the checker reported clean. The plant string was
+`The year 1900 is written`, and the actual HTML is `The year <strong>1900</strong>
+is written` — tags in between, so the replacement silently matched nothing. The
+checker was never given a contradiction to find. Redone with an anchor asserted
+to exist first, it caught it immediately and cleared on restore.
+
+That is the second time today a verification step has quietly done nothing. Both
+times the tell was the same: a result that was too clean, from a step whose
+success I had not confirmed separately from its outcome.
+
+Wired into `npm run audit`.
+
 ## 2026-09-02 — a page earning impressions was contradicting itself
 
 Followed the remaining two conversion queries from the live data. `240000 ms to

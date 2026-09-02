@@ -78,11 +78,14 @@ export default async function () {
     // A year is written 1990, not 1,990 — including in the title, the heading and
     // the questions, all of which target a query that has no comma in it.
     const num = isYear ? String(n) : n.toLocaleString();
+    // Row values are grouped for the table; in prose the page number itself
+    // follows the year rule like everywhere else on the page.
+    const inProse = (t) => (isYear ? t.split(n.toLocaleString()).join(String(n)) : t);
 
     const FAQ = faq([
       { q: `What is ${num} in Roman numerals?`, a: `<strong>${r}</strong>` },
       { q: `How do you read ${r}?`,
-        a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${val.split(' = ').pop()}`).join(', ')}${rows.length > 1 ? `, giving ${num} in total` : ''}.` },
+        a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${inProse(val.split(' = ').pop())}`).join(', ')}${rows.length > 1 ? `, giving ${num} in total` : ''}.` },
       { q: `How do you write ${num} in words?`, a: `${spell(n)}.` },
       { q: 'Why is there no zero?',
         a: 'Roman numerals have no symbol for zero. The concept reached Europe only with Hindu-Arabic numerals, centuries after the system was in use — which is a large part of why it was eventually replaced for arithmetic.' },
@@ -121,7 +124,7 @@ ${rows.some(([s]) => /^(IV|IX|XL|XC|CD|CM)$/.test(s))
 <tr><td><code>L</code></td><td>50</td><td></td><td></td></tr>
 </tbody></table>
 
-<h2>${n.toLocaleString()} in other notations</h2>
+<h2>${num} in other notations</h2>
 <table><tbody>
 <tr><td>Roman</td><td class="out">${r}</td></tr>
 <tr><td>Binary</td><td class="out">${n.toString(2)}</td></tr>
@@ -131,7 +134,7 @@ ${rows.some(([s]) => /^(IV|IX|XL|XC|CD|CM)$/.test(s))
 </tbody></table>
 
 <h2>Writing it by hand</h2>
-<p>Work down through the symbol values, taking as many of each as will fit before moving to the next. For ${n.toLocaleString()}:</p>
+<p>Work down through the symbol values, taking as many of each as will fit before moving to the next. For ${num}:</p>
 <pre><code>${steps(n).join('\n')}</code></pre>
 <p>The result reads <strong>${r}</strong> — ${r.length} character${r.length === 1 ? '' : 's'}, against ${String(n).length} digit${String(n).length === 1 ? '' : 's'} in Arabic numerals.${r.length > String(n).length * 2 ? ' The verbosity at numbers like this is precisely why positional notation replaced the system for arithmetic.' : ''}</p>
 

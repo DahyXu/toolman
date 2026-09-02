@@ -207,7 +207,7 @@ export default async function ({ categorySection = {} } = {}) {
         .slice(0, 14)
         .map(([x, y]) => ({ id: `${x.id}-to-${y.id}`, label: `${title(plural(x))} to ${title(plural(y))}` }));
 
-      const kStr = fmt(k), invStr = fmt(1 / k);
+      const kStr = fmtG(k), invStr = fmtG(1 / k);
       const exact = Number.isInteger(k) || Number.isInteger(1 / k) || /^[\d.]+$/.test(kStr);
 
       pages.push(pairPage({

@@ -83,11 +83,11 @@ const PAIRS = [
 // string rather than as a fraction, which would turn 5.2 into 20 inches.
 function feetValue(v, fromId) {
   if (fromId !== 'feet') return { num: v, label: null };
-  if (Number.isInteger(v)) return { num: v, label: v + (v === 1 ? ' foot' : ' feet') };
+  if (Number.isInteger(v)) return { num: v, label: group(String(v)) + (v === 1 ? ' foot' : ' feet') };
   const [ftS, inS = '0'] = String(v).split('.');
   const ft = parseInt(ftS, 10);
   const inch = parseInt(inS, 10);
-  if (!(inch >= 0 && inch < 12)) return { num: v, label: v + ' feet' };
+  if (!(inch >= 0 && inch < 12)) return { num: v, label: group(String(v)) + ' feet' };
   return {
     num: ft + inch / 12,
     label: `${ft} feet ${inch} inch${inch === 1 ? '' : 'es'}`,
@@ -205,7 +205,7 @@ function valuePage(from, to, raw, all) {
     { q: `How many ${toP} is ${valLabel}?`,
       a: `${valLabel} is <strong>${fmtG(result)} ${toP}</strong>.` },
     { q: `How do I convert ${fromP} to ${toP} myself?`,
-      a: `Multiply by ${fmt(k)}. To go back, divide by ${fmt(k)} — or multiply by ${fmt(1 / k)}.` },
+      a: `Multiply by ${fmtG(k)}. To go back, divide by ${fmtG(k)} — or multiply by ${fmtG(1 / k)}.` },
     { q: 'Is this figure exact?',
       a: `The conversion factor between the ${from.name} and the ${to.name} is fixed by definition. The figure above is rounded for readability; the converter carries full precision.` },
   ]);
@@ -248,9 +248,9 @@ function valuePage(from, to, raw, all) {
 </script>
 
 <h2>How the calculation works</h2>
-<p>One ${from.name} is ${fmt(k)} ${k === 1 ? to.name : toP}, so:</p>
+<p>One ${from.name} is ${fmtG(k)} ${k === 1 ? to.name : toP}, so:</p>
 <pre><code>${fmt(v)} ${from.sym} × ${fmt(k)} = ${fmt(result)} ${to.sym}</code></pre>
-<p>Reversing it, ${fmtG(result)} ${toP} ÷ ${fmt(k)} returns ${fmt(v)} ${fromP}.</p>
+<p>Reversing it, ${fmtG(result)} ${toP} ÷ ${fmtG(k)} returns ${fmtG(v)} ${v === 1 ? from.name : fromP}.</p>
 
 <h2>Nearby values</h2>
 <table><thead><tr><th>${title(fromP)}</th><th>${title(toP)}</th></tr></thead><tbody>${near.join('')}</tbody></table>

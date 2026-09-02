@@ -11,7 +11,7 @@
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name=toolman --branch=main --commit-dirty=true",
     "cf": "node scripts/cf.mjs",
     "setup": "node scripts/cf.mjs setup",
-    "audit": "node scripts/dead-code.mjs && node scripts/audit.mjs && node scripts/schema.mjs && node scripts/a11y.mjs && node scripts/sitemap-check.mjs",
+    "audit": "node scripts/dead-code.mjs && node scripts/audit.mjs && node scripts/schema.mjs && node scripts/a11y.mjs && node scripts/contradiction.mjs && node scripts/sitemap-check.mjs",
     "audit:full": "npm run audit && node scripts/depth.mjs && node scripts/similarity.mjs",
     "check": "node build.mjs && npm run audit"
   }
