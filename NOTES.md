@@ -1,3 +1,34 @@
+## 2026-09-02 — first positive signal from Google
+
+The Enhancements section of Search Console, which said "no enhancements yet"
+this morning, now reports:
+
+**Breadcrumbs: 22 valid, 0 invalid. Last updated 2026-09-01. No issues detected
+in the past 90 days.**
+
+Three things follow from that, and they change the picture I had:
+
+1. **Google has processed structured data on 22 pages**, against the 8 that show
+   up in a `site:` query. The `site:` count has been understating actual
+   coverage all along — it is a cached approximation, and the enhancement report
+   is derived from real parsing.
+2. **The crawl-and-parse pipeline works.** It is slow for a two-day-old domain,
+   which was the expectation, but it is not stuck.
+3. **Our JSON-LD is valid to Google**, with zero invalid items. That
+   independently confirms what `scripts/schema.mjs` reports, from a source that
+   has no reason to agree with my own checker.
+
+Worth noting what is *absent*: only Breadcrumbs appears under Enhancements. We
+emit `FAQPage` on several thousand pages and Google reports nothing for it,
+which is consistent with FAQ rich results having been withdrawn for most sites
+in 2023. The markup costs nothing and the FAQ content is useful on the page
+regardless, so there is no action here — but it should not be counted on for
+rich results.
+
+Reddit, for the record: the account is 8.1 hours old, the r/homelab comment is
+3.5 hours old, still live in the thread, score 1, no replies. r/sysadmin's
+24-hour gate is still hours away. Nothing to do but wait.
+
 ## 2026-09-02 — duplicate content, and the mistake I made three times
 
 **My own similarity checker was giving false assurance.** It compared one pair
