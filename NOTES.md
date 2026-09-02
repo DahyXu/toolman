@@ -1,3 +1,50 @@
+## 2026-09-02 — Reddit, measured rather than assumed
+
+The user logged in a Reddit account and asked me to find people looking for
+tools like ours and recommend them, without it reading as advertising.
+
+**The account is one day old with zero comment karma.** That turns out to
+decide everything:
+
+- r/ccna returned a hard block on my attempt: "You can't contribute in this
+  community yet ... u/DahyCC is 1 day old." Not a karma gate, an age gate, and
+  it applies to plain comments with no link at all.
+- r/sysadmin states in its own submit text that accounts under 24 hours cannot
+  post.
+- r/webdev prohibits self-promotion outright.
+- r/ccna's self-promotion rule requires being an *active contributor* first and
+  names the failure mode exactly: "no drive by self-promotion". We satisfy its
+  other two conditions (relevant, free with no registration) and fail that one
+  completely.
+
+**I caused a side effect and had to clean it up.** Typing the comment through
+synthetic keystrokes, some keys landed on the page rather than in the text box
+and Reddit read them as single-key shortcuts — the post ended up saved and
+hidden on the user's account. Reversed both via /api/unsave and /api/unhide
+(both HTTP 200, saved and hidden lists back to zero) and told the user. The
+lesson is to drive text fields through form_input or verify focus first, rather
+than firing a long key sequence at a page with single-key bindings.
+
+**The finding that overturned the plan.** PROMOTION.md led its r/SideProject
+copy with "privacy-first, 100% client-side toolkit". Two existing posts with
+essentially that exact pitch:
+
+- one 10 hours old — score 1, zero comments
+- one 30 days old — score 1, zero comments
+
+Score 1 is the author's own upvote, and the median new post there also scores
+1. The angle is saturated and invisible, not unlucky. Checking the week's top
+25 showed what does work: a playful visual (nail-sorting simulator, 996), a
+specific surprising number, a cost comparison, a personal story, or a
+contrarian claim. **Not one of the top 25 was a general dev-tool collection.**
+
+Rewrote PROMOTION.md around the specific technical failures instead — the QR
+format-bit bug, the .top TLD blocklist, the 2,191-page island, the dead
+lastmodOf. Those are genuinely uncommon and they are what this audience reads.
+
+Nothing was posted. The one action the user approved — a no-link answer in
+r/ccna — was refused by Reddit itself.
+
 ## 2026-09-02 — a checker for the failure mode that keeps recurring
 
 Finding `lastmodOf()` dead made the pattern worth naming. Three times now a fix

@@ -4,14 +4,55 @@ Written to be posted from a real account. Every claim here is verifiable
 against the site or the repo — nothing is inflated, because these audiences
 check.
 
-**Why this matters for the goal:** GitHub links are `nofollow`, so they help
-discovery but pass no authority. A link from a Hacker News or Reddit thread
-that gets any traction is followed and does pass authority, which is currently
-the single biggest lever on how fast Google indexes the remaining 6,470 pages.
+---
 
-**Timing:** Show HN does best posted 08:00–11:00 UTC on a weekday. Reddit is
-more forgiving. Do not post the same thing to several subreddits within a few
-hours — that is what gets flagged as spam.
+## What was measured on 2026-09-02, and what it changed
+
+I checked Reddit directly rather than guessing, and two findings overturned the
+earlier version of this file.
+
+**The "privacy-first client-side toolkit" angle is dead on r/SideProject.**
+Two posts with essentially our exact pitch:
+
+| post | age | score | comments |
+|---|---|---|---|
+| "tired of ad-bloated utility sites tracking my code, so I built a 100% private, client-side developer toolkit" | 10 hours | 1 | 0 |
+| "I built a 100% client-side developer toolkit because I didn't want to paste sensitive data into random websites" | 30 days | 1 | 0 |
+
+Score 1 is the author's own automatic upvote. Thirty days, zero comments. The
+median score of a new r/SideProject post is also 1, so these are not unlucky —
+they are invisible, and the pitch is saturated. The previous draft of this file
+led with exactly that angle.
+
+**What actually reaches the top of r/SideProject** (top 25 of the week): a
+playful visual thing (a nail-sorting simulator, 996), a specific surprising
+number ("read 9.2 million news articles in 145 days"), a cost comparison ("an
+alternative to Vestaboard that doesn't cost $199/year"), a personal story ("I
+code at 4 AM in Cuba because that's when the internet works"), or a contrarian
+claim ("your AI-generated SaaS is 99.9% a waste of time — prove me wrong",
+380 comments). **Not one of the top 25 was a general-purpose dev-tool
+collection.**
+
+So the copy below leads with the specific technical failures, which is the one
+thing here that is genuinely uncommon. The tool collection is context, not the
+headline.
+
+## Account gates, verified from Reddit's own responses
+
+| subreddit | what blocks us | source |
+|---|---|---|
+| r/ccna | Hard block: "Your account isn't old enough yet." Self-promo additionally requires being an *active contributor* — "no drive by self-promotion" | the dialog itself; the subreddit's written rules |
+| r/sysadmin | "accounts less than 24 hours old will be unable to post" | the subreddit's own submit text |
+| r/webdev | self-promotion prohibited | the subreddit's own submit text |
+| r/SideProject | no gate found | — |
+
+An account created today cannot comment in a moderated technical subreddit at
+all, with or without a link. This is not a caution — r/ccna returned it as an
+error. Wait out the age gate before trying again.
+
+**The sequence that works** is the one r/ccna's rule spells out: become a
+contributor first, link later. Comments that answer a question and contain no
+link build both the karma and the history that every later link depends on.
 
 ---
 
@@ -20,7 +61,7 @@ hours — that is what gets flagged as spam.
 Title (80 char limit, this is 62):
 
 ```
-Show HN: 6,478 browser-only web tools with no backend at all
+Show HN: 6,544 browser-only web tools with no backend at all
 ```
 
 Body:
@@ -30,12 +71,12 @@ I wanted a set of tools I could paste production data into without thinking
 about it — API responses, JWTs, config files. Everything here runs as plain
 JavaScript in the browser. There is no server to send anything to.
 
-It is a static site: 25 interactive tools plus ~6,400 generated reference
-pages (unit conversions, time zones, HTTP status codes, port numbers, cooking
-measures). No framework, no runtime dependencies, no build dependencies beyond
-Node itself. Mobile Lighthouse is 100 on performance.
+It is a static site: 27 interactive tools plus ~6,500 generated reference
+pages (unit conversions, time zones, HTTP status codes, port numbers, chmod
+values, CIDR prefixes, cooking measures). No framework, no runtime
+dependencies, no build dependencies beyond Node itself.
 
-Three things I did not expect going in:
+Four things I did not expect going in:
 
 The QR encoder was the hardest part. My first version produced codes that
 looked perfectly fine and that no decoder on earth could read. The 15 format
@@ -49,11 +90,18 @@ blocklists covering the entire .top TLD drop subresource requests, so the
 stylesheet silently failed to load and the whole site rendered unstyled. Worth
 knowing if you ever launch on a cheap TLD.
 
-I ended up writing five audit scripts that run against the built output, and
-they found more than I expected: 2,291 FAQ answers whose structured data did
-not match the visible page (each generator wrote the copy twice and the two
-drifted), 61 form controls with no accessible name, and one URL that two
-generators were both writing where one silently overwrote the other.
+34% of the site was unreachable and I did not know. A parent page linked to
+none of its children, so 2,191 pages linked only to each other — an island
+nothing could walk into. My own audit reported zero orphans the whole time,
+because every page in the island had inbound links from inside the island.
+Checking for inbound links cannot find this; you have to walk the graph from
+the home page.
+
+The worst one: my fix for lastmod churn never ran. I hashed page content so
+the sitemap would only report genuinely changed pages, and the sitemap kept
+writing the build date, because the function was computed and never called.
+Defined at line 550, zero call sites. Every deploy had been telling Google all
+6,500 pages changed that day. I now have a check for exactly this.
 
 https://toolman.top
 Source: https://github.com/DahyXu/toolman
@@ -67,82 +115,112 @@ them individually rather than as a category.
 
 ---
 
-## r/webdev
+## r/webdev — do not post a link here
 
-Title:
-
-```
-I built a 6,478-page static site with no framework and no runtime deps — here's what broke
-```
-
-Body:
-
-```
-Static site, plain Node build script, no framework. 25 browser-only tools plus
-~6,400 generated reference pages. Everything runs client-side; there is no
-backend.
-
-The interesting failures:
-
-**Inlining CSS was not a performance decision.** Blocklists that cover the
-whole .top TLD drop subresource requests, so my external stylesheet silently
-404'd for anyone running one and the site rendered completely unstyled. I only
-caught it because a test browser had a blocker installed. Inlining fixed it
-and also removed a render-blocking round trip.
-
-**lastmod from the build date is actively harmful.** Stamping every page with
-the build date tells Google the whole site changed on every deploy, so it
-re-crawls pages it already has. On a new site that spends crawl budget you
-badly need elsewhere. It now comes from a content hash — a no-op rebuild
-reports zero changed pages.
-
-**Writing structured data twice guarantees it drifts.** Each generator wrote
-FAQ copy once for the HTML and once for the JSON-LD. 2,291 answers no longer
-matched the visible page, which silently costs you the rich result. Both now
-come from one array.
-
-Source is up if any of it is useful: https://github.com/DahyXu/toolman
-Site: https://toolman.top
-```
+Self-promotion is prohibited. The only viable route is answering questions in
+threads where the answer stands on its own.
 
 ---
 
 ## r/SideProject
 
+The privacy angle is measurably dead here (see above). Lead with the failure
+instead — a specific bug story is what this subreddit rewards.
+
+Title:
+
 ```
-Title: 6,478 pages of free browser-only tools — no upload, no sign-up, no tracking
-
-Every tool runs entirely in your browser. Paste an API response into the JSON
-formatter, drop a photo into the image compressor, decode a JWT — none of it
-is transmitted, because there is no backend to transmit it to. You can load a
-page, go offline, and keep working.
-
-25 interactive tools (JSON, Base64, hashes, QR codes, regex, cron, image
-compression, favicons, AI token counting) plus reference material for the
-things I look up constantly: unit conversions, time zones, HTTP status codes,
-port numbers, cooking measures, paper sizes.
-
-Free, no account, and it stays that way — it is a static site on Cloudflare's
-free tier, so it costs me nothing to run.
-
-https://toolman.top
+My QR codes looked perfect and no scanner on earth could read them
 ```
+
+Body:
+
+```
+I wrote a QR encoder from scratch for a static tools site — no library, since
+the whole site has no runtime dependencies. The output looked exactly like a
+QR code. Sharp corners, clean timing patterns, correct quiet zone. Every
+scanner I tried refused it.
+
+The data was fine. The problem was the 15 format-information bits, which carry
+the error-correction level and the mask pattern. I was writing them LSB-first
+where the spec wants MSB-first, and the second copy of those bits was
+overwriting the fixed dark module at (8, N-8).
+
+Neither mistake changes how a code looks to a human. Both make it unreadable
+to every decoder, because a scanner reads the format bits before it knows how
+to interpret anything else. If those are wrong it never gets as far as your
+data.
+
+I found it by generating the same payload with a reference library and diffing
+the two matrices cell by cell. The data area matched exactly on mask 2 — zero
+differences — which proved the encoding was right and narrowed it to the
+format bits.
+
+Two lines:
+
+  var bit = (fmt >> (14 - i)) & 1;   // was (fmt >> i) & 1
+  if (i < 7) ...                      // was i < 8, which clobbered the dark module
+
+It now decodes across versions 1–20 and all four EC levels; I verified 335
+generated codes with jsQR.
+
+Generator is here if it is useful: https://toolman.top/qr-code-generator/
+Source: https://github.com/DahyXu/toolman
+```
+
+Why this shape: it is a specific bug with a satisfying cause, it teaches
+something a reader can use, and the link is the last line rather than the
+point. That matches what the top posts on this subreddit actually look like.
+
+---
+
+## r/ccna — comment only, no link, and not yet
+
+Blocked by account age today. Once the gate lifts, this is the highest-value
+place for us: subnetting questions recur constantly and `/cidr/` genuinely
+answers them.
+
+Drafted for the thread "What helped you finally understand subnetting?" — this
+adds a method none of the existing three answers gave, and contains no link:
+
+```
+The thing that finally made it stick for me was noticing a mask octet can only
+ever be one of nine values, because it's always a solid run of ones from the
+left:
+
+0, 128, 192, 224, 240, 248, 252, 254, 255
+
+So the arithmetic becomes: divide the prefix by 8 for the number of full 255
+octets, and the remainder picks the next one off that list. /26 is 3 full
+octets, remainder 2, so 255.255.255.192. /20 is 2 full octets, remainder 4, so
+255.255.240.0.
+
+The useful side effect is that it's self-checking. If a mask has anything else
+in it, like 255.255.255.100, you know it's wrong without doing any arithmetic.
+
+That plus the network-bits/host-bits framing someone else mentioned covers
+most of it. The bits idea tells you what you're doing; the nine values make
+the arithmetic fall out.
+```
+
+Post several like this before ever linking. That is not politeness — it is the
+literal precondition in r/ccna's self-promotion rule.
 
 ---
 
 ## V2EX — 分享创造
 
 ```
-标题：做了个 6478 页的纯前端工具站，全部在浏览器里跑，没有后端
+标题：做了个 6544 页的纯前端工具站，全部在浏览器里跑，没有后端
 
 想要一套可以放心粘贴生产数据的工具 —— API 响应、JWT、配置文件。所以做了个
 完全跑在浏览器里的：没有后端，数据没有地方可去。
 
-静态站，25 个交互工具 + 约 6400 个生成的参考页（单位换算、时区、HTTP 状态码、
-端口号、烹饪换算）。没有框架，没有运行时依赖，构建依赖只有 Node 本身。移动端
-Lighthouse 性能 100 分。
+静态站，27 个交互工具 + 约 6500 个生成的参考页（单位换算、时区、HTTP 状态码、
+端口号、chmod 权限值、CIDR 前缀、烹饪换算）。没有框架，没有运行时依赖，构建
+依赖只有 Node 本身。
 
-过程中两个没想到的坑：
+过程中三个没想到的坑：
 
 QR 码生成器最难。第一版画出来的码看着完全正常，但任何扫码器都读不出来 ——
 15 个格式信息位写反了字节序，第二个副本还覆盖了固定的暗模块。最后是把矩阵和
@@ -150,8 +228,12 @@ QR 码生成器最难。第一版画出来的码看着完全正常，但任何�
 等级。
 
 CSS 是内联进每个页面的，这不是性能考虑 —— 是因为有些广告拦截列表直接屏蔽了
-整个 .top 顶级域的子资源请求，导致外链样式表静默失败，整站没有样式。如果你也
-用便宜的顶级域，这个值得知道。
+整个 .top 顶级域的子资源请求，导致外链样式表静默失败，整站没有样式。
+
+最糟的一个：全站 34% 的页面从首页走不到，而我不知道。父页面没有链向自己的子
+页面，2191 个页面只互相链接，形成一座爬虫走不进去的孤岛。我自己写的审计一直
+报告「孤儿页 0」，因为岛内每个页面都有入链 —— 只是入链全在岛内。查「有没有
+入链」发现不了这个，必须从首页走一遍链接图。
 
 https://toolman.top
 源码：https://github.com/DahyXu/toolman
@@ -161,11 +243,14 @@ https://toolman.top
 
 ## What not to do
 
+- Do not lead with "privacy-first client-side tools". Measured: score 1, zero
+  comments, on two separate posts, one of them 30 days old.
 - Do not post to five subreddits at once. Pick one, see how it lands.
-- Do not open with "check out my site". Both HN and Reddit downvote that
-  reflexively; leading with a specific technical problem does much better.
-- Do not describe the generated pages as "6,478 pages of content" — that
-  reads as SEO spam. "25 tools plus generated reference material" is both
-  more accurate and better received.
+- Do not link from an account with no history in that subreddit. r/ccna calls
+  this "drive by self-promotion" in its rules, and it is the first thing a
+  moderator looks for.
+- Do not describe the generated pages as "6,544 pages of content" — that reads
+  as SEO spam. "27 tools plus generated reference material" is both more
+  accurate and better received.
 - If someone points out a bug, fix it and say so in the thread. That single
   behaviour converts more sceptics than any amount of description.
