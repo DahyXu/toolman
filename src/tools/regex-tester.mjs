@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Regex Tester & Debugger — Test Regular Expressions Online | Toolman',
   short: 'Test regular expressions live with match highlighting and capture groups.',
   desc:
-    'Free online regex tester. Test JavaScript regular expressions against sample text with live match highlighting, capture groups, named groups, replace preview and a quick reference.',
+    'Test a regular expression against sample text with live match highlighting, every capture group broken out, and a replacement preview.',
   intro:
     'Type a pattern and some test text. Matches highlight as you type, and every capture group is broken out below.',
   body: `<div class="tool">

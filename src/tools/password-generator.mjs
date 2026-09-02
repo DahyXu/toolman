@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Strong Password Generator — 8 to 64 Characters | Toolman',
   short: 'Generate strong random passwords and passphrases with an entropy readout.',
   desc:
-    'Free online strong password generator. Create random passwords of any length with symbols, numbers and unambiguous characters, or memorable passphrases — with a live entropy and crack-time estimate. Generated in your browser.',
+    'Generate strong passwords or passphrases in your browser using crypto.getRandomValues, with an entropy estimate and an offline crack-time figure.',
   intro:
     'Generate strong passwords locally in your browser. Nothing is transmitted, logged or stored, so the password you see is yours alone.',
   body: `<div class="tool">

@@ -1,3 +1,47 @@
+## 2026-09-02 — 602 meta descriptions were being cut mid-sentence
+
+Kept reading rather than measuring, after the category-title finding, and hit a
+bigger one: **602 of 6,675 descriptions ended in an ellipsis**, cut mid-phrase by
+`fitDesc()` because they were written past the ~160 characters Google shows.
+Nine per cent of the site, and my audit had never mentioned it — it checks for
+missing, duplicate, under-70 and over-175, and a description truncated at 155 is
+none of those.
+
+**I tried to fix it in the wrong place first.** Loosening `fitDesc()` to prefer a
+word boundary over an early sentence boundary cut the too-short count from 620 to
+481 — and pushed truncation from 602 to 748. Measuring four thresholds showed the
+trade was roughly one for one at every setting, so it was not a fix at all.
+Reverted, and went at the source instead.
+
+Root cause by section, which made the work obvious:
+
+| section | truncated | of |
+|---|---|---|
+| /cron/ | **59** | 59 — every page |
+| tool pages | **21** | 28 |
+| /convert/ | 430 | 4,200 |
+| /color/ | 71 | 682 |
+
+Every template had been written without accounting for how long the interpolated
+name gets. `/cron/` was 100% truncated because the fixed part alone was near the
+limit before any schedule title was added. Rewrote each template sized against
+its *longest* interpolation rather than a typical one, and rewrote all 21 tool
+descriptions by hand — those are the pages Google actually indexes.
+
+Result: **602 truncated → 23**. Median description length 127, mean 127, only 54
+pages under 100 characters, the bulk sitting in the 120–159 range Google will
+show in full.
+
+One number in that check was misleading and worth naming: "under 115 characters"
+went from 620 to 1,405, which looks like a regression. The distribution shows it
+is not — most of those are 100–115, which is a complete, readable description
+rather than a short one. A shorter description that ends properly beats a longer
+one cut off mid-list.
+
+Also fixed while reading: `/ai/` said "1 free tool**s** that run in your browser",
+a count interpolated into a hardcoded plural, and `/convert/` had the one-word H1
+"Converters" while its title targeted "unit converter". It gates 4,200 pages.
+
 ## 2026-09-02 — four category titles were repeating themselves
 
 Went back to the eight pages Google has actually indexed, since those are the

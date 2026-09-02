@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Text to Binary, Hex, Decimal & ASCII Converter | Toolman',
   short: 'See any text as binary, hexadecimal, decimal, octal and UTF-8 bytes at once.',
   desc:
-    'Free text to binary converter. See any text as binary, hex, decimal, octal, UTF-8 bytes and HTML entities at the same time, with a per-character breakdown, and convert back again.',
+    'See any text as binary, hexadecimal, decimal, octal and UTF-8 bytes at once, with a per-character breakdown, and convert it back again.',
   intro:
     'Type or paste text to see it in every representation at once, with a breakdown of each character. Conversion happens in your browser.',
   body: `<div class="tool">

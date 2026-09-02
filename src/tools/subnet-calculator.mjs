@@ -6,7 +6,7 @@ export default {
   metaTitle: 'CIDR Subnet Calculator — IPv4 Ranges, Masks & Hosts | Toolman',
   short: 'Enter an address and prefix to get the network, broadcast, usable range and host count.',
   desc:
-    'Free CIDR subnet calculator. Enter an IPv4 address and prefix length to get the network address, broadcast address, subnet mask, wildcard mask, usable host range and total host count.',
+    'Enter an IPv4 address and prefix to get the network and broadcast addresses, subnet mask, wildcard mask, usable host range and total host count.',
   intro:
     'Enter an address in CIDR notation to see the network, the broadcast address, the usable range and how many hosts fit. Everything is computed in your browser.',
   body: `<div class="tool">

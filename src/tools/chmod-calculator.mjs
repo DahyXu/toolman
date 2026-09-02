@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Chmod Calculator — Octal, Symbolic & Permission Bits | Toolman',
   short: 'Tick permission boxes to get the octal chmod value, or type a value to see what it grants.',
   desc:
-    'Free chmod calculator. Convert between octal permission values, symbolic notation like rwxr-xr-x and the individual read, write and execute bits, with setuid, setgid and sticky bit support.',
+    'Convert between octal permission values, symbolic notation like rwxr-xr-x and the individual read, write and execute bits, including setuid and sticky.',
   intro:
     'Tick the boxes to build a permission value, or type an octal number or a symbolic string to see exactly what it grants. Everything runs in your browser.',
   body: `<div class="tool">

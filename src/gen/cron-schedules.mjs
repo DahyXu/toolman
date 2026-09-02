@@ -246,7 +246,7 @@ export default async function () {
     pages.push({
       path: `/cron/${s.slug}/`,
       title: `Cron Expression for ${s.title.replace(/^every/, 'Every')} — ${s.expr} | Toolman`,
-      desc: `The cron expression to run a job ${s.title} is ${s.expr}. See what each field means, the next scheduled runs and equivalents for GitHub Actions, Kubernetes and AWS EventBridge.`,
+      desc: `The cron expression for ${s.title} is ${s.expr}. What each field means, when it runs next, and the same schedule in GitHub Actions.`,
       h1: `Cron expression: ${s.title}`,
       crumbs: [
         { name: 'Cron schedules', path: '/cron/' },
@@ -309,7 +309,7 @@ ${FAQ.html}
   pages.push({
     path: '/cron/',
     title: `Cron Expression Examples — ${all.length} Common Schedules | Toolman`,
-    desc: `Ready-made cron expressions for every common schedule: every 5 minutes, hourly, daily at a given time, weekdays, weekly, monthly and more — each with field-by-field explanation and next run times.`,
+    desc: `Ready-made cron expressions for every common schedule: every 5 minutes, hourly, daily, weekdays, weekly and monthly, each explained field by field with its next run times.`,
     h1: 'Cron schedule examples',
     crumbs: [{ name: 'Cron schedules', path: '/cron/' }],
     body: `<p class="muted">${all.length} ready-made cron expressions, each with a field breakdown, the next scheduled runs and equivalents for GitHub Actions, Kubernetes and AWS EventBridge. Need something else? <a href="/cron-expression-generator/">Build a custom expression</a>.</p>

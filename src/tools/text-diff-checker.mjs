@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Diff Checker — Compare Two Texts Online Free | Toolman',
   short: 'Compare two blocks of text and highlight every added and removed line.',
   desc:
-    'Free online diff checker. Paste two texts to see a line-by-line comparison with additions and deletions highlighted, plus word-level differences and an ignore-whitespace option.',
+    'Compare two texts and see exactly what changed, line by line with word-level highlighting inside changed lines. Nothing leaves your browser.',
   intro:
     'Paste the original on the left and the changed version on the right. Differences are computed in your browser — nothing is uploaded.',
   body: `<div class="tool">

@@ -106,7 +106,13 @@ function fitDesc(d) {
   if (!d || d.length <= 160) return d;
   const cut = d.slice(0, 158);
   const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
-  return stop > 90 ? cut.slice(0, stop + 1) : cut.replace(/\s+\S*$/, '') + '…';
+  // A sentence boundary is the nicest place to stop, but only if it is near the
+  // limit. The file-format hub had a 178-character description whose first
+  // sentence ended at 102, so cutting there threw away a third of the space
+  // Google will actually show and lost the sentence naming what the page covers.
+  // Below 130, trim at a word boundary instead and keep the extra 30 characters.
+  if (stop > 90) return cut.slice(0, stop + 1);
+  return cut.replace(/\s+\S*$/, '') + '…';
 }
 
 export function page(o) {

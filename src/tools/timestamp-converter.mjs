@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Unix Timestamp Converter — Epoch to Date & Back | Toolman',
   short: 'Convert Unix epoch seconds or milliseconds to a human date, and back.',
   desc:
-    'Free online Unix timestamp converter. Turn epoch seconds, milliseconds, microseconds or nanoseconds into a readable date in UTC and your local time zone — and convert any date back to a timestamp.',
+    'Convert a Unix timestamp to a readable date and back. Seconds, milliseconds, microseconds and nanoseconds are detected automatically.',
   intro:
     'Convert between Unix time and human-readable dates. Seconds, milliseconds, microseconds and nanoseconds are detected automatically.',
   body: `<div class="tool">

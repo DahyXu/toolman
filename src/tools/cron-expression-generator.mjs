@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Cron Expression Generator & Explainer — Free Online | Toolman',
   short: 'Build, explain and preview cron schedules in plain English.',
   desc:
-    'Free cron expression generator and explainer. Build a crontab schedule from dropdowns, translate any cron expression into plain English, and preview the next run times.',
+    'Build a cron expression from plain English or paste one to see what it means, when it next runs, and what each of the five fields is doing.',
   intro:
     'Type a cron expression to see what it means and when it runs next, or pick a preset. Supports standard 5-field crontab plus <code>*/n</code>, ranges and lists.',
   body: `<div class="tool">

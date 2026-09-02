@@ -6,7 +6,7 @@ export default {
   metaTitle: 'URL Encoder / Decoder Online — Percent Encoding | Toolman',
   short: 'Percent-encode or decode URLs and query strings, with a parameter breakdown.',
   desc:
-    'Free online URL encoder and decoder. Percent-encode text for use in a URL, decode escaped URLs, and split any URL into its scheme, host, path and query parameters.',
+    'Percent-encode text for use in a URL or decode an escaped one, and split any URL into its scheme, host, path and query parameters.',
   intro: 'Encode text for safe use in a URL, decode a percent-escaped string, or paste a full URL to see its parts.',
   body: `<div class="tool">
   <div class="row">

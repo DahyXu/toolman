@@ -6,7 +6,7 @@ export default {
   metaTitle: 'JSON Formatter & Validator — Free Online JSON Beautifier | Toolman',
   short: 'Beautify, minify and validate JSON with precise error positions.',
   desc:
-    'Free online JSON formatter, validator and beautifier. Paste JSON to pretty-print it with 2 or 4 space indentation, minify it, or find the exact line of a syntax error. Runs entirely in your browser.',
+    'Format, validate and minify JSON in your browser. Reports the line and column of a syntax error, sorts keys, and escapes or unescapes strings.',
   intro:
     'Paste JSON below to instantly beautify, minify or validate it. Everything is parsed locally in your browser — your data is never uploaded.',
   body: `<div class="tool">

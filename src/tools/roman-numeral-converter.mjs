@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Roman Numeral Converter — Numbers to Roman and Back | Toolman',
   short: 'Convert numbers to Roman numerals and Roman numerals to numbers.',
   desc:
-    'Free Roman numeral converter. Turn any number from 1 to 3,999,999 into Roman numerals, or decode a Roman numeral back to a number, with the working shown and validation of malformed numerals.',
+    'Convert numbers to Roman numerals and back, with a symbol-by-symbol breakdown showing how each value is built and why subtractive pairs work.',
   intro: 'Type a number or a Roman numeral — the other side updates as you type.',
   body: `<div class="tool">
   <div class="grid2">

@@ -6,7 +6,7 @@ export default {
   metaTitle: 'QR Code Generator — Free, No Expiry, No Sign-up | Toolman',
   short: 'Create permanent QR codes for links, text, Wi-Fi and contact cards.',
   desc:
-    'Free QR code generator with no expiry and no account. Create QR codes for a URL, plain text, Wi-Fi credentials, email or phone number, customise the colours and size, and download as PNG or SVG.',
+    'Generate a QR code for a URL, text, WiFi network or contact card and download it as PNG or SVG. Encoded in your browser, and the code never expires.',
   intro:
     'Generate a QR code that never expires. It is drawn in your browser, so no tracking redirect is inserted and nothing is stored — the code encodes exactly what you type.',
   body: `<div class="tool">

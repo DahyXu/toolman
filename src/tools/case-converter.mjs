@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Case Converter — UPPERCASE, lowercase, Title Case & camelCase | Toolman',
   short: 'Convert text between upper, lower, title, sentence, camel, snake and kebab case.',
   desc:
-    'Free online case converter. Change text to UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case, kebab-case or CONSTANT_CASE in one click.',
+    'Convert text to UPPERCASE, lowercase, Title Case, camelCase, PascalCase, snake_case, kebab-case and more. Word boundaries are detected from case changes.',
   intro:
     'Paste text and pick a case. Programming cases handle word boundaries properly, so <code>myVariableName</code> and <code>my variable name</code> both convert cleanly.',
   body: `<div class="tool">

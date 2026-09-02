@@ -6,7 +6,7 @@ export default {
   metaTitle: 'SHA-256 / SHA-1 / MD5 Hash Generator Online | Toolman',
   short: 'Generate SHA-256, SHA-384, SHA-512, SHA-1 and MD5 hashes of text or files.',
   desc:
-    'Free online hash generator. Compute SHA-256, SHA-384, SHA-512, SHA-1, MD5 and CRC32 checksums for text or files directly in your browser, with hex and Base64 output.',
+    'Generate SHA-256, SHA-384, SHA-512, SHA-1, MD5 and CRC32 hashes of text or a file. Hashing happens in your browser, so nothing is uploaded.',
   intro:
     'Hash text or a file locally in your browser. Nothing is uploaded, so you can safely check confidential documents.',
   body: `<div class="tool">

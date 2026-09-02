@@ -6,7 +6,7 @@ export default {
   metaTitle: 'AI Token Counter — Estimate GPT, Claude & Gemini Tokens | Toolman',
   short: 'Estimate token counts and API cost for GPT, Claude, Gemini and Llama.',
   desc:
-    'Free online token counter for LLM prompts. Estimate how many tokens your text uses in GPT-4o, Claude, Gemini and Llama models, see the character-to-token ratio, and calculate API cost. Runs offline in your browser.',
+    'Estimate how many tokens your prompt uses in GPT, Claude, Gemini and Llama, with the cost per call. Runs in your browser, so nothing is sent anywhere.',
   intro:
     'Paste a prompt to estimate its token count across popular large language models, and see roughly what it will cost per API call. Nothing is sent anywhere — the estimate is computed in your browser.',
   body: `<div class="tool">

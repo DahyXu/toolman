@@ -94,7 +94,7 @@ function pairPage(a, b, all) {
   return {
     path,
     title: `${a.ab} to ${b.ab} Converter — Time Zone Conversion | Toolman`,
-    desc: `Convert ${a.ab} to ${b.ab}. ${b.ab} is ${dirWord} ${a.ab}. Includes a live converter, a full 24-hour conversion table and the best meeting times between the two zones.`,
+    desc: `Convert ${a.ab} to ${b.ab}. ${b.ab} is ${dirWord} ${a.ab}. Live converter, a 24-hour table and the best times to meet.`,
     h1: `Convert ${a.ab} to ${b.ab}`,
     crumbs: [
       { name: 'Converters', path: '/convert/' },

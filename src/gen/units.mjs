@@ -89,7 +89,7 @@ function pairPage({ catKey, catName, from, to, factorText, formula, inverseFormu
   return {
     path,
     title: `${title(fromP)} to ${title(toP)} Converter (${from.sym} to ${to.sym}) | Toolman`,
-    desc: `Convert ${fromP} to ${toP} instantly. 1 ${from.name} = ${fmt(one)} ${one === 1 ? to.name : toP}. Free ${catName.toLowerCase()} converter with the formula, a full conversion table and worked examples.`,
+    desc: `Convert ${fromP} to ${toP}. 1 ${from.name} = ${fmt(one)} ${one === 1 ? to.name : toP}. Free converter with the exact formula and a full conversion table.`,
     h1,
     crumbs: [
       { name: 'Converters', path: '/convert/' },
@@ -347,7 +347,7 @@ ${(tempIndex.get(`${a.id}-to-${b.id}`) || []).length ? `<h2>Common ${a.name} to 
     path: '/convert/',
     title: `Unit Converter — ${total}+ Free Online Conversions | Toolman`,
     desc: `Free unit converter covering length, weight, temperature, volume, area, speed, data, time, pressure, energy and more — ${total} direct conversions with formulas and tables.`,
-    h1: 'Converters',
+    h1: 'Unit converters',
     crumbs: [{ name: 'Converters', path: '/convert/' }],
     // This URL is both the Converters category and the unit-conversion hub.
     // build.mjs hands over the category half so neither overwrites the other.

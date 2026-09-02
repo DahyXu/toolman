@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Binary, Hex & Decimal Converter — Any Base 2 to 36 | Toolman',
   short: 'Convert numbers between binary, octal, decimal, hexadecimal and any base.',
   desc:
-    'Free online number base converter. Convert between binary, octal, decimal and hexadecimal, or any base from 2 to 36, with a bit breakdown and two’s-complement view.',
+    'Convert numbers between binary, octal, decimal, hexadecimal and any base from 2 to 36, with a bit breakdown and a two’s-complement view.',
   intro: 'Type a number in any row — the others update instantly.',
   body: `<div class="tool">
   <div class="grid2">

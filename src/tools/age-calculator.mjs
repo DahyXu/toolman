@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Age Calculator — Exact Age in Years, Months and Days | Toolman',
   short: 'Work out an exact age, or the gap between any two dates.',
   desc:
-    'Free online age calculator. Enter a date of birth to get an exact age in years, months and days, plus total weeks, days, hours and the next birthday countdown. Works for any two dates.',
+    'Calculate exact age in years, months and days between any two dates, plus totals in weeks, hours and seconds, the weekday you were born and your next birthday.',
   intro: 'Enter a date of birth — or any two dates — to get the exact difference between them.',
   body: `<div class="tool">
   <div class="grid2">

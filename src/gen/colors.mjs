@@ -165,7 +165,7 @@ function colorPage(hex, name) {
   return {
     path: `/color/${hex}/`,
     title,
-    desc: `${H} is a ${desc}. See its RGB (${rgb.r}, ${rgb.g}, ${rgb.b}), HSL, CMYK values, WCAG contrast ratios, tints, shades and a matching color palette.`,
+    desc: `${H} is a ${desc}. Its RGB is (${rgb.r}, ${rgb.g}, ${rgb.b}). See HSL, CMYK, WCAG contrast, tints, shades and a matching palette.`,
     h1: name ? `${name.charAt(0).toUpperCase() + name.slice(1)} — ${H}` : `${H} color`,
     crumbs: [{ name: 'Colors', path: '/color/' }, { name: H, path: `/color/${hex}/` }],
     jsonld: [FAQ.schema],

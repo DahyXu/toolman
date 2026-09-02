@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Lorem Ipsum Generator — Placeholder Text, Any Length | Toolman',
   short: 'Generate classic or modern placeholder text by paragraph, sentence or word.',
   desc:
-    'Free lorem ipsum generator. Create placeholder text by paragraphs, sentences, words or characters, in classic Latin or several modern variants, with optional HTML markup.',
+    'Generate lorem ipsum placeholder text by paragraphs, sentences, words or characters, as plain text or wrapped in HTML tags.',
   intro: 'Pick how much filler text you need and copy it straight into your mockup.',
   body: `<div class="tool">
   <div class="row">

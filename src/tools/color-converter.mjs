@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Color Converter — HEX to RGB, HSL, HSV & CMYK | Toolman',
   short: 'Convert between HEX, RGB, HSL, HSV, CMYK and CSS named colors.',
   desc:
-    'Free online color converter. Convert HEX to RGB, RGB to HEX, HSL, HSV, CMYK and LAB, pick a color visually, and get tints, shades and a contrast check for accessibility.',
+    'Convert a colour between HEX, RGB, HSL, HSV and CMYK, and see its tints, shades and WCAG contrast ratios against black and white text.',
   intro: 'Enter a color in any format — HEX, RGB, HSL or a CSS name — and get every other representation, plus shades and contrast ratios.',
   body: `<div class="tool">
   <div class="row">

@@ -6,7 +6,7 @@ export default {
   metaTitle: 'Percentage Calculator — 6 Calculators in One | Toolman',
   short: 'Work out percentages, increases, decreases, discounts and tips.',
   desc:
-    'Free online percentage calculator. Find what percent one number is of another, add or subtract a percentage, calculate percentage change, discounts, tips and reverse percentages — with the working shown.',
+    'Six percentage calculators in one: percent of a number, what percent, percentage change, add or subtract a percentage, discounts and tips.',
   intro: 'Six percentage calculations, each with the formula and the working shown.',
   body: `<div class="tool">
   <h2>What is X% of Y?</h2>

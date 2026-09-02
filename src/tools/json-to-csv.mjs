@@ -6,7 +6,7 @@ export default {
   metaTitle: 'JSON to CSV Converter — Free Online, Both Directions | Toolman',
   short: 'Convert JSON arrays to CSV and CSV back to JSON, with nested key flattening.',
   desc:
-    'Free online JSON to CSV converter. Turn a JSON array into a spreadsheet-ready CSV with automatic column detection and nested object flattening — or convert CSV back to JSON. Runs in your browser.',
+    'Convert JSON to CSV and back in your browser, with correct quoting for fields containing commas, quotes or newlines. Nothing is uploaded.',
   intro:
     'Paste a JSON array to get CSV, or paste CSV to get JSON. Nested objects are flattened into dotted column names such as <code>address.city</code>.',
   body: `<div class="tool">
