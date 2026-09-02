@@ -75,28 +75,31 @@ export default async function () {
     const others = nums.filter((x) => x !== n && Math.abs(x - n) <= 60).slice(0, 24);
 
     const isYear = n >= 1900 && n <= 2050;
+    // A year is written 1990, not 1,990 — including in the title, the heading and
+    // the questions, all of which target a query that has no comma in it.
+    const num = isYear ? String(n) : n.toLocaleString();
 
     const FAQ = faq([
-      { q: `What is ${n.toLocaleString()} in Roman numerals?`, a: `<strong>${r}</strong>` },
+      { q: `What is ${num} in Roman numerals?`, a: `<strong>${r}</strong>` },
       { q: `How do you read ${r}?`,
-        a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${val.split(' = ').pop()}`).join(', ')}${rows.length > 1 ? `, giving ${n.toLocaleString()} in total` : ''}.` },
-      { q: `How do you write ${n.toLocaleString()} in words?`, a: `${spell(n)}.` },
+        a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${val.split(' = ').pop()}`).join(', ')}${rows.length > 1 ? `, giving ${num} in total` : ''}.` },
+      { q: `How do you write ${num} in words?`, a: `${spell(n)}.` },
       { q: 'Why is there no zero?',
         a: 'Roman numerals have no symbol for zero. The concept reached Europe only with Hindu-Arabic numerals, centuries after the system was in use — which is a large part of why it was eventually replaced for arithmetic.' },
     ]);
 
     pages.push({
       path: `/roman/${n}/`,
-      title: `${n.toLocaleString()} in Roman Numerals — ${r}`,
-      desc: `The number ${n.toLocaleString()} is written ${r} in Roman numerals. See how it breaks down symbol by symbol, plus a table of nearby numbers and a converter for any value.`,
-      h1: `${n.toLocaleString()} in Roman numerals`,
+      title: `${num} in Roman Numerals — ${r}`,
+      desc: `${isYear ? 'The year' : 'The number'} ${num} is written ${r} in Roman numerals. See how it breaks down symbol by symbol, plus a table of nearby numbers and a converter for any value.`,
+      h1: `${num} in Roman numerals`,
       crumbs: [
         { name: 'Roman numerals', path: '/roman/' },
         { name: String(n), path: `/roman/${n}/` },
       ],
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:2.2rem;font-family:var(--mono);margin:.3em 0"><strong>${r}</strong></p>
-<p class="muted">The number <strong>${n.toLocaleString()}</strong> is written <strong>${r}</strong> in Roman numerals.${isYear ? ` As a year it appears in copyright lines and cornerstones written this way.` : ''}</p>
+<p class="muted">${isYear ? 'The year' : 'The number'} <strong>${num}</strong> is written <strong>${r}</strong> in Roman numerals.${isYear ? ` As a year it appears in copyright lines and cornerstones written this way.` : ''}</p>
 
 <h2>How ${r} breaks down</h2>
 <table><thead><tr><th>Symbols</th><th>Value</th></tr></thead><tbody>

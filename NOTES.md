@@ -1,3 +1,29 @@
+## 2026-09-02 — years were written 1,990
+
+Read the Roman numeral section at its edges. The arithmetic is right everywhere
+I checked — 4 is IV, 9 is IX, 49 is XLIX, 3999 is MMMCMXCIX, 2026 is MMXXVI —
+and I was wrong about one thing I expected to find: the "How do you read MCMXC?"
+answer is not shared boilerplate. Only the rule sentence is common; each page
+then breaks down its own numeral, "M is 1,000, CM is 900, XC is 90, giving
+1,990 in total".
+
+The real defect was a page disagreeing with itself. `/roman/1990/` said **"As a
+year it appears in copyright lines and cornerstones"** and, in the same
+paragraph, wrote the number as **1,990**. The page already knew it was a year
+and still formatted it with a thousands separator — which nobody does for a
+year, and which the search query does not contain either.
+
+Years 1900–2050 now render plain in the title, the H1, the intro and the
+questions, and read "The year 1990" rather than "The number 1,990". Everything
+outside that range keeps the separator, because 3,999 genuinely is a number:
+
+    1990 in Roman numerals      The year 1990 is written MCMXC
+    3,999 in Roman numerals     The number 3,999 is written MMMCMXCIX
+
+The numeric columns in the breakdown and nearby-numbers tables keep
+`toLocaleString` — those are figures in a table rather than the subject of the
+sentence.
+
 ## 2026-09-02 — #000000 was described as a near-black grey
 
 Kept reading at the boundaries, this time the 682 colour pages. The two most
