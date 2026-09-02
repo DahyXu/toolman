@@ -24,7 +24,7 @@ const urlOf = (f) => '/' + path.relative(dist, f).replace(/\\/g, '/').replace(/i
 const titles = new Map(), descs = new Map(), h1s = new Map();
 const pages = new Map();
 const linkedTo = new Set();
-const problems = { noTitle: [], noDesc: [], noH1: [], noCanonical: [], longTitle: [], shortDesc: [], longDesc: [], multiH1: [] };
+const problems = { noTitle: [], noDesc: [], noH1: [], noCanonical: [], longTitle: [], shortDesc: [], longDesc: [], multiH1: [], dupRobots: [] };
 let totalLinks = 0;
 const brokenLinks = [];
 
@@ -38,6 +38,8 @@ for (const f of files) {
 
   // A noindex page will never appear in a search result, so its title and
   // description length are not defects. It still counts for link checking.
+  const robotsTags = (html.match(/<meta name="robots"/g) || []).length;
+  if (robotsTags > 1) problems.dupRobots.push(`${url} (${robotsTags})`);
   const noindex = /<meta name="robots" content="[^"]*noindex/.test(html);
   if (!noindex) {
   pages.set(url, { title, desc, canon });
@@ -129,11 +131,12 @@ line('duplicate H1s', dupH1.map(([t, v]) => `"${t.slice(0, 50)}" ×${v.length} �
 line('broken internal links', brokenLinks);
 line('orphan pages (nothing links to them)', orphans);
 line('pages unreachable from the home page', unreachable);
+line('pages with more than one robots meta', problems.dupRobots);
 line('titles over 65 chars', problems.longTitle, 3);
 line('descriptions under 70 chars', problems.shortDesc, 3);
 line('descriptions over 175 chars', problems.longDesc, 3);
 
 const fatal = problems.noTitle.length + problems.noDesc.length + problems.noCanonical.length +
-  problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length + unreachable.length;
+  problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length + unreachable.length + problems.dupRobots.length;
 console.log(`\n${fatal === 0 ? '✓ no indexing blockers' : '✗ ' + fatal + ' issues that can block indexing'}\n`);
 process.exit(0);

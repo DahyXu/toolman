@@ -1,3 +1,49 @@
+## 2026-09-02 — the thin pages, and a slug bug hiding among them
+
+Ran the content-depth report properly for the first time and worked the tail
+rather than the median. Seven indexable pages were under 200 words; the median
+is 425.
+
+**A real URL bug surfaced while reading that list.** Temperature slugs were
+built with chained replaces:
+
+    String(raw).replace('.', '-').replace('-', 'minus-')
+
+For a negative that works. For 37.5 it does not: the decimal point becomes a
+dash first, and the sign substitution then matches *that* dash, producing
+`/convert/37minus-5-celsius-to-fahrenheit/`. Four published URLs were nonsense,
+and 37.5 °C is body temperature — one of the higher-demand queries in the whole
+temperature set. Sign and decimal point are separate concerns and are handled
+separately now. The old URLs had already gone into the sitemap and IndexNow, so
+they are 301s rather than fresh 404s; verified live.
+
+**Thin pages, fixed by section:**
+
+- `/about/` 89 → 483 words. It is the page that says who is behind the site,
+  which is one of very few trust signals a domain with no history can offer.
+- `/privacy/` 169 → 540, and more importantly corrected. It promised "contact
+  details listed on the about page" that did not exist, and hedged analytics as
+  something we "may" use — Cloudflare Web Analytics is in fact active, injected
+  at the edge rather than present in our source, which is why it did not show up
+  in a grep of the repo but did show up as a subresource when I measured load
+  performance. A privacy policy is the wrong page to be vague on.
+- Four category hubs at 124–139 words. Same shape as `/convert/` when Google
+  fetched it and declined to index it: a table and a link list, no prose. Each
+  gates its own pair pages. Wrote per-category notes for all twelve, plus the
+  temperature hub, which goes through the affine code path and so was missed by
+  the shared one. Every number in the temperature reference table was checked by
+  computation before shipping.
+
+Every indexable page is now over 200 words.
+
+**And a defect I had introduced myself.** `/search/` was carrying two
+conflicting robots tags — `index,follow` and `noindex,follow`. When I gave the
+layout a `noindex` option earlier today I did not convert the one page that was
+still setting the tag by hand through a raw `head` string, so both were emitted.
+Fixed, and `scripts/audit.mjs` now fails on more than one robots meta per page.
+Verified the check by planting a duplicate, seeing it caught, and seeing it
+clear on removal — the same self-test the dead-code detector got.
+
 ## 2026-09-02 — first Reddit comment is live
 
 The user pushed back on my only trying r/ccna, and was right. Broadening the

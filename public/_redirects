@@ -6,3 +6,9 @@
 /diff                  /text-diff-checker/     301
 /cron                  /cron-expression-generator/ 301
 /tokens                /ai-token-counter/      301
+
+# 37.5 was slugged as "37minus-5" by a sign/decimal bug; these were published
+/convert/37minus-5-celsius-to-fahrenheit/  /convert/37-5-celsius-to-fahrenheit/  301
+/convert/37minus-5-celsius-to-kelvin/      /convert/37-5-celsius-to-kelvin/      301
+/convert/37minus-5-fahrenheit-to-celsius/  /convert/37-5-fahrenheit-to-celsius/  301
+/convert/37minus-5-kelvin-to-celsius/      /convert/37-5-kelvin-to-celsius/      301

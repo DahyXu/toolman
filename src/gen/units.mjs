@@ -129,6 +129,68 @@ ${values.length ? `<h2>Common ${fromP} to ${toP} values</h2>
   };
 }
 
+// Each category hub was a table and a link list. The four smallest ran
+// 124-139 words, the same shape as /convert/ when Google fetched it and
+// declined to index it. A hub that gates pages needs to be worth landing on.
+const CAT_NOTES = {
+  length: `<h2>Where length conversions go wrong</h2>
+<p>The inch has been defined as exactly 25.4&nbsp;mm since the international yard and pound agreement of 1959, so every imperial length conversion on this site is exact rather than measured. Before 1959 the US and the UK used slightly different inches, and the old US definition survives as the <em>survey foot</em>, which is larger by two parts per million. That is invisible on a tape measure and very visible across a county boundary, which is why US land surveys were still using it until it was officially retired.</p>
+<p>The other recurring trap is writing feet and inches as a decimal. <code>5.2</code> does not mean 5&nbsp;ft 2&nbsp;in — as a decimal it is 5&nbsp;ft 2.4&nbsp;in, because a tenth of a foot is 1.2&nbsp;inches. Height pages here treat the part after the point as a literal inch count, which is what people mean when they type it.</p>`,
+  weight: `<h2>Mass, not weight</h2>
+<p>Everything in this category is really mass. Weight is a force — mass times local gravity — and it changes with altitude and latitude, while mass does not. Everyday usage merges the two and no harm is done, because scales are calibrated for Earth's surface, but the distinction is why the SI unit of force is the newton rather than the kilogram.</p>
+<h2>The tons</h2>
+<p>Three different tons are in common use and they are close enough to be mistaken for one another: the <strong>metric ton</strong> is 1,000&nbsp;kg, the <strong>US short ton</strong> is 2,000&nbsp;lb (907.18&nbsp;kg), and the <strong>UK long ton</strong> is 2,240&nbsp;lb (1,016&nbsp;kg). A shipping quote in "tons" is ambiguous by about 12% unless it says which. The pound itself is exact: 0.45359237&nbsp;kg by definition.</p>`,
+  data: `<h2>Why a 1&nbsp;TB drive shows as 931&nbsp;GB</h2>
+<p>Two different definitions of the prefixes are in use. Storage manufacturers use the decimal SI meaning, where a terabyte is 10<sup>12</sup> bytes. Operating systems have traditionally used binary multiples, where the same quantity is 2<sup>40</sup> bytes. The drive is not smaller than advertised; the two systems are counting in different bases, and the gap widens with each prefix — 2.4% at kilo, 7.4% at giga, 10% at tera.</p>
+<p>The IEC introduced <strong>kibibyte, mebibyte and gibibyte</strong> (KiB, MiB, GiB) for the binary meanings so that the SI prefixes could keep their decimal ones. Adoption is partial: Linux tools and macOS report decimal, Windows reports binary while labelling it "GB", and RAM is always sold in binary multiples regardless. Both conventions are available here so you can convert between them explicitly rather than guessing which one a number came from.</p>`,
+  area: `<h2>Squared units square the factor</h2>
+<p>The most common error in area conversion is reusing the length factor. There are 3.28 feet in a metre, but there are 3.28<sup>2</sup> = 10.76 square feet in a square metre. The same applies throughout: a square kilometre is a million square metres, not a thousand, because the factor 1,000 is squared.</p>
+<h2>Acres and hectares</h2>
+<p>An acre was originally the area a yoke of oxen could plough in a day, which is why it is an awkward 4,046.86&nbsp;m². A hectare is a clean 10,000&nbsp;m², or a square 100&nbsp;m on a side. The useful approximation is that a hectare is about two and a half acres — precisely, 2.471. A football pitch is close to one hectare, which makes it a workable mental yardstick for either unit.</p>`,
+  volume: `<h2>US and imperial measures are not the same</h2>
+<p>This is the category where an unmarked unit does the most damage. A <strong>US gallon is 3.785&nbsp;L; an imperial gallon is 4.546&nbsp;L</strong> — a difference of 20%. Everything derived from them differs too: US pints, quarts and fluid ounces are all smaller than their imperial namesakes, except that the US fluid ounce is very slightly <em>larger</em> (29.57&nbsp;mL against 28.41&nbsp;mL), because the two systems divide their gallons differently. A fuel-economy figure in miles per gallon means two noticeably different things either side of the Atlantic.</p>
+<h2>Cups are a special case</h2>
+<p>A cup is a unit of volume, but recipes use it to measure ingredients by weight, and the conversion depends entirely on what is in the cup. A cup of water is 236&nbsp;g, a cup of flour about 125&nbsp;g, a cup of honey about 340&nbsp;g. That is a property of the ingredient rather than of the unit, so those live on the <a href="/cooking/">cooking pages</a> instead of here.</p>`,
+  speed: `<h2>The units and where each is used</h2>
+<p>Road speeds are kilometres or miles per hour, air and sea speeds are knots, and physics is metres per second. A <strong>knot</strong> is one nautical mile per hour, and a nautical mile is exactly 1,852&nbsp;m — chosen because it is one minute of latitude, which makes navigation arithmetic on a chart trivial. That is why aviation and shipping kept it while everything else moved on.</p>
+<h2>Mach is not a fixed speed</h2>
+<p>Mach 1 is the local speed of sound, which depends on air temperature and therefore on altitude. It is about 1,225&nbsp;km/h at sea level on a standard day and around 1,062&nbsp;km/h in the stratosphere, where airliners cruise. The figure used here is the sea-level standard, so treat a Mach conversion as an approximation unless you know the conditions.</p>`,
+  time: `<h2>Months and years are not fixed</h2>
+<p>Seconds through weeks are exact multiples of one another. Months and years are not: a month is anywhere from 28 to 31 days, and a year is 365 or 366. Conversions involving them have to pick an average, and this site uses the Gregorian mean — 365.2425 days per year and one twelfth of that, 30.436875 days, per month.</p>
+<p>That is the right choice for a rate ("how many seconds in a year") and the wrong one for a date ("what is 18 months from today"), where you want calendar arithmetic that lands on a real date. The <a href="/age-calculator/">age calculator</a> does the second kind, counting actual calendar months rather than multiplying by an average.</p>
+<h2>Leap seconds</h2>
+<p>Unix time deliberately ignores leap seconds, so a Unix day is always exactly 86,400 seconds even when the day it represents was not. This keeps the arithmetic simple at the cost of drifting slightly from astronomical time — a trade nearly every system makes.</p>`,
+  pressure: `<h2>The unit depends on the industry</h2>
+<p>Pressure has more units in active use than almost any other quantity, because several fields standardised independently. The SI unit is the <strong>pascal</strong>, one newton per square metre, which is so small that meteorology works in hectopascals and engineering in kilopascals. A <strong>bar</strong> is 100,000&nbsp;Pa, chosen to be roughly one atmosphere, and it survives in European engineering. <strong>psi</strong> dominates in the US, including tyre pressures everywhere they are sold.</p>
+<h2>Millimetres of mercury</h2>
+<p>Blood pressure is still quoted in millimetres of mercury, and so is vacuum work. The unit is literally the height of a mercury column that the pressure will support, which is why the original barometers were about 760&nbsp;mm tall — one atmosphere. Aviation uses inches of mercury for altimeter settings in the US and hectopascals almost everywhere else, which is a genuine source of confusion in the cockpit.</p>
+<h2>Gauge and absolute</h2>
+<p>A tyre gauge reading zero does not mean the tyre is a vacuum; it means the pressure inside matches the atmosphere outside. Readings that measure against the surrounding air are <em>gauge</em> pressure, often written psig, and readings that measure against a vacuum are <em>absolute</em>, psia. They differ by one atmosphere, about 14.7&nbsp;psi. The conversions here are between units and leave that reference point alone.</p>`,
+  energy: `<h2>Which calorie</h2>
+<p>The word covers two units differing by a factor of a thousand. The <strong>small calorie</strong> is the energy to heat one gram of water by one degree Celsius, about 4.184&nbsp;J. The <strong>large calorie</strong>, or kilocalorie, is a thousand of those. Food labelling uses the large one but almost always writes it with a small c, so a 200-calorie snack is really 200&nbsp;kcal, or about 837&nbsp;kJ. Labels outside the US usually give both.</p>
+<h2>Energy and power are different quantities</h2>
+<p>A watt is a rate; a joule is an amount. Multiplying a rate by a time gives an amount, which is where the <strong>kilowatt-hour</strong> comes from: a kilowatt sustained for an hour, or 3.6&nbsp;million joules. Electricity is billed in kilowatt-hours because the meaningful question is how much energy was delivered, not how fast. If a figure is quoted in watts, it belongs in <a href="/convert/power/">power</a> rather than here.</p>`,
+  power: `<h2>Power is a rate, energy is an amount</h2>
+<p>A watt is one joule per second — a rate of delivery, not a quantity. The distinction matters when reading a specification: a kettle rated at 3&nbsp;kW draws that much while it is on, and how much energy it uses depends entirely on how long you run it. Multiply the rate by the time and you get energy, which is why your electricity bill is in <a href="/convert/energy/">kilowatt-hours</a> rather than kilowatts.</p>
+<h2>Three different horsepower</h2>
+<p>The unit is not standardised. <strong>Mechanical horsepower</strong>, the one meant in English-speaking car specifications, is 745.7&nbsp;W. <strong>Metric horsepower</strong> — PS in German, CV in French and Italian — is 735.5&nbsp;W, about 1.4% smaller, and is what European manufacturers quote at home. A car advertised as 300&nbsp;PS is 296&nbsp;hp, which is where small discrepancies between a manufacturer's figures in different markets usually come from. This site uses mechanical horsepower.</p>
+<p>James Watt derived the unit by measuring how much a working horse could lift, specifically to sell steam engines against the animals they replaced. A real horse can exceed one horsepower briefly and sustains rather less.</p>
+<h2>BTU per hour</h2>
+<p>Heating and air conditioning in the US are rated in BTU per hour, which is a power despite looking like an energy unit — the "per hour" is doing the work. One watt is about 3.41&nbsp;BTU/h, so a 12,000&nbsp;BTU/h air conditioner is roughly 3.5&nbsp;kW of cooling. Confusingly, that same machine is often called a "one ton" unit, from the rate of cooling one ton of ice melting over a day.</p>`,
+  angle: `<h2>Why 360 degrees</h2>
+<p>The division is Babylonian and survives because 360 has an unusual number of divisors — 24 of them — so halves, thirds, quarters, fifths, sixths, eighths, ninths, tenths and twelfths of a circle are all whole numbers of degrees. Nothing about the choice is natural; it is simply convenient, and no proposed replacement has ever displaced it.</p>
+<h2>Radians are the natural unit</h2>
+<p>A radian is the angle subtended by an arc equal in length to the radius, which makes a full turn 2π radians. It looks awkward and is in fact the unit that makes the mathematics simple: the derivative of sin&nbsp;x is cos&nbsp;x only when x is in radians, and arc length is just radius times angle. Every trigonometric function in a programming language expects radians, which is the single most common source of wrong answers in graphics and geometry code — <code>Math.sin(90)</code> is not 1.</p>
+<h2>Minutes, seconds and gradians</h2>
+<p>A degree divides into 60 <strong>arcminutes</strong> and each of those into 60 <strong>arcseconds</strong>, the same sexagesimal scheme as clock time and from the same source. Latitude and longitude are still written this way, and one arcminute of latitude is one nautical mile by definition. The <strong>gradian</strong> divides the circle into 400 instead, so a right angle is a round 100 — a metric-era proposal that survives in some European surveying and on scientific calculators, and almost nowhere else.</p>`,
+  frequency: `<h2>Hertz is just "per second"</h2>
+<p>One hertz is one cycle per second, so the unit is dimensionally the inverse of time. That is why frequency and period are reciprocals: a 50&nbsp;Hz mains supply has a period of 20&nbsp;milliseconds, and a 2.4&nbsp;GHz radio has a period of about 0.42&nbsp;nanoseconds. If you know one, dividing 1 by it gives the other.</p>
+<h2>Where each scale turns up</h2>
+<p>Mains electricity is 50&nbsp;Hz in most of the world and 60&nbsp;Hz in the Americas. Audio spans roughly 20&nbsp;Hz to 20&nbsp;kHz, the range of human hearing, and CD audio samples at 44.1&nbsp;kHz — a little over twice the top of that range, because the Nyquist limit requires sampling at more than double the highest frequency you intend to reproduce. Wi-Fi and processor clocks are in the gigahertz, where a single cycle is short enough that the distance light travels in it becomes a design constraint: at 3&nbsp;GHz, light moves about 10&nbsp;cm per cycle.</p>
+<h2>RPM is a frequency</h2>
+<p>Revolutions per minute measures the same quantity in different units — one RPM is 1/60&nbsp;Hz. Engines, hard drives and motors are specified this way by convention. A 7,200&nbsp;RPM drive spins at 120&nbsp;Hz, which is also why drive vibration tends to show up as a hum near that frequency.</p>`,
+};
+
 export default async function ({ categorySection = {} } = {}) {
   const pages = [];
   const catIndex = [];
@@ -187,7 +249,8 @@ ${us.map((u) => `<tr><td>${esc(cap(u.name))}</td><td>${esc(u.sym)}</td><td>${fmt
 <h2>All ${cat.name.toLowerCase()} conversions</h2>
 <ul class="linklist">${pairs
         .map(([x, y]) => `<li><a href="/convert/${x.id}-to-${y.id}/">${esc(title(plural(x)))} to ${esc(title(plural(y)))}</a></li>`)
-        .join('')}</ul>`,
+        .join('')}</ul>
+${CAT_NOTES[catKey] || ''}`,
     });
   }
 
@@ -247,7 +310,32 @@ ${(tempIndex.get(`${a.id}-to-${b.id}`) || []).length ? `<h2>Common ${a.name} to 
     crumbs: [{ name: 'Converters', path: '/convert/' }, { name: 'Temperature', path: '/convert/temperature/' }],
     body: `<p class="muted">Convert between the four temperature scales still in use.</p>
 <ul class="linklist">${tPairs.map(([x, y]) => `<li><a href="/convert/${x.id}-to-${y.id}/">${x.name} to ${y.name}</a></li>`).join('')}</ul>
-<h2>The scales</h2>${TEMPS.map((t) => `<h3>${t.name} (${esc(t.sym)})</h3><p>${t.d}</p>`).join('')}`,
+<h2>The scales</h2>${TEMPS.map((t) => `<h3>${t.name} (${esc(t.sym)})</h3><p>${t.d}</p>`).join('')}
+
+<h2>Why temperature is not like other conversions</h2>
+<p>Every other unit conversion is a single multiplication, because the scales share a zero point: zero metres and zero feet are the same length, so one factor covers it. Temperature scales disagree about where zero is <em>and</em> how big a degree is, so a conversion needs a multiplication and an offset. That is why you cannot convert a temperature <em>difference</em> the same way as a temperature: a rise of 10&nbsp;°C is a rise of 18&nbsp;°F, not 50&nbsp;°F, because the offset applies to the reading and not to the interval.</p>
+
+<h2>The one point where two scales agree</h2>
+<p>Celsius and Fahrenheit cross at <strong>&minus;40&deg;</strong>, where both scales give the same number. It falls out of the arithmetic rather than being designed in, and it makes a convenient sanity check: any conversion that does not map &minus;40 to &minus;40 has the offset wrong. Kelvin and Rankine both start at absolute zero, so they never go negative and never cross the other two.</p>
+
+<h2>Absolute zero and why Kelvin has no degree sign</h2>
+<p>Kelvin measures from absolute zero, the point at which a system holds no thermal energy that can be removed. It is written <strong>295&nbsp;K</strong> rather than 295&nbsp;°K, because a kelvin is a unit in its own right rather than a position on a graduated scale. A kelvin is the same size as a degree Celsius, so converting between them is pure addition: subtract 273.15 to get Celsius. Rankine does the same job for Fahrenheit-sized degrees and appears mainly in US thermodynamics.</p>
+
+<h2>Reference points worth knowing</h2>
+<table>
+<thead><tr><th></th><th>Celsius</th><th>Fahrenheit</th><th>Kelvin</th></tr></thead>
+<tbody>
+<tr><td>Absolute zero</td><td>&minus;273.15</td><td>&minus;459.67</td><td>0</td></tr>
+<tr><td>Water freezes</td><td>0</td><td>32</td><td>273.15</td></tr>
+<tr><td>Room temperature</td><td>21</td><td>69.8</td><td>294.15</td></tr>
+<tr><td>Body temperature</td><td>37</td><td>98.6</td><td>310.15</td></tr>
+<tr><td>Water boils at sea level</td><td>100</td><td>212</td><td>373.15</td></tr>
+</tbody>
+</table>
+<p>Body temperature is the one people misremember. 98.6&nbsp;°F looks like a precise measurement but is simply 37&nbsp;°C converted, and the original nineteenth-century figure was never that exact. Modern studies put the average slightly lower, nearer 36.6&nbsp;°C.</p>
+
+<h2>Doing it in your head</h2>
+<p>To go from Celsius to Fahrenheit, <strong>double it and add 30</strong>. That is exact at 10&nbsp;°C and within 4 degrees anywhere between &minus;10&nbsp;°C and 30&nbsp;°C, which covers ordinary weather. It drifts badly at the extremes — at 100&nbsp;°C it is out by 18 degrees — so use the real formula for anything that matters. Going the other way, subtract 30 and halve.</p>`,
   });
   catIndex.push({ key: 'temperature', name: 'Temperature', count: tPairs.length });
   catIndex.push({ key: 'css-units', name: 'CSS Units', count: 72 });

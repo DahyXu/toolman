@@ -272,7 +272,7 @@ ${FAQ.html}
 function tempPage(a, b, raw, all) {
   const conv = (x) => fromK[b.id](toK[a.id](x));
   const result = conv(raw);
-  const path = `/convert/${String(raw).replace('.', '-').replace('-', 'minus-').replace('minus--', 'minus-')}-${a.id}-to-${b.id}/`;
+  const path = `/convert/${tempSlug(raw)}-${a.id}-to-${b.id}/`;
   const label = `${raw}${a.sym}`;
   const near = [];
   for (let i = -4; i <= 4; i++) {
@@ -344,13 +344,20 @@ for (const [fromId, toId, setName] of PAIRS) {
 // Temperature slugs render negatives as "minus-", so these pairs need their own
 // index rather than sharing the unit one. Exported for the same reason: without
 // it the temperature value pages are only reachable from each other.
+
+// 37.5 became "37minus-5" under the old chained replaces, because after the
+// decimal point became a dash the sign substitution matched that dash instead
+// of a leading minus. Take the sign off first, then the decimal point is the
+// only dash there is.
+const tempSlug = (v) => (v < 0 ? 'minus-' : '') + String(Math.abs(v)).replace('.', '-');
+
 export const TEMP_PAIRS = [['celsius', 'fahrenheit'], ['fahrenheit', 'celsius'], ['celsius', 'kelvin'], ['kelvin', 'celsius']];
 const tempValues = (aId) => SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
 export const tempIndex = new Map();
 for (const [aId, bId] of TEMP_PAIRS) {
   const a = TEMPS.find((t) => t.id === aId), b = TEMPS.find((t) => t.id === bId);
   tempIndex.set(`${aId}-to-${bId}`, tempValues(aId).map((raw) => ({
-    path: `/convert/${String(raw).replace('.', '-').replace('-', 'minus-').replace('minus--', 'minus-')}-${aId}-to-${bId}/`,
+    path: `/convert/${tempSlug(raw)}-${aId}-to-${bId}/`,
     label: `${raw}${a.sym} to ${b.name}`,
     short: `${raw}${a.sym}`,
   })));

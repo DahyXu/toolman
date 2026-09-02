@@ -413,15 +413,27 @@ write('/about/', page({
   path: '/about/',
   h1: `About ${SITE.name}`,
   crumbs: [{ name: 'About', path: '/about/' }],
-  body: `<p>${SITE.name} is a growing collection of small, focused web tools. Every one of them runs entirely in your browser using plain JavaScript.</p>
-<h2>Principles</h2>
+  body: `<p>${SITE.name} is a collection of small, focused web tools and reference material. Every tool runs entirely in your browser as plain JavaScript. There is no backend, no account, and no upload step — you can load a page, disconnect from the network, and keep working.</p>
+
+<h2>Why it works this way</h2>
+<p>Most online utilities send your input to a server to be processed. For a colour picker that hardly matters. For an API response, a JWT, a config file or a private key it matters a great deal: the data lands on someone else's disk, for an unstated period, under a privacy policy nobody reads. Doing the work in the browser removes the question entirely rather than asking you to trust an answer to it.</p>
+<p>That constraint shapes everything else. There is no framework and no runtime dependency, so a page is HTML with its JavaScript inline and nothing to fetch. Pages are 10–20&nbsp;KB and the stylesheet is inlined rather than linked — partly for speed, and partly because ad-blocking lists that cover the whole <code>.top</code> domain were silently dropping the external stylesheet and leaving the site unstyled.</p>
+
+<h2>What is here</h2>
 <ul>
-<li><strong>Your data stays yours.</strong> No file is ever uploaded. There is no backend that could store it.</li>
-<li><strong>No friction.</strong> No accounts, no email walls, no "upgrade to export".</li>
-<li><strong>Small and fast.</strong> Pages are static HTML with inline JavaScript, served from Cloudflare's edge network.</li>
+<li><strong><a href="/tools/">Interactive tools</a></strong> — formatters, encoders, hash and QR generators, image compression, regex and cron builders. Each is one self-contained page.</li>
+<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a> and <a href="/paper/">paper sizes</a>.</li>
 </ul>
+
+<h2>How correctness is checked</h2>
+<p>Reference pages are only worth having if the numbers are right, so the arithmetic is computed at build time rather than transcribed, and then verified against an independent source. Every CIDR mask and host count is checked against a separately written table; every chmod value is checked against its canonical symbolic form, including the setuid, setgid and sticky cases. The QR encoder is verified by decoding 335 generated codes across versions 1–20 and all four error-correction levels — an earlier version produced codes that looked perfect and that no scanner could read.</p>
+<p>A set of audit scripts runs against the built output and fails the build on missing metadata, duplicate titles, broken internal links, pages unreachable from the home page, invalid structured data, and accessibility problems such as form controls with no accessible name. They exist because each of those was a real defect here first.</p>
+
+<h2>Cost and longevity</h2>
+<p>The whole site is static files on Cloudflare's free tier, so it costs essentially nothing to run. That is the honest reason it can stay free without advertising, tracking or an upgrade path: there is nothing to recoup.</p>
+
 <h2>Feedback</h2>
-<p>Missing a tool or spotted a bug? Suggestions are welcome — this site is built in public and updated frequently.</p>`,
+<p>Missing a tool, or found a wrong number? Corrections are genuinely welcome — the source is <a href="https://github.com/DahyXu/toolman" rel="noopener">on GitHub</a>, and a bug in a reference page is worth more to fix than a new feature is to add.</p>`,
 }));
 
 write('/privacy/', page({
@@ -431,18 +443,40 @@ write('/privacy/', page({
   h1: 'Privacy policy',
   crumbs: [{ name: 'Privacy', path: '/privacy/' }],
   body: `<p><em>Last updated: ${new Date().toISOString().slice(0, 10)}</em></p>
+
 <h2>Short version</h2>
-<p>Everything you type, paste or open in a tool on this site is processed by JavaScript running inside your own browser. It is never sent to us, because there is no server-side processing at all.</p>
-<h2>Files and text</h2>
-<p>Images, documents and text you load into a tool stay in your browser's memory and are discarded when you close or reload the page.</p>
-<h2>Local storage</h2>
-<p>Some tools remember small preferences (such as light/dark theme) using your browser's local storage. This data stays on your device and can be cleared at any time through your browser settings.</p>
+<p>Everything you type, paste or open in a tool on this site is processed by JavaScript running inside your own browser. None of it is sent anywhere, because there is no server-side processing and no backend to send it to. You can verify this: load any tool, disconnect from the network, and it will keep working.</p>
+
+<h2>What happens to what you put into a tool</h2>
+<p>Text, images, documents and files you load into a tool stay in your browser's memory for as long as the page is open, and are discarded when you close or reload it. Nothing is written to disk, transmitted, queued or logged. This is a property of how the site is built rather than a promise about how we behave: the code that handles your input is the JavaScript on the page you are looking at, and you can read it with View Source.</p>
+<p>The practical consequence is that pasting a production API response, a JWT, a config file or a private key into a tool here carries the same exposure as opening it in a text editor on your own machine. That is the entire reason the site is built this way.</p>
+
+<h2>Data stored on your device</h2>
+<p>Some tools save small preferences in your browser's <code>localStorage</code> — the light or dark theme setting is the main one. This never leaves your device, is readable only by this site, and can be cleared at any time through your browser's site-data settings. We set no cookies of our own.</p>
+
 <h2>Analytics</h2>
-<p>We may use privacy-friendly, cookie-less aggregate analytics to count page views. No personal information, fingerprinting or cross-site tracking is involved.</p>
-<h2>Third parties</h2>
-<p>The site is hosted on Cloudflare, which processes request metadata (such as IP address) for security and delivery purposes as described in Cloudflare's own privacy documentation.</p>
+<p>Cloudflare Web Analytics is enabled on this site. It is served by Cloudflare and injected at the edge rather than being part of the page source. It counts page views and referrers in aggregate, sets no cookies, uses no fingerprinting, and does not track visitors across other websites. There is no advertising network, no tag manager, no session recording and no third-party embed anywhere on the site.</p>
+
+<h2>Hosting</h2>
+<p>The site is static files served from Cloudflare's network. As with any web host, Cloudflare processes request metadata such as your IP address, user agent and the URL requested, in order to deliver the page and to protect the service from abuse. That processing is governed by Cloudflare's own privacy documentation, and we do not receive or store those logs.</p>
+
+<h2>What we do not do</h2>
+<ul>
+<li>No accounts, sign-ups, or email collection. There is nothing to register for.</li>
+<li>No file uploads. There is no upload endpoint.</li>
+<li>No selling or sharing of data, because none is collected.</li>
+<li>No advertising, and therefore no advertising identifiers.</li>
+<li>No paid tier, so no payment processing and no billing records.</li>
+</ul>
+
+<h2>Children</h2>
+<p>The site collects no personal information from anyone, of any age. Nothing here is directed at children specifically, and nothing about using it requires disclosing anything about yourself.</p>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, the date at the top will change with it. The site's source is public, so any change to what the pages actually do is visible in its commit history as well.</p>
+
 <h2>Contact</h2>
-<p>Questions about this policy can be sent through the contact details listed on the <a href="/about/">about page</a>.</p>`,
+<p>Questions about this policy, or reports of anything on the site behaving differently from what is described here, can be raised as an issue on <a href="https://github.com/DahyXu/toolman" rel="noopener">the project's GitHub repository</a>.</p>`,
 }));
 
 // ---------- 404 ----------
@@ -467,7 +501,7 @@ write('/search/', page({
   path: '/search/',
   h1: 'Search',
   crumbs: [{ name: 'Search', path: '/search/' }],
-  head: '<meta name="robots" content="noindex,follow">',
+  noindex: true,
   body: `<p class="muted">Search across ${searchIndex.length.toLocaleString()} tools, converters and reference pages.</p>
 <div class="tool">
   <label for="q">What are you looking for?</label>
