@@ -598,9 +598,23 @@ const CHUNK = 2000;
 // be the pages worth ranking rather than whichever ones sort first
 // alphabetically. Rank by editorial value, then chunk.
 const toolSlugs = new Set(tools.map((t) => `/${t.slug}/`));
-const HUBS = new Set(['/', '/tools/', '/convert/', '/color/', '/http/', '/cron/', '/port/',
-  '/file/', '/cooking/', '/roman/', '/paper/', '/dev/', '/text/', '/image/', '/ai/',
-  '/convert/time-zones/', '/convert/css-units/', '/convert/temperature/', '/about/', '/privacy/']);
+
+// A hub is any page that has pages beneath it. Deriving that from the URLs
+// rather than listing it by hand is not tidiness: the hand-written list was
+// last edited before /chmod/, /cidr/ and /ascii/ existed, so those three landed
+// in the second sitemap chunk at priority 0.6 while gating 192 pages between
+// them. A list maintained separately from the thing it describes drifts.
+// Seeded with the pages that are hubs without their children nesting under
+// them: the time-zone pairs live at /convert/pst-to-est/, not beneath
+// /convert/time-zones/, so no prefix rule will find them.
+const HUBS = new Set(['/', '/about/', '/privacy/', '/tools/',
+  '/convert/time-zones/', '/convert/css-units/', '/convert/temperature/']);
+for (const u of new Set(written)) {
+  const depth = u.split('/').filter(Boolean).length;
+  if (depth === 0 || depth > 2) continue;
+  if (toolSlugs.has(u)) continue;
+  if (written.some((v) => v !== u && v.startsWith(u))) HUBS.add(u);
+}
 
 function rank(u) {
   if (u === '/') return 0;                     // home

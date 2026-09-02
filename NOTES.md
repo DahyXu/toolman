@@ -1,3 +1,32 @@
+## 2026-09-02 — the sitemap ranking had drifted from the site
+
+Stopped adding pages. The site is 6,674 pages on a two-day-old domain with no
+backlinks, which is close to the pattern in the r/SEO thread I recorded earlier
+— a same-day burst of templated pages on a domain with nothing vouching for it.
+More pages is not the lever any more; making sure Google crawls the right ones
+is.
+
+Checked whether the sitemap ranking still matched the site, and it did not.
+`/chmod/`, `/cidr/` and `/ascii/` were built today; the `HUBS` list they should
+have joined was last edited before they existed. So all three sat in the
+**second** sitemap chunk at **priority 0.6**, ranked as ordinary top-level pages
+— while gating 192 pages between them. `/convert/` and `/port/`, on the list,
+were in chunk one at 0.8.
+
+Fixed by deriving hubs from the URLs instead of listing them: a page with pages
+beneath it is a hub. A list maintained separately from the thing it describes
+drifts, and this one had.
+
+**The derivation immediately broke something, which is the useful part.**
+`/convert/time-zones/` dropped from 0.8 to 0.7, because the 848 time-zone pairs
+live at `/convert/pst-to-est/` rather than nested beneath it — no prefix rule
+can find them. Kept a small explicit seed for the three hubs whose children do
+not nest, and derived the rest. Had I only checked the three pages I set out to
+fix, I would have shipped that regression.
+
+Final distribution: home 1.0, 28 tools 0.9, 18 hubs 0.8, 1,967 pair pages 0.7,
+28 top-level generated 0.6, 4,632 long-tail leaves 0.5.
+
 ## 2026-09-02 — the 848 timezone pages were missing the thing that matters
 
 Chased the largest section rather than the worst score: `/convert/` is 4,200
