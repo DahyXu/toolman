@@ -1,4 +1,5 @@
 import { esc, faq } from '../layout.mjs';
+import { DETAIL } from '../data/port-detail.mjs';
 
 // port, service, protocol, what it is, security note
 const P = [
@@ -87,6 +88,7 @@ export default async function () {
       body: `<p><span class="pill">${proto}</span> <span class="pill">${port < 1024 ? 'well-known' : port < 49152 ? 'registered' : 'dynamic'}</span></p>
 <h2>What runs on port ${port}</h2>
 <p>${what}</p>
+${DETAIL[port] ? `<p>${DETAIL[port]}</p>` : ''}
 <h2>Security considerations</h2>
 <p>${security}</p>
 <h2>Checking whether something is listening</h2>

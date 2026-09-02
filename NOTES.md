@@ -1,3 +1,55 @@
+## 2026-09-02 — why the child sitemaps say "cannot fetch", and per-port content
+
+**The sitemap question, answered from git history rather than guessed.** The
+user asked why four child sitemaps still show 无法抓取 when the index reads 成功.
+I had put it down to queue latency; that was wrong, and the log settles it:
+
+    c5501cf  09-01 23:32  Shard the sitemap into 2,000-URL chunks with an index
+    e7a72fc  09-01 21:01  Deploy to Cloudflare Pages
+
+`sitemap-1.xml` through `sitemap-4.xml` **did not exist** until 23:32 on 9/1.
+The site first deployed at 21:01 with a single `sitemap.xml`. They were
+submitted to Search Console at a moment when those URLs returned 404, Google
+recorded the failure, and it has not retried since. Three observations follow
+exactly from that and would not follow from latency:
+
+- Type shows 未知 — never parsed, so Google does not know what they are.
+- **Last-read time is blank**, not old. It is not that a read failed; no read
+  ever completed.
+- Only `sitemap.xml` succeeded, because that URL existed from the start — its
+  contents changed from a urlset to an index, but it was always fetchable.
+
+Verified there is nothing wrong now: all five return 200 with
+`Content-Type: application/xml`, no BOM, a correct XML declaration, no
+`x-robots-tag`, and robots.txt lists every one of them, all checked with a
+Googlebot user agent.
+
+It also does not matter. The index is the canonical submission, it reads
+successfully, it lists all four children, and Google is demonstrably reaching
+deep pages — 22 pages with valid breadcrumbs, `/convert/` and `/color/228b22/`
+indexed. Resubmitting is accepted silently without creating a new record, and
+the current Search Console UI has no delete option in the row menu. The only way
+to force clean records is to rename the files so they become new URLs, which
+restarts discovery on a working index to remove four cosmetic red lines. Not
+worth it; they will clear on Google's own retry.
+
+**Per-port content, and the lesson holding up.** `/port/993/` carried about
+thirteen words of port-specific text inside four hundred words of shared
+lsof/netstat boilerplate, and `/port/` is one of the eight pages Google has
+indexed. Wrote a real paragraph for each of the 48 ports into
+`src/data/port-detail.mjs` — why active FTP breaks behind NAT, why 993 and 995
+differ in mail model rather than in encryption, why an exposed 2375 is a remote
+root shell rather than a vulnerability, why `localhost` and `127.0.0.1` are not
+the same thing to a MySQL client.
+
+Result: port went from **✗ worst 91% to ✓ worst 75%**, average 75% → 62%, and
+993 against 995 from 9 unique words to 33.
+
+That is the same technique that failed on paper's ANSI sizes, and the difference
+is instructive: ports have genuinely distinct behaviour to describe, ANSI D and
+ANSI E do not. Enriching the data works when there is something true to add and
+becomes padding when there is not.
+
 ## 2026-09-02 — first positive signal from Google
 
 The Enhancements section of Search Console, which said "no enhancements yet"
