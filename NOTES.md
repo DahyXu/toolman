@@ -1,3 +1,35 @@
+## 2026-09-02 — CIDR subnet calculator and a 33-page prefix reference
+
+The second target from the research. Same reasoning as chmod: low-authority
+incumbents on the head term (jodies.de and cidr.xyz alongside mxtoolbox), a
+natural long-tail matrix, and it sits under /dev/, which Google has indexed.
+
+`subnet-calculator` takes CIDR notation and returns the network, broadcast,
+mask, wildcard, usable range, host count and address classification, plus a
+binary view showing where the network/host boundary falls and a table of what
+the network splits into. `/cidr/` covers all 33 prefix lengths — the odd ones
+get searched as much as the common ones.
+
+Verified against an independently written mask table rather than against the
+generator's own arithmetic: all 33 masks and usable-host counts correct.
+Calculator checked on the cases that actually break implementations:
+
+- `172.20.5.7/22` → network 172.20.4.0, broadcast 172.20.7.255, 1,022 usable
+  (the non-octet-aligned case)
+- `/31` → no broadcast, both addresses usable (RFC 3021)
+- `/32` → single address, no broadcast
+- `/0` → 4,294,967,294 usable. This one needed care: shifting by 32 in
+  JavaScript shifts by 0 rather than clearing the register, so `maskOf(0)`
+  is a special case rather than falling out of the arithmetic.
+- CGNAT and link-local correctly classified; both invalid-octet and
+  invalid-prefix inputs produce specific errors
+
+Fixed one imprecision found while testing: `0.0.0.0` was reported as Public,
+where `0.0.0.0/8` is reserved.
+
+Site is now 6,544 pages across 27 tools. All audits clean, one unreachable page
+(the 404, correctly).
+
 ## 2026-09-02 — researched what to build, and built it
 
 The user's original brief included researching which tools to make. I had never
