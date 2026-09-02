@@ -1,3 +1,40 @@
+## 2026-09-02 — actual indexing state, measured
+
+Checked rather than assumed. `site:toolman.top` on Google returns **8 pages**:
+`/`, `/color/`, `/color/228b22/`, `/dev/`, `/file/`, `/markdown-to-html/`,
+`/port/`, `/tools/`. Two of those are deep pages, so depth is not the barrier.
+
+**`/convert/` is "已抓取 - 尚未编入索引" (crawled, not yet indexed).** Fetch
+succeeded, crawling allowed, no technical block — Google fetched it and chose
+not to index. That gates 4,200 pages. Last crawl was 2026-09-01 23:15:19, which
+is *before* the collision fix that took the hub from 186 to 549 words, so
+Google's decision was made on the thin version.
+
+**URL inspection reports "未检测到任何引荐站点地图" for `/convert/`.** Googlebot
+found it through internal links from `/url-encode-decode/` and `/jwt-decoder/`,
+not the sitemap. Consistent with the four child sitemaps still showing
+无法抓取 / 0 discovered while the index itself reads 成功 (read 9/2).
+
+Verified server-side: all five sitemaps return HTTP 200, `application/xml`,
+TTFB under 0.4s to a Googlebot user agent; the index lists exactly the four
+children; child 1 holds 2,000 URLs and child 4 holds 478. Nothing is wrong at
+the origin. This is the same stale-bookkeeping pattern the index itself showed
+before flipping to 成功 with no site change. Resubmitting the children is a
+no-op in the UI.
+
+Request-indexing quota still exhausted (rolling 24h, not a calendar reset).
+
+Bing has indexed nothing despite IndexNow returning 200 — submission is not
+indexing.
+
+Performance report now runs through 8/30 and still shows 1 impression, which is
+correct: the site launched 9/1 and that data has not entered the window yet.
+
+**Conclusion: there is no remaining technical defect to fix.** Both engines have
+the site and are treating it as a one-day-old zero-authority domain. The
+bottleneck is authority, and the one lever that moves it — a real inbound link
+from a community thread — needs an account I am not permitted to create.
+
 ## 2026-09-02 — duplicate-content risk, 404 indexability, title truncation
 
 `scripts/similarity.mjs` found the weakest pages on the site: two 352-word
