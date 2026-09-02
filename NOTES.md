@@ -1,3 +1,32 @@
+## 2026-09-02 — read the page that ranks first
+
+Since `/color/` is the one section demonstrably ranking, I read the page that
+sits at #1 rather than assuming it was fine.
+
+**The numbers are all correct.** Verified `#169C16` by hand: RGB (22, 156, 22)
+from the hex, HSL (120, 75%, 35%), CMYK (86%, 0%, 86%, 39%), decimal 1481750,
+and the two contrast ratios multiply to 21.0, which is the identity that must
+hold for any colour measured against white and black. The "closest CSS named
+colour is forestgreen" line is right too.
+
+**One real defect, and my a11y check could not see it.** The swatch prints the
+hex code twice, once in white and once in black, so a reader can judge which is
+legible on that background before reading the measured ratios. Nothing said so.
+The meaning of the demonstration was carried entirely by colour — a screen
+reader got "#169C16 #169C16" with no explanation of why it was said twice, and
+`scripts/a11y.mjs` passed it because these are spans with text rather than
+unlabelled controls. Its rule is "every control has an accessible name", and
+these are not controls.
+
+The swatch now carries `role="img"` with a label describing what it shows, each
+sample has a title, and a sentence under it explains the demonstration in the
+page text. That last part helps everyone, not only screen-reader users: the
+point of the two samples was never actually stated.
+
+That is the sixth defect this session found by reading rather than measuring,
+and the second where the checker was working correctly and simply had no rule
+for the thing that was wrong.
+
 ## 2026-09-02 — the site ranks #1 for something
 
 Indexed does not mean ranking, so I measured the second thing rather than

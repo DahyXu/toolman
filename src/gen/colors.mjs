@@ -176,9 +176,10 @@ function colorPage(hex, name) {
     h1: name ? `${name.charAt(0).toUpperCase() + name.slice(1)} — ${H}` : `${H} color`,
     crumbs: [{ name: 'Colors', path: '/color/' }, { name: H, path: `/color/${hex}/` }],
     jsonld: [FAQ.schema],
-    body: `<div style="height:150px;border-radius:14px;border:1px solid var(--line);background:${H};display:flex;align-items:center;justify-content:center;gap:20px">
-  <span style="color:#fff;font:600 20px var(--mono)">${H}</span><span style="color:#000;font:600 20px var(--mono)">${H}</span>
+    body: `<div role="img" aria-label="${H} shown as a background with the hex code written on it in white and in black" style="height:150px;border-radius:14px;border:1px solid var(--line);background:${H};display:flex;align-items:center;justify-content:center;gap:20px">
+  <span title="White text on ${H}" style="color:#fff;font:600 20px var(--mono)">${H}</span><span title="Black text on ${H}" style="color:#000;font:600 20px var(--mono)">${H}</span>
 </div>
+<p class="muted">The swatch above shows ${H} with its hex code written on it in white and in black, so you can see which of the two is legible before reading the measured ratios below.</p>
 <p class="muted">${H} is a <strong>${desc}</strong>${near.exact ? `. It is the CSS named color <strong>${near.name}</strong>` : `, closest to the CSS named color <a href="/color/${near.hex}/">${near.name}</a> (#${near.hex.toUpperCase()})`}.</p>
 
 <h2>Color values</h2>
