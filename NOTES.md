@@ -1,3 +1,31 @@
+## 2026-09-02 — the colour coverage is aimed at the right half
+
+Checked whether the section that ranks is composed of the pages that *can*
+rank. Of the 681 colour pages, **542 are arbitrary hex codes and 139 are CSS
+named colours**. The named ones — forestgreen, cadetblue, azure — have
+established pages competing for them and we do not rank. The arbitrary ones are
+where both page-one results came from.
+
+So the coverage is already pointed at the winnable 80%, and nothing needs
+changing. That is worth recording as a thing checked rather than assumed: it
+would have been equally plausible for the matrix to be mostly named colours,
+in which case the whole section would have been aimed at competition it cannot
+beat yet.
+
+I also tried to find a pattern in *which* 46 colour pages Google has indexed,
+in case the hub's ordering was driving it and could be changed. The visible
+sample is a mix of named and arbitrary with no discernible structure, so there
+is nothing to act on. Reverse-engineering Google's crawl selection from nine
+URLs is not analysis.
+
+**A caveat I should state plainly rather than let the ranking finding imply
+otherwise.** Ranking #1 for `169c16 color code` produces impressions only if
+somebody searches it. An arbitrary hex code has very low individual volume —
+the thesis is that 542 of them aggregate to something, not that any one of them
+matters. That thesis is untested until GSC reports query data, which arrives
+with the 9/1 window around 9/3. Until then, "we rank #1" and "we will get
+impressions" are two different claims and only the first is evidenced.
+
 ## 2026-09-02 — read the page that ranks first
 
 Since `/color/` is the one section demonstrably ranking, I read the page that
