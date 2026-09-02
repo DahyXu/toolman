@@ -316,7 +316,7 @@ const allToolsBody = Object.values(CATEGORIES)
   .join('');
 
 write('/tools/', page({
-  title: `All Free Online Tools (${tools.length}+) | ${SITE.name}`,
+  title: `All ${tools.length} Free Online Tools | ${SITE.name}`,
   desc: `Browse all ${tools.length} free online tools on ${SITE.name}. Developer utilities, converters, text and image tools — all running privately in your browser.`,
   path: '/tools/',
   h1: 'All tools',
@@ -327,12 +327,12 @@ write('/tools/', page({
 // ---------- home ----------
 const featured = tools.filter((t) => t.weight >= 8);
 write('/', page({
-  title: `${SITE.name} — ${tools.length}+ Free Online Tools That Run in Your Browser`,
+  title: `${SITE.name} — ${tools.length} Free Online Tools That Run in Your Browser`,
   desc: SITE.description,
   path: '/',
   body: `<div class="hero">
 <h1>Free online tools that respect your data</h1>
-<p>${tools.length}+ developer, text, image and conversion tools. Everything runs locally in your browser — nothing is uploaded, nothing is stored, no sign-up needed.</p>
+<p>${tools.length} developer, text, image and conversion tools. Everything runs locally in your browser — nothing is uploaded, nothing is stored, no sign-up needed.</p>
 </div>
 <h2>Popular tools</h2>
 <ul class="cards">${featured

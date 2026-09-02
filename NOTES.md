@@ -1,3 +1,31 @@
+## 2026-09-02 — the numbers we tell people about ourselves had drifted
+
+Two smaller things after the section-by-section read.
+
+**"28+" when there are exactly 28.** The home page title, the tools page title
+and the home page intro all claimed `${tools.length}+`. The count is computed
+from the directory, so it is exact, and the plus sign claims more than exists.
+Everywhere else on this site a figure is the real one — I have spent the day
+verifying arithmetic against independent sources — so an inflated count in the
+one place a visitor sees first was out of step with the rest of it. Now plain.
+
+**The README and the promotion copy were three sections behind.** README said
+6,478 pages and 25 tools; PROMOTION.md, which is the copy meant to be posted to
+Hacker News and Reddit, said 6,544 pages and 27 tools. Reality is 6,674 and 28.
+Posting a number that does not match the site to an audience that checks is a
+bad way to open. Both refreshed, and the README's matrix table — which listed
+five sections and stopped before cooking, roman, ascii, cron, port, http, paper,
+cidr, file and chmod ever existed — now lists all twelve.
+
+**Reddit, with an honest read of the result.** The r/homelab comment is eight
+and a half hours old, still live, still at score 1, no replies. The answer was
+good; the timing was not. The thread was already twelve hours old when the
+comment went up, and in a subreddit that size it had left the front page before
+anyone could see the reply. Recorded in PROMOTION.md: aim for threads under
+about three hours old. More comments is not the fix, earlier ones are.
+
+Account is 13 hours old, so r/sysadmin's 24-hour gate is about eleven hours off.
+
 ## 2026-09-02 — 450 cooking pages said "1/2 cups"
 
 Read the last unchecked section, `/cooking/`. The arithmetic holds: a cup of

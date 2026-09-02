@@ -57,6 +57,13 @@ CQS is the thing to grow, and it is built from comments that get upvoted, not
 from votes cast. Upvoting to build standing does nothing for it and, done
 systematically, is vote manipulation.
 
+**Comment on fresh threads.** The r/homelab comment was genuinely useful and
+sat at score 1 with no replies eight hours later. The thread was already twelve
+hours old when it went up, which in a subreddit that size means it had left the
+front page before the comment existed. Aim for threads under about three hours
+old — the answer being good is necessary and not sufficient, because nobody
+scrolls to a day-old thread to read it.
+
 **The sequence that works** is the one r/ccna's rule spells out: become a
 contributor first, link later. Comments that answer a question and contain no
 link build both the karma and the history that every later link depends on.
@@ -68,7 +75,7 @@ link build both the karma and the history that every later link depends on.
 Title (80 char limit, this is 62):
 
 ```
-Show HN: 6,544 browser-only web tools with no backend at all
+Show HN: 6,674 browser-only web tools with no backend at all
 ```
 
 Body:
@@ -78,7 +85,7 @@ I wanted a set of tools I could paste production data into without thinking
 about it — API responses, JWTs, config files. Everything here runs as plain
 JavaScript in the browser. There is no server to send anything to.
 
-It is a static site: 27 interactive tools plus ~6,500 generated reference
+It is a static site: 28 interactive tools plus ~6,600 generated reference
 pages (unit conversions, time zones, HTTP status codes, port numbers, chmod
 values, CIDR prefixes, cooking measures). No framework, no runtime
 dependencies, no build dependencies beyond Node itself.
@@ -256,8 +263,8 @@ https://toolman.top
 - Do not link from an account with no history in that subreddit. r/ccna calls
   this "drive by self-promotion" in its rules, and it is the first thing a
   moderator looks for.
-- Do not describe the generated pages as "6,544 pages of content" — that reads
-  as SEO spam. "27 tools plus generated reference material" is both more
+- Do not describe the generated pages as "6,674 pages of content" — that reads
+  as SEO spam. "28 tools plus generated reference material" is both more
   accurate and better received.
 - If someone points out a bug, fix it and say so in the thread. That single
   behaviour converts more sceptics than any amount of description.

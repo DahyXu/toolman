@@ -1,6 +1,6 @@
 # Toolman
 
-**[toolman.top](https://toolman.top)** — 6,478 pages of fast, privacy-first web
+**[toolman.top](https://toolman.top)** — 6,674 pages of fast, privacy-first web
 tools and reference material. Every tool runs entirely in the visitor's
 browser: there is no backend, nothing is uploaded, and the whole site is plain
 HTML with inline JavaScript served from Cloudflare's edge.
@@ -10,15 +10,15 @@ Try it: [JSON formatter](https://toolman.top/json-formatter/) ·
 [AI token counter](https://toolman.top/ai-token-counter/) ·
 [cron expressions](https://toolman.top/cron-expression-generator/) ·
 [regex tester](https://toolman.top/regex-tester/) ·
-[all 25 tools](https://toolman.top/tools/)
+[all 28 tools](https://toolman.top/tools/)
 
 ## What's in it
 
 | | |
 |---|---|
-| Interactive tools | 25 |
-| Generated reference pages | 6,444 |
-| Total pages | 6,478 |
+| Interactive tools | 28 |
+| Generated reference pages | 6,646 |
+| Total pages | 6,674 |
 | Runtime dependencies | none |
 | Build dependencies | none (plain Node) |
 
@@ -31,17 +31,27 @@ lorem ipsum generator, percentage calculator, age calculator.
 
 **Generated matrices** — these carry the long-tail search traffic:
 
-| Matrix | Pages | Example |
+| Section | Pages | Example |
 |---|---|---|
-| Unit conversions (12 categories) | 864 | `/convert/meters-to-feet/` |
-| Time zone conversions | 848 | `/convert/pst-to-est/` |
-| Color reference | 682 | `/color/ff0000/` |
-| CSS unit conversions | 72 | `/convert/px-to-rem/` |
-| Temperature | 12 | `/convert/celsius-to-fahrenheit/` |
+| Unit and time-zone conversions | 4,199 | `/convert/meters-to-feet/` |
+| Cooking measures, by ingredient | 990 | `/cooking/1-cups-all-purpose-flour-to-grams/` |
+| Colour reference | 681 | `/color/ff0000/` |
+| Roman numerals | 327 | `/roman/2026/` |
+| ASCII codes | 128 | `/ascii/65/` |
+| Cron schedules | 58 | `/cron/every-5-minutes/` |
+| Port numbers | 48 | `/port/3306/` |
+| HTTP status codes | 38 | `/http/404/` |
+| Paper sizes | 38 | `/paper/a4/` |
+| CIDR prefixes | 33 | `/cidr/24/` |
+| File formats | 33 | `/file/webp/` |
+| File permissions | 29 | `/chmod/755/` |
 
-Every generated page carries a working converter, the exact formula, a full
-conversion table, unit definitions and a FAQ with `FAQPage` structured data —
-not a thin template.
+Every generated page carries the working numbers, the formula behind them, a
+full table and a FAQ with `FAQPage` structured data. The arithmetic is computed
+at build time and checked against an independent source rather than
+transcribed — every CIDR mask against a separately written table, every chmod
+value against its canonical symbolic form, every ASCII code's hex, octal and
+binary.
 
 ## Layout
 
