@@ -67,6 +67,7 @@ button.primary:hover{background:var(--acc2);border-color:var(--acc2)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+@media(max-width:560px){.mainnav{flex-wrap:wrap;overflow-x:visible;gap:8px 14px}}
 .tool{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}
 .out{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.88rem}
 .err{color:var(--err)}.ok{color:var(--ok)}
