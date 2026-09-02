@@ -1,3 +1,39 @@
+## 2026-09-02 — a checker for the failure mode that keeps recurring
+
+Finding `lastmodOf()` dead made the pattern worth naming. Three times now a fix
+of mine has looked complete and done nothing, and twice the checker I wrote to
+catch a class of problem could not see the instance in front of it.
+`sitemap-check.mjs` validated that lastmod was a well-formed date, which the
+build date always is.
+
+`scripts/dead-code.mjs` reports module-level declarations that are computed and
+never read. It is deliberately conservative — module scope only, and a name
+counts as used if it appears on any line but its own declaration — so it will
+miss some dead code rather than produce noise nobody reads.
+
+Two lessons applied while writing it:
+
+**I tested the detector before trusting it.** The first version reported all
+215 top-level declarations in the project as unused, which is obviously wrong.
+Cause: the quoted heredoc still ate one level of backslash, so `'\b'` reached
+the file as `''` — a backspace character rather than a word boundary — and
+nothing matched. This is the same escaping trap that has corrupted generated JS
+several times here; the reliable answer, again, is to write the file with the
+editor rather than through a heredoc.
+
+**Then I verified it can actually fail.** Planted a deliberately dead symbol,
+confirmed it was reported, removed it, confirmed the report went away. A
+checker that says "all clear" is worthless until you have watched it say
+something else.
+
+Real findings: `$` in build.mjs was a false positive (`` cannot bound a
+non-word character — fixed with an identifier-class lookaround), and an unused
+`cap` helper in `src/gen/cidr.mjs`, now removed. `lastmodOf` no longer appears,
+which independently confirms this morning's fix landed.
+
+Added `npm run audit`, `npm run audit:full` and `npm run check`. Running six
+scripts from memory is how a check gets skipped.
+
 ## 2026-09-02 (evening) — /convert/ is indexed, and lastmod never worked
 
 **`/convert/` is now indexed.** This morning URL Inspection said "已抓取 - 尚未编入索引"

@@ -47,8 +47,6 @@ const USE = {
   32: 'A single address. Not really a subnet but a host route: a loopback interface, a firewall rule matching one machine, or a specific route pushed to override a broader one.',
 };
 
-const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-
 export default async function () {
   const pages = [];
   const ALL = [...Array(33).keys()];
