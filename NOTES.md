@@ -1,3 +1,55 @@
+## 2026-09-02 — duplicate content, and the mistake I made three times
+
+**My own similarity checker was giving false assurance.** It compared one pair
+of pages per section — the first against the middle one. That reported `/cron/`
+at 79%, comfortably under the threshold. Sampling many pairs instead showed the
+section's *worst* pair at 97%. The risk is a duplicate pair, so one sample can
+miss it entirely. `scripts/similarity.mjs` now walks consecutive and spread-out
+pairs, reports average and worst, and names the worst pair.
+
+That immediately surfaced three sections over the 90% line that had been
+invisible: cron 97%, paper 93%, port 91%.
+
+**Then I made the same mistake three times.** Each time I differentiated pages
+by writing a paragraph shared across a *band* of items — hours 13–17, midweek
+days, the US paper series — and each time the pages inside a band came out just
+as identical as before. `/cron/every-day-at-14/` and `.../at-15/` shared 540 of
+547 words after the first attempt. Bands cannot fix a per-item problem.
+
+The lesson, stated plainly because I clearly needed it: **content generated from
+a template is shared by definition. Only content that varies with the item
+differentiates.** That means it has to come from the data, or be computed from
+it, not written once in the generator.
+
+What worked, on that principle:
+
+- **24 distinct per-hour notes** for the daily cron pages, each saying something
+  true only of that hour — midnight's date-boundary contention, 02:00 being the
+  hour that repeats or vanishes under daylight saving, 15:00 being the widest
+  Europe/US overlap, 23:00 finishing on the following calendar day.
+- **A coverage sentence computed per hour** — which regions are working, awake
+  or asleep when the job fires. That differs for all 24 by construction.
+- **Seven distinct weekday notes** rather than one shared "midweek" paragraph.
+- **Interval arithmetic** — runs per day, and overlap headroom, both derived
+  from the interval. Verified: 1440/3 = 480, 1440/15 = 96.
+- **Series arithmetic for paper**, computed rather than written: A8 is A0 halved
+  eight times, 256 of them make an A0, 16 fit on an A4. All checked.
+
+Result: cron 97% → 91% worst, average 85% → 72%.
+
+**Where I stopped, and why.** Paper's worst pair is now ANSI D vs ANSI E at 94%,
+and the honest reason is that those two sheets have almost nothing different to
+say beyond their dimensions. The remaining sections over the line total 147
+pages — 2% of the site. Pushing further would mean writing a bespoke paragraph
+per item into the data, and for items with nothing distinctive that becomes
+padding, which is a worse outcome than the duplication it would be hiding.
+
+One genuine find while writing the ANSI content: the US series **alternates**
+aspect ratio, 1:1.294 and 1:1.545 in turn, where the A series holds 1:1.414
+through every fold. Verified against the dimensions. That is the real reason a
+drawing does not scale cleanly between ANSI sizes, and it is worth a page saying
+so.
+
 ## 2026-09-02 — regression check across all 28 tools
 
 Everything on this site was tested at some point, but the tools were driven

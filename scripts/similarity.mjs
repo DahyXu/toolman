@@ -87,15 +87,36 @@ for (const f of walk(dist)) {
   const section = url === '/' ? '(home)' : url.split('/').filter(Boolean)[0];
   (bySection[section] ||= []).push(f);
 }
-for (const [section, files] of Object.entries(bySection).sort((a, b) => b[1].length - a[1].length).slice(0, 10)) {
+// Comparing a single pair per section is not enough: it reported /cron/ at 79%,
+// safely under the threshold, while the worst pair in that section was 97%. The
+// risk is a duplicate *pair*, so sample many and report the worst one found.
+const vocab = (f) => new Set(text(fs.readFileSync(f, 'utf8')).toLowerCase().split(' '));
+const overlap = (a, b) => [...a].filter((w) => b.has(w)).length / new Set([...a, ...b]).size;
+
+for (const [section, files] of Object.entries(bySection).sort((a, b) => b[1].length - a[1].length).slice(0, 12)) {
   if (files.length < 2) continue;
-  const a = new Set(text(fs.readFileSync(files[0], 'utf8')).toLowerCase().split(' '));
-  const b = new Set(text(fs.readFileSync(files[Math.floor(files.length / 2)], 'utf8')).toLowerCase().split(' '));
-  const shared = [...a].filter((w) => b.has(w)).length;
-  const union = new Set([...a, ...b]).size;
-  const jaccard = shared / union;
-  const mark = jaccard > 0.9 ? '✗' : jaccard > 0.8 ? '~' : '✓';
-  console.log(`  ${mark} ${section.padEnd(12)} ${String(files.length).padStart(5)} pages   ${(jaccard * 100).toFixed(0)}% vocabulary overlap between two siblings`);
+  // Neighbours are the likeliest duplicates, so walk consecutive pairs, and add
+  // spread-out pairs so a section ordered by something unrelated is still seen.
+  const pairs = [];
+  const step = Math.max(1, Math.floor(files.length / 40));
+  for (let i = 0; i + step < files.length && pairs.length < 60; i += step) pairs.push([files[i], files[i + step]]);
+  for (let i = 0; i + 1 < files.length && pairs.length < 80; i += Math.max(1, Math.floor(files.length / 20))) pairs.push([files[i], files[i + 1]]);
+
+  let worst = 0, worstPair = null, sum = 0;
+  const cache = new Map();
+  const v = (f) => (cache.has(f) ? cache.get(f) : (cache.set(f, vocab(f)), cache.get(f)));
+  for (const [x, y] of pairs) {
+    const j = overlap(v(x), v(y));
+    sum += j;
+    if (j > worst) { worst = j; worstPair = [x, y]; }
+  }
+  const avg = sum / pairs.length;
+  const mark = worst > 0.9 ? '✗' : worst > 0.8 ? '~' : '✓';
+  const where = worstPair
+    ? worstPair.map((f) => '/' + path.relative(dist, f).replace(/\\/g, '/').replace(/index\.html$/, '')).join(' vs ')
+    : '';
+  console.log(`  ${mark} ${section.padEnd(12)} ${String(files.length).padStart(5)} pages   avg ${(avg * 100).toFixed(0)}%  worst ${(worst * 100).toFixed(0)}%`);
+  if (worst > 0.8) console.log(`      worst pair: ${where}`);
 }
 console.log('\n  ✓ under 80% — siblings read as genuinely different pages');
 console.log('  ~ 80–90% — templated but carrying distinct data');

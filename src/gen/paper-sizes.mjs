@@ -55,6 +55,51 @@ const SERIES = {
   Photo: ['Photo prints', 'Common print and frame sizes, defined in inches.'],
 };
 
+
+// How this sheet relates to the others in its series. Every number here is
+// exact rather than approximate, because the series is defined by halving.
+function seriesMaths(name, series, w, h) {
+  const m = /^([ABC])(\d+)$/.exec(name);
+  if (series === 'US') {
+    // Everything in the US series is a multiple of Letter, so the honest thing
+    // to give each sheet is its own size in Letters and its own aspect ratio —
+    // the ratio genuinely alternates here, unlike the A series.
+    const LW = 215.9, LH = 279.4;
+    const letters = Math.round((w * h) / (LW * LH));
+    const ratio = (Math.max(w, h) / Math.min(w, h)).toFixed(3);
+    const out = [];
+    out.push(letters >= 2
+      ? `At ${w} &times; ${h}&nbsp;mm this is <strong>about ${letters} Letter sheets</strong> of area. The ANSI drawing sizes are built by doubling Letter repeatedly, in the same spirit as the A series but starting from a different sheet.`
+      : `This sheet is <strong>${letters === 1 ? 'about the area of a single Letter sheet' : 'smaller than a Letter sheet'}</strong>, at ${w} &times; ${h}&nbsp;mm.`);
+    out.push(`Its aspect ratio is <strong>1:${ratio}</strong>. This is where the US system differs from A sizes in a way that matters: the A series keeps a constant 1:1.414 through every fold, while doubling a Letter-based sheet alternates between roughly 1:1.29 and 1:1.55. A drawing scaled from one ANSI size to the next therefore does not fill the sheet the way an A-series drawing does, and something always has to be cropped or padded.`);
+    out.push('That single difference is why documents laid out for one system never move cleanly to the other, and why a "fit to page" print from Letter to A4 leaves uneven margins rather than simply shrinking.');
+    return out.map((x) => `<p>${x}</p>`).join('');
+  }
+  if (!m) return '';
+  const letter = m[1], n = +m[2];
+  const inA0 = Math.pow(2, n);
+  const parts = [];
+
+  parts.push(`${name} is ${letter}0 halved <strong>${n === 0 ? 'no times — it is the base of the series' : n === 1 ? 'once' : n + ' times'}</strong>. Halving a sheet across its longer side is what generates the next size down, and because the sides are in a 1:&radic;2 ratio the proportions survive every fold — which is the entire reason the series exists.`);
+
+  if (n > 0) {
+    parts.push(`That makes <strong>${inA0.toLocaleString()} sheet${inA0 === 1 ? '' : 's'} of ${name}</strong> exactly one sheet of ${letter}0, with nothing left over. The area works out at ${(1 / inA0).toFixed(n > 6 ? 6 : 4).replace(/0+$/, '').replace(/\.$/, '')} m&sup2;, since ${letter}0 is defined as one square metre.`);
+  } else {
+    parts.push(`${letter}0 is defined as one square metre of area with sides in a 1:&radic;2 ratio. Every other size in the series is derived from it by halving, which is why none of the dimensions are round numbers.`);
+  }
+
+  if (letter === 'A' && n !== 4) {
+    const rel = n > 4 ? Math.pow(2, n - 4) : Math.pow(2, 4 - n);
+    parts.push(n > 4
+      ? `Against the sheet most people picture: <strong>${rel} of these fit on one A4</strong>.`
+      : `Against the sheet most people picture: <strong>one of these holds ${rel} A4 sheet${rel === 1 ? '' : 's'}</strong>.`);
+  }
+
+  parts.push(`Scaling to the next size up or down is a factor of &radic;2 &asymp; 1.414 on each edge, so enlarging ${name} to the next size is <strong>141%</strong> on a photocopier and reducing it is <strong>71%</strong>. Those two numbers are on the preset buttons of most copiers for exactly this reason, and they are the same for every size in the series.`);
+
+  return parts.map((x) => `<p>${x}</p>`).join('');
+}
+
 export default async function () {
   const pages = [];
 
@@ -98,7 +143,7 @@ export default async function () {
 </tbody></table>
 <p class="muted">Setting up a print document? Use 300 DPI and add 3&nbsp;mm of bleed on every edge unless your printer specifies otherwise.</p>
 
-<h2>About ${name}</h2>
+<h2>How ${name} relates to the rest of the series</h2>\n${seriesMaths(name, series, w, h)}\n\n<h2>About ${name}</h2>
 <p>${note}</p>
 ${series === 'A' ? `<h2>Why A sizes halve so neatly</h2>
 <p>The A series is built on a 1:√2 ratio — approximately 1:1.414. That proportion has a unique property: cut the sheet in half across its long side and the two halves keep exactly the same proportions. This is why two A4 sheets make an A3, why scaling A4 artwork to A3 needs no cropping, and why photocopiers have a single "A4 → A3" button that just works.</p>` : ''}

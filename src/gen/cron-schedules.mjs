@@ -116,6 +116,116 @@ function nextRuns(expr, n = 5) {
 const fmtRun = (d) =>
   `${DOW[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()].slice(0, 3)} ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
 
+
+// What genuinely differs between one hour of the day and another. Without this
+// the hourly pages differed only by a digit, which is the definition of a
+// duplicate as far as a search engine is concerned.
+function hourNotes(h) {
+  const HOUR = {
+    0: 'Midnight is the most contended slot on the internet. Log rotation, backups, billing rollovers and a large share of every crontab fire at 00:00, so a job here competes for disk and database with everything else on the machine. It is also the instant the date changes: a job that stamps "today" at 00:00 can disagree with one that started at 23:59, and anything computing "yesterday" is one time-zone conversion away from the wrong day. Unless the job genuinely belongs on the date boundary, a few minutes later is strictly better.',
+    1: 'One in the morning is the start of the maintenance window on most systems, and the start of the daylight saving danger zone. Traffic has bottomed out and a long job has hours of headroom, which is the appeal. The catch is that in any zone observing DST this hour is adjacent to the transition, so verify what your cron implementation does before assuming a job scheduled here runs exactly once a day, every day.',
+    2: 'Two in the morning is the single worst hour to schedule anything that must not repeat. This is the hour the clock jumps over in spring and repeats in autumn, so in a zone observing DST a job here <em>does not run at all</em> on one day of the year and <em>runs twice</em> on another. Vixie cron attempts to compensate for the spring gap, other implementations do not, and the behaviour is not consistent between them. If the job is not idempotent, the duplicate autumn run will do real damage. Run the server in UTC and this disappears, because UTC has no transitions.',
+    3: 'Three in the morning is the tail of the maintenance window and just past the DST transition, which makes it a common compromise: quiet enough for heavy work, and far enough from 02:00 that the clock change is less likely to land on it. It is still inside the risky band in some zones, so UTC remains the safe answer.',
+    4: 'Four in the morning is the classic backup hour. It is the deepest part of the trough almost everywhere, far enough past the DST window to be safe in practice, and still leaves several hours before anyone in Europe starts work. If a job is heavy and nobody needs to watch it, this is the default worth reaching for.',
+    5: 'Five in the morning is where jobs go that must be finished before Europe wakes up. There is roughly two hours of margin before the earliest arrivals, which is enough for a retry if the first attempt fails but not enough for a human to intervene. Suitable for a pipeline whose output the working day depends on, provided it can recover on its own.',
+    6: 'Six in the morning is the last comfortably quiet hour in European time zones. Anything scheduled here should be finished rather than starting when people arrive, because from this point the machine stops being idle. It is a reasonable slot for the final step of an overnight chain — the one that publishes the result rather than computes it.',
+    7: 'Seven in the morning catches the very start of the European working day. The system is no longer idle but not yet loaded, which makes this a workable slot for something moderately heavy that must run before business hours rather than during them.',
+    8: 'Eight in the morning is inside working hours in continental Europe and still the middle of the night across the Americas. That asymmetry is the useful property: a job here has European staff available to react while imposing nothing on US traffic.',
+    9: 'Nine in the morning is the start of the working day in London and the middle of the morning in Berlin, and the most common time to deliver something a person is meant to read. The trade-off is that the machine is now genuinely busy, so this hour suits a light job with a human audience rather than a heavy one.',
+    10: 'Ten in the morning is mid-morning across Europe and evening in East Asia. Load is at a European daytime plateau. Fine for a light recurring task; poor for anything holding a long database lock, since it will be felt.',
+    11: 'Eleven is late morning in Europe and the end of the evening in Asia. It is one of the last hours before the European lunch dip, which some teams use deliberately as the moment to publish something they want seen before the afternoon.',
+    12: 'Midday attracts jobs mostly because it is memorable, which also makes it busier than it looks. The genuine hazard here is notation rather than load: 12:00 is noon and 00:00 is midnight, and writing "12 AM" for either is the most common way to schedule a job exactly twelve hours from where it was meant to go. Cron itself is unambiguous — it only knows 0 to 23 — so the mistake happens when translating from a human description.',
+    13: 'One in the afternoon is the European afternoon and the very start of the North American morning. It is the first hour of the day when staff on both sides of the Atlantic might be awake at once, which matters more for who can respond to a failure than for load.',
+    14: 'Two in the afternoon is mid-afternoon in Europe and the start of the working morning on the US East Coast. This is the first hour with genuine overlap between European and American teams, which makes it a practical slot for anything that might need a decision from either.',
+    15: 'Three in the afternoon is late in the European day and mid-morning in New York. The overlap window is at its widest here — Europe has not left and America has arrived — so a job that occasionally needs a human has the largest pool of them available at this hour.',
+    16: 'Four in the afternoon is the last hour of the European working day and late morning in the eastern United States. A European failure here has very little time left to be noticed before people leave, which makes it a worse slot than it looks for anything needing attention on that side.',
+    17: 'Five in the afternoon closes the European day. From this hour on, a failure is effectively an American-hours problem, because nobody in Europe is looking. Worth knowing if your on-call rota is concentrated on one continent.',
+    18: 'Six in the evening is after hours in Europe and the middle of the American working afternoon. For a consumer-facing system this is also where traffic starts climbing towards its evening peak, so "after work" and "quiet" are not the same thing here.',
+    19: 'Seven in the evening is late afternoon in New York and evening in Europe. On a system serving consumers rather than staff, this is approaching peak load — the opposite of what the clock suggests to someone thinking in office hours.',
+    20: 'Eight in the evening is close to peak consumer traffic in Europe and the American working afternoon. Almost the worst hour of the day for a heavy job on a user-facing system, and unremarkable on an internal one, so which it is depends entirely on who your users are.',
+    21: 'Nine in the evening is past the European peak and still the American afternoon. Load is falling in one hemisphere and steady in the other, which makes it a reasonable compromise for a system with users on both.',
+    22: 'Ten at night is quiet in Europe and morning in East Asia and Australia. If your team spans those regions, this is one of the few hours with staff available that is also genuinely low-traffic in the West.',
+    23: 'Eleven at night is the last hour before the date changes, which is exactly why it deserves care. A job that starts at 23:00 and runs for more than an hour finishes on the following calendar day, so anything that stamps its own completion time will disagree with anything that stamps its start. If the job is long and the date matters, either move it earlier or record the start rather than the finish.',
+  };
+  const parts = [HOUR[h]];
+  if (h >= 1 && h <= 3) {
+    parts.push('Running the server in UTC removes the daylight saving problem entirely, and is the reason most infrastructure does exactly that. If the server must run in a local zone, move the job outside 01:00 to 03:00.');
+  }
+  return parts.map((x) => `<p>${x}</p>`).join('');
+}
+
+function hourElsewhere(h) {
+  const zones = [['New York', -5], ['London', 0], ['Berlin', 1], ['Mumbai', 5.5], ['Singapore', 8], ['Tokyo', 9], ['Sydney', 11]];
+  const local = (off) => (((h + off) % 24) + 24) % 24;
+  const rows = zones.map(([city, off]) => {
+    const raw = h + off;
+    const day = raw < 0 ? ' (previous day)' : raw >= 24 ? ' (next day)' : '';
+    const m = Number.isInteger(off) ? '00' : '30';
+    return `<tr><td>${city}</td><td class="out">${String(Math.floor(local(off))).padStart(2, '0')}:${m}${day}</td></tr>`;
+  }).join('');
+
+  // This differs for every hour of the day, which is the point: it is the one
+  // fact about "04:00 UTC" that is not also true of "05:00 UTC".
+  const state = (l) => (l >= 9 && l < 17 ? 'working' : l >= 7 && l < 22 ? 'awake' : 'asleep');
+  const g = { working: [], awake: [], asleep: [] };
+  for (const [city, off] of zones) g[state(local(off))].push(city);
+  const phrase = [];
+  if (g.working.length) phrase.push(`the middle of the working day in ${g.working.join(', ')}`);
+  if (g.awake.length) phrase.push(`outside working hours but waking or winding down in ${g.awake.join(', ')}`);
+  if (g.asleep.length) phrase.push(`the middle of the night in ${g.asleep.join(', ')}`);
+
+  return `<p>Assuming the server runs UTC, a job firing at this hour lands on ${phrase.join('; ')}. That matters less for the machine than for the people: whoever is on call when this breaks is determined by this row, not by the schedule.</p>
+<table><thead><tr><th>If the server runs UTC, this is</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+
+// Which weekday a job runs on changes one thing that matters more than the
+// schedule itself: whether anyone is there when it breaks.
+function dayNotes(d) {
+  const DAY = {
+    0: 'Sunday is the deepest part of the weekly trough on most systems, which is why it is the traditional slot for a full backup or a complete reindex — the work that is too disruptive to run any other day. Two cautions. Nobody is watching, so a Sunday failure is discovered on Monday at the earliest, which means the job needs alerting that actually reaches a person rather than an email into an unread inbox. And cron numbers Sunday as 0, but most implementations also accept 7, so the same schedule can legitimately appear written either way.',
+    1: 'Monday is the natural home for anything summarising the week just finished: a report generated now covers a complete week and lands when there are people to read it. It is also the day the weekend surfaces. If something failed quietly on Saturday, Monday is when it is found, so a Monday job that consumes weekend data should verify the data arrived rather than assume it did — the failure mode is a report that looks fine and is silently missing two days.',
+    2: 'Tuesday is the conventional release day in a lot of engineering organisations, for a reason that applies to scheduled jobs too: Monday is absorbed by whatever the weekend produced, so Tuesday is the first day the team is actually available to respond, and there are still three working days behind it. If a job needs a human ready when it runs, this is usually the earliest day that is genuinely true.',
+    3: 'Wednesday is the furthest point from both weekends, which makes it the lowest-risk day in the week. Whatever happens, there are two working days on either side — enough margin to notice a failure, fix it, and still see the fix confirmed before the week ends. For a job with no reason to prefer any particular day, this is the default worth choosing.',
+    4: 'Thursday is the last day of the week that still has a full working day behind it. That makes it the final safe slot for anything that might need attention: a Thursday failure gets Friday, while the same failure on Friday gets the weekend. If you are moving a job away from Friday and want to keep it as late in the week as possible, this is where it goes.',
+    5: 'Friday is the worst day for anything that can fail expensively. A job that breaks on Friday evening has the whole weekend to compound — a stuck queue grows for two days, a partial migration stays partial, and an alert nobody reads on Friday night is an alert nobody reads until Monday. The cost of moving it earlier in the week is usually nothing, and it buys a working day of margin.',
+    6: 'Saturday carries most of the benefit of a weekend slot with slightly less of the risk than Sunday: traffic is low enough for heavy work, and a failure still has Sunday before the week restarts. It is the better of the two weekend days for anything whose output Monday depends on, because there is a whole day left to retry.',
+  };
+  return [DAY[d],
+    'Whichever day you pick, check the field itself: cron numbers the week from 0 for Sunday, and both 0 and 7 are usually accepted for it. A job firing a day early or a day late is almost always an off-by-one here — writing 1 for Sunday out of habit gives you Monday.',
+  ].map((x) => `<p>${x}</p>`).join('');
+}
+
+
+// Runs per day, and the overlap headroom, both fall out of the interval. Cron
+// will happily start a second copy of a job while the first is still running,
+// and the shorter the interval the more likely that is.
+function intervalNotes(mins) {
+  const perDay = Math.round((24 * 60) / mins);
+  const label = mins < 60 ? `${mins} minutes` : mins === 60 ? 'hour' : `${mins / 60} hours`;
+  const parts = [];
+
+  parts.push(`This fires <strong>${perDay.toLocaleString()} times a day</strong>, once every ${label}. That number is worth looking at before anything else: whatever the job costs — a database query, an API call, a container start — multiply it by ${perDay.toLocaleString()} and check the result is one you are willing to pay every day.`);
+
+  if (mins <= 5) {
+    parts.push(`At this frequency <strong>overlap is the main hazard</strong>. Cron starts a new run on schedule whether or not the previous one has finished, so if the job ever takes longer than ${mins} minute${mins === 1 ? '' : 's'} you get two copies running at once, then three. The usual symptom is a job that works fine until the data grows, then quietly begins corrupting or double-processing. Guard it with a lock — <code>flock</code> is one line in the crontab — rather than hoping the runtime stays short.`);
+  } else if (mins <= 20) {
+    parts.push(`Overlap is still worth guarding against here. A job that normally takes seconds can take minutes when something upstream is slow, and cron will start the next run regardless. <code>flock</code> costs nothing and turns a pile-up into a skipped run, which is almost always the better failure.`);
+  } else if (mins < 60) {
+    parts.push(`${mins} minutes is a comfortable polling cadence: frequent enough that nothing waits long, and slow enough that overlap only matters if the job is genuinely slow. It is the interval most status checks and queue drains end up at.`);
+  } else if (mins <= 240) {
+    parts.push(`At this spacing a run has a wide margin before the next one, so overlap is rarely the concern. The thing to check instead is what happens when one run is missed entirely — a machine reboot at the wrong moment means the gap is doubled, and if each run assumes it is processing exactly ${label} of data, that assumption is now wrong.`);
+  } else {
+    parts.push(`With ${label} between runs, missing one is far more consequential than overlapping. Have the job derive its own window from the last successful run rather than assuming a fixed ${label}, so a skipped execution catches up instead of leaving a hole.`);
+  }
+
+  if (mins < 60 && 60 % mins !== 0) {
+    parts.push(`<strong>This interval does not divide evenly into an hour.</strong> <code>*/${mins}</code> counts from zero within each hour and then restarts, so the last gap before the top of the hour is shorter than the rest — the runs are not actually evenly spaced. If even spacing matters, pick a divisor of 60: 2, 3, 4, 5, 6, 10, 12, 15, 20 or 30.`);
+  }
+
+  return parts.map((x) => `<p>${x}</p>`).join('');
+}
+
 export default async function () {
   const all = build();
   const pages = [];
@@ -164,6 +274,10 @@ ${['minute', 'hour', 'day of month', 'month', 'day of week'].map((f, i) => {
 
 <h2>Things to watch</h2>
 <p>${s.notes}</p>
+${/^0 \d{1,2} \* \* \*$/.test(s.expr) ? hourNotes(+s.expr.split(' ')[1]) + hourElsewhere(+s.expr.split(' ')[1]) : ''}
+${/^\S+ \S+ \* \* [0-6]$/.test(s.expr) ? dayNotes(+s.expr.split(' ')[4]) : ''}
+${/^\*\/(\d+) \* \* \* \*$/.test(s.expr) ? intervalNotes(+/^\*\/(\d+)/.exec(s.expr)[1]) : ''}
+${/^0 \*\/(\d+) \* \* \*$/.test(s.expr) ? intervalNotes(60 * +/^0 \*\/(\d+)/.exec(s.expr)[1]) : ''}
 
 <h2>The same schedule elsewhere</h2>
 <pre><code># crontab
