@@ -1,3 +1,51 @@
+## 2026-09-02 (later) — the real reason /convert/ is not indexed
+
+I was wrong this morning to conclude there was no technical defect left. There
+was, and it was the biggest one on the site.
+
+Comparing hubs against what Google has actually indexed:
+
+| section    | pages | hub outlinks | coverage | indexed |
+|------------|-------|--------------|----------|---------|
+| /color/    |   682 |          683 |     100% | yes     |
+| /port/     |    49 |           49 |     100% | yes     |
+| /file/     |    34 |           34 |     100% | yes     |
+| /convert/  |  4200 |           49 |     1.2% | no      |
+| /cooking/  |   991 |           34 |     3.4% | no      |
+
+The indexed sections are exactly the ones whose hub links to every child.
+
+A BFS of the link graph from the home page then gave the real number:
+**2,192 pages (34% of the site) were unreachable by following links at all.**
+`/convert/` had an average click depth of 5.8 and a maximum of 9.
+
+Cause: `/convert/kilograms-to-pounds/` linked to **zero** of its 36 value
+pages. The parent never linked to its children, so the 2,191 value pages formed
+a closed island — they linked to each other through "Nearby values" and nothing
+reachable from the home page linked in. 2,191 of them had inbound links from
+*within the island*, which is why my own audit reported zero orphans.
+
+Fix: `common-values.mjs` now exports `valueIndex` and `tempIndex` (temperature
+slugs render negatives as `minus-`, so those need their own map), and
+`units.mjs` renders a "Common values" block on each pair page. Result:
+
+- unreachable 2,192 → **1** (`/404.html`, which is noindex and correct)
+- `/convert/` average click depth 5.8 → **3.1**
+
+`scripts/audit.mjs` now walks the graph from `/` rather than only asking
+whether anything links to a page. The old check was structurally incapable of
+seeing an island. This is the second time an audit script of mine has had a bug
+that hid the thing it was written to find.
+
+Also strengthened the `/convert/` hub from 515 to 844 words with an exact
+conversion-factor table and a mental-arithmetic section. I checked every
+numeric claim in it with a script before shipping and two were wrong: the
+litres-to-gallons rule of thumb gave 9.5 against a true 10.57 (should be divide
+by 4 then *add* 5%), and I claimed the double-and-add-30 Celsius rule was within
+3° when it is within 4° over ordinary weather and out by 18° at 100°C.
+
+Deployed; 6,478 URLs pushed to IndexNow.
+
 ## 2026-09-02 — actual indexing state, measured
 
 Checked rather than assumed. `site:toolman.top` on Google returns **8 pages**:

@@ -319,6 +319,43 @@ ${TFAQ.html}
   };
 }
 
+
+// The value pages for each unit pair, keyed by "<from>-to-<to>". Exported so
+// the pair page can link to its own children — without that link the value
+// pages are only reachable from other value pages, which makes them an island
+// Googlebot cannot walk into from the home page.
+export const valueIndex = new Map();
+for (const [fromId, toId, setName] of PAIRS) {
+  const from = byId.get(fromId), to = byId.get(toId);
+  if (!from || !to) continue;
+  valueIndex.set(`${fromId}-to-${toId}`, SETS[setName].map((raw) => {
+    const fv = feetValue(raw, fromId);
+    return {
+      path: fv.slugLabel
+        ? `/convert/${fv.slugLabel}-to-${toId}/`
+        : `/convert/${String(raw).replace('.', '-')}-${fromId}-to-${toId}/`,
+      label: `${fv.label || group(raw) + ' ' + plural(from)} to ${plural(to)}`,
+      short: fv.label || `${group(raw)} ${plural(from)}`,
+    };
+  }));
+}
+
+
+// Temperature slugs render negatives as "minus-", so these pairs need their own
+// index rather than sharing the unit one. Exported for the same reason: without
+// it the temperature value pages are only reachable from each other.
+export const TEMP_PAIRS = [['celsius', 'fahrenheit'], ['fahrenheit', 'celsius'], ['celsius', 'kelvin'], ['kelvin', 'celsius']];
+const tempValues = (aId) => SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
+export const tempIndex = new Map();
+for (const [aId, bId] of TEMP_PAIRS) {
+  const a = TEMPS.find((t) => t.id === aId), b = TEMPS.find((t) => t.id === bId);
+  tempIndex.set(`${aId}-to-${bId}`, tempValues(aId).map((raw) => ({
+    path: `/convert/${String(raw).replace('.', '-').replace('-', 'minus-').replace('minus--', 'minus-')}-${aId}-to-${bId}/`,
+    label: `${raw}${a.sym} to ${b.name}`,
+    short: `${raw}${a.sym}`,
+  })));
+}
+
 export default async function () {
   const pages = [];
   const seen = new Set();
@@ -327,13 +364,7 @@ export default async function () {
     const from = byId.get(fromId), to = byId.get(toId);
     if (!from || !to) { console.warn('unknown unit pair', fromId, toId); continue; }
     const values = SETS[setName];
-    const index = values.map((raw) => {
-      const fv = feetValue(raw, fromId);
-      const path = fv.slugLabel
-        ? `/convert/${fv.slugLabel}-to-${toId}/`
-        : `/convert/${String(raw).replace('.', '-')}-${fromId}-to-${toId}/`;
-      return { path, label: `${fv.label || group(raw) + ' ' + plural(from)} to ${plural(to)}` };
-    });
+    const index = valueIndex.get(`${fromId}-to-${toId}`);
     for (const raw of values) {
       const p = valuePage(from, to, raw, index);
       if (seen.has(p.path)) continue;
@@ -343,14 +374,10 @@ export default async function () {
   }
 
   // temperature
-  const tPairs = [['celsius', 'fahrenheit'], ['fahrenheit', 'celsius'], ['celsius', 'kelvin'], ['kelvin', 'celsius']];
-  for (const [aId, bId] of tPairs) {
+  for (const [aId, bId] of TEMP_PAIRS) {
     const a = TEMPS.find((t) => t.id === aId), b = TEMPS.find((t) => t.id === bId);
-    const values = SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
-    const index = values.map((raw) => ({
-      path: `/convert/${String(raw).replace('.', '-').replace('-', 'minus-').replace('minus--', 'minus-')}-${aId}-to-${bId}/`,
-      label: `${raw}${a.sym} to ${b.name}`,
-    }));
+    const values = tempValues(aId);
+    const index = tempIndex.get(`${aId}-to-${bId}`);
     for (const raw of values) {
       const p = tempPage(a, b, raw, index);
       if (seen.has(p.path)) continue;

@@ -170,6 +170,36 @@ const CATEGORY_BODY = {
 <li><strong>Digital storage</strong> has two competing definitions — a manufacturer's "1 TB" is 10¹² bytes, while your operating system displays 2⁴⁰, which is why a new drive shows as 931 GB.</li>
 <li><strong>US and imperial volumes differ.</strong> A US gallon is 3.785 L; an imperial gallon is 4.546 L. Recipes and fuel figures cross this boundary constantly.</li>
 <li><strong>Cooking measures are not a unit conversion at all</strong> — they depend on the density of the ingredient, which is why those live on their own pages.</li>
+</ul>
+
+<h2>The factors worth knowing by heart</h2>
+<p>Most day-to-day conversions come down to a dozen numbers. These are exact unless marked otherwise — an inch has been defined as exactly 25.4 mm since 1959, and a pound as exactly 0.45359237 kg, so those are definitions rather than measurements.</p>
+<table>
+<thead><tr><th>From</th><th>To</th><th>Multiply by</th><th></th></tr></thead>
+<tbody>
+<tr><td>Inches</td><td>Centimetres</td><td>2.54</td><td>exact</td></tr>
+<tr><td>Feet</td><td>Metres</td><td>0.3048</td><td>exact</td></tr>
+<tr><td>Miles</td><td>Kilometres</td><td>1.609344</td><td>exact</td></tr>
+<tr><td>Pounds</td><td>Kilograms</td><td>0.45359237</td><td>exact</td></tr>
+<tr><td>Ounces</td><td>Grams</td><td>28.349523125</td><td>exact</td></tr>
+<tr><td>US gallons</td><td>Litres</td><td>3.785411784</td><td>exact</td></tr>
+<tr><td>Imperial gallons</td><td>Litres</td><td>4.54609</td><td>exact</td></tr>
+<tr><td>Acres</td><td>Hectares</td><td>0.40468564224</td><td>exact</td></tr>
+<tr><td>psi</td><td>Bar</td><td>0.0689475729</td><td>approx.</td></tr>
+<tr><td>Kilocalories</td><td>Kilojoules</td><td>4.184</td><td>exact, thermochemical</td></tr>
+<tr><td>Nautical miles</td><td>Kilometres</td><td>1.852</td><td>exact</td></tr>
+<tr><td>Degrees</td><td>Radians</td><td>π/180</td><td>exact</td></tr>
+</tbody>
+</table>
+<p>Two of these are worth a second look. The <strong>calorie</strong> has several competing definitions; the 4.184 above is the thermochemical calorie, which is the one food labelling uses. And the <strong>gallon</strong> entry is the single most common source of wrong answers on this list — a US gallon is about 17% smaller than an imperial one, so a fuel-economy figure quoted in mpg means two different things either side of the Atlantic.</p>
+
+<h2>Doing it in your head</h2>
+<p>Approximations that are close enough to be useful and easy to remember:</p>
+<ul>
+<li><strong>Kilometres to miles: multiply by 0.6</strong> — a slight underestimate, about 3% low. More precisely, consecutive Fibonacci numbers are near-perfect km/mile pairs — 5 km ≈ 3 miles, 8 km ≈ 5 miles, 13 km ≈ 8 miles. The ratio converges on the golden ratio, 1.618, which happens to sit within 0.6% of the true factor 1.609.</li>
+<li><strong>Celsius to Fahrenheit: double it and add 30.</strong> Exact at 10°C and within 4° anywhere between −10°C and 30°C, which covers most weather. It drifts further at the extremes — at 100°C it is out by 18°.</li>
+<li><strong>Kilograms to pounds: double it and add 10%.</strong> 80 kg → 160 + 16 = 176 lb, against a true 176.4.</li>
+<li><strong>Litres to US gallons: divide by 4, then add 5%.</strong> 40 L → 10 + 0.5 = 10.5, against a true 10.57.</li>
 </ul>`,
   image: `<h2>Image processing without the upload</h2>
 <p>Most online image tools work by uploading your file to a server, processing it there and giving you a link back. That means your photo sits on someone else's disk, for an unspecified period, under a privacy policy you did not read. These tools use a canvas in your own browser instead — the file never travels, there is no queue, no size cap beyond your device's memory, and no watermark.</p>

@@ -84,6 +84,29 @@ const dupH1 = [...h1s.entries()].filter(([, v]) => v.length > 1);
 // orphans: indexable pages nothing links to
 const orphans = [...pages.keys()].filter((u) => u !== '/' && !linkedTo.has(u) && !u.includes('404'));
 
+// Having an inbound link is not the same as being reachable. A group of pages
+// can link only to each other and form an island Googlebot never walks into
+// from the home page — this check reported zero orphans while 2,192 pages were
+// unreachable that way. Walk the graph from '/' instead.
+const outLinks = new Map();
+for (const f of files) {
+  const nav = fs.readFileSync(f, 'utf8')
+    .replace(/<script[\s\S]*?<\/script>/g, '')
+    .replace(/<pre[\s\S]*?<\/pre>/g, '')
+    .replace(/<code[\s\S]*?<\/code>/g, '');
+  outLinks.set(urlOf(f), [...nav.matchAll(/href="(\/[^"#?]*)"/g)].map((m) => m[1]));
+}
+const reached = new Set(['/']);
+let frontier = ['/'];
+while (frontier.length) {
+  const next = [];
+  for (const u of frontier)
+    for (const v of outLinks.get(u) || [])
+      if (!reached.has(v) && outLinks.has(v)) { reached.add(v); next.push(v); }
+  frontier = next;
+}
+const unreachable = [...pages.keys()].filter((u) => !reached.has(u));
+
 const line = (label, arr, sample = 5) => {
   const n = Array.isArray(arr) ? arr.length : arr;
   const mark = n === 0 ? '✓' : '✗';
@@ -105,11 +128,12 @@ line('duplicate descriptions', dupDescs.map(([t, v]) => `"${t.slice(0, 60)}" ×$
 line('duplicate H1s', dupH1.map(([t, v]) => `"${t.slice(0, 50)}" ×${v.length} → ${v[0]}`));
 line('broken internal links', brokenLinks);
 line('orphan pages (nothing links to them)', orphans);
+line('pages unreachable from the home page', unreachable);
 line('titles over 65 chars', problems.longTitle, 3);
 line('descriptions under 70 chars', problems.shortDesc, 3);
 line('descriptions over 175 chars', problems.longDesc, 3);
 
 const fatal = problems.noTitle.length + problems.noDesc.length + problems.noCanonical.length +
-  problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length;
+  problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length + unreachable.length;
 console.log(`\n${fatal === 0 ? '✓ no indexing blockers' : '✗ ' + fatal + ' issues that can block indexing'}\n`);
 process.exit(0);

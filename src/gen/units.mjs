@@ -1,3 +1,4 @@
+import { valueIndex, tempIndex } from './common-values.mjs';
 import { CATS, TEMPS, toK, fromK, plural } from '../data/units.mjs';
 import { esc, faq } from '../layout.mjs';
 
@@ -67,6 +68,8 @@ function pairPage({ catKey, catName, from, to, factorText, formula, inverseFormu
     (v) => `<tr><td>${group(v)} ${esc(to.sym)}</td><td>${fmtG(invert(v))} ${esc(from.sym)}</td></tr>`
   ).join('');
 
+  const values = valueIndex.get(`${from.id}-to-${to.id}`) || [];
+
   const sib = siblings
     .map((s) => `<li><a href="/convert/${s.id}/">${esc(s.label)}</a></li>`)
     .join('');
@@ -115,6 +118,10 @@ ${widget}
 <p>${bDesc}</p>
 
 ${FAQ.html}
+
+${values.length ? `<h2>Common ${fromP} to ${toP} values</h2>
+<p class="muted">Worked answers for the values people look up most.</p>
+<ul class="linklist">${values.map((v) => `<li><a href="${v.path}">${esc(v.short)}</a></li>`).join('')}</ul>` : ''}
 
 <h2>Related ${catName.toLowerCase()} conversions</h2>
 <ul class="linklist">${sib}</ul>
@@ -224,6 +231,10 @@ ${faq([
           ? 'Celsius and Fahrenheit read the same at −40°: −40°C = −40°F.'
           : 'Only Celsius and Fahrenheit cross, at −40°. Kelvin and Rankine both start at absolute zero and never go negative.' },
     ]).html}
+${(tempIndex.get(`${a.id}-to-${b.id}`) || []).length ? `<h2>Common ${a.name} to ${b.name} values</h2>
+<p class="muted">Worked answers for the temperatures people look up most.</p>
+<ul class="linklist">${tempIndex.get(`${a.id}-to-${b.id}`).map((v) => `<li><a href="${v.path}">${esc(v.short)}</a></li>`).join('')}</ul>` : ''}
+
 <h2>Other temperature conversions</h2>
 <ul class="linklist">${tPairs.filter(([x, y]) => !(x === a && y === b)).map(([x, y]) => `<li><a href="/convert/${x.id}-to-${y.id}/">${x.name} to ${y.name}</a></li>`).join('')}</ul>`,
     });
