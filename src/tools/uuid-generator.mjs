@@ -41,6 +41,26 @@ export default {
 </table>
 <h2>Why v7 matters for databases</h2>
 <p>Random v4 values are inserted at scattered positions in an index, which fragments pages and hurts write throughput on large tables. UUID v7 puts the timestamp in the most significant bits, so new rows append at the right edge of the index — the same locality an auto-increment integer gives you, without a central sequence.</p>
+<h2>What UUIDv7 actually is</h2>
+<p>UUIDv7 was standardised in <strong>RFC 9562</strong> in May 2024, which replaced the long-serving RFC 4122. Its layout is what makes it different from v4:</p>
+<table>
+<thead><tr><th>Bits</th><th>Contents</th></tr></thead>
+<tbody>
+<tr><td>48</td><td>Unix timestamp in milliseconds, big-endian, in the most significant position</td></tr>
+<tr><td>4</td><td>Version — always <code>7</code>, the first character of the third group</td></tr>
+<tr><td>2</td><td>Variant — always <code>8</code>, <code>9</code>, <code>a</code> or <code>b</code>, the first character of the fourth group</td></tr>
+<tr><td>74</td><td>Random, from a cryptographic source</td></tr>
+</tbody>
+</table>
+<p>Because the timestamp occupies the leading bits, <strong>v7 values are time-sortable as plain strings</strong>. Two identifiers generated a millisecond apart compare in the order they were created, with no parsing and no separate column — which is the property the database benefit above is built on. Sorting a list of v7 strings alphabetically sorts it chronologically.</p>
+
+<h2>The tradeoff nobody mentions</h2>
+<p><strong>A v7 identifier tells you when it was created.</strong> The first twelve hex characters are a millisecond timestamp, readable by anyone holding the value:</p>
+<pre><code>01a063b0-47ce-7bc9-89a6-aeebe0a9a896
+^^^^^^^^^^^^  = 0x01a063b047ce ms since 1970</code></pre>
+<p>That is usually harmless and occasionally not. A v7 in a public URL discloses when the record was made — when an account signed up, when a document was drafted, when an order was placed. If the identifier is exposed to users and the creation time is not something you would print next to it, use v4, which carries 122 random bits and reveals nothing at all.</p>
+<p>The choice is therefore less about which version is newer and more about where the value goes: v7 for primary keys and internal references, where index locality pays for itself; v4 for anything a stranger will see.</p>
+
 <h2>Collision probability</h2>
 <p>A v4 UUID carries 122 random bits, or about 5.3&nbsp;×&nbsp;10<sup>36</sup> possible values. Generating a billion UUIDs per second for a century leaves the chance of a single collision far below one in a billion — assuming a proper cryptographic random source, which is exactly what <code>crypto.getRandomValues()</code> provides.</p>
 <h2>Nano ID and short IDs</h2>

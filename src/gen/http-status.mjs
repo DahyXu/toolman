@@ -58,8 +58,14 @@ export default async function () {
 
     const FAQ = faq([
       { q: `What does HTTP ${code} mean?`, a: when },
-      { q: `How do I fix a ${code} error?`, a: fix },
-      { q: `Is ${code} a client or server problem?`,
+      { q: code >= 400
+          ? `How do I fix a ${code} error?`
+          : code >= 300
+            ? `When should I use ${code}?`
+            : `What should I do about a ${code}?`, a: fix },
+      { q: cat === '4xx' || cat === '5xx'
+          ? `Is ${code} a client or server problem?`
+          : `Does ${code} mean something went wrong?`,
         a: cat === '4xx' ? 'A client problem by definition — the request needs to change. That said, a 4xx can still be the server\u2019s fault if it is misconfigured and rejecting valid requests.'
           : cat === '5xx' ? 'A server problem. The request was valid; the server failed to fulfil it. Nothing the client changes will help.'
           : cat === '3xx' ? 'Neither — it is an instruction to look somewhere else, and clients normally follow it automatically.'

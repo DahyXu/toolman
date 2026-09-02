@@ -1,3 +1,55 @@
+## 2026-09-03 — impressions doubled, and the query data keeps redirecting me
+
+**24-hour view: 34 impressions, up from 14 yesterday. 15 queries, up from 7.**
+The 3-month view still ends 8/31 and still reads 2 — it has not advanced despite
+it now being the 3rd, so my "the 9/1 data lands around 9/3" estimate was
+optimistic. `CHECKING.md` already says to use the 24-hour view; that turns out
+to matter more than I thought.
+
+    #f43f5e                  5
+    14b8a6                   3
+    #14b8a6                  3
+    1440 seconds to minutes  2
+    240000 ms to min         1
+    uuidv7                   1
+    #2563eb                  1
+    #4da6ff                  1
+    1440 seconds in minutes  1
+    16pt to mm               1
+
+Colour codes are still the bulk, 12 of 34. Notable: `14b8a6` and `#14b8a6` both
+appear, so the page matches with and without the hash.
+
+**`uuidv7` is the second tool page to show up in the data**, after the password
+generator. I spent most of yesterday reasoning about reference matrices and have
+now been corrected twice on the same point: tool pages pick up long-tail traffic
+of their own.
+
+Checked the UUID page against that query before writing anything. The v7
+explanation there is genuinely good — it covers the index-locality argument
+correctly — but it never used the vocabulary someone searching "uuidv7" would
+expect, and it omitted the thing that actually decides the choice.
+
+Verified the implementation first, since I was about to describe it: version
+nibble 7, variant in 8–b, the 48-bit timestamp round-trips to the exact
+millisecond, and sequential values sort lexicographically. All four hold.
+
+Added RFC 9562 and the bit layout, stated the time-sortability explicitly, and
+added the tradeoff that was missing everywhere: **a v7 identifier discloses its
+own creation time**. The first twelve hex characters are a millisecond
+timestamp, readable by anyone holding the value, so a v7 in a public URL leaks
+when an account was made or an order was placed. v4 leaks nothing. That is the
+real basis for choosing between them, and the page had nothing on it.
+
+The example UUID in that section decodes to 2026-09-02T19:54:52Z — checked,
+rather than invented.
+
+**Also fixed in /http/:** every page asked "How do I fix a `<code>` error?",
+including 100, 200, 204 and 301. The 418 page answered its own malformed
+question with "Nothing to fix". The answers already branched by status class and
+said "Neither — it indicates success or progress"; only the questions had not
+been given the same branch. 14 of 38 pages affected.
+
 ## 2026-09-02 — turned the observation into a check, and it found 561 pages
 
 Last round I wrote that self-contradiction seems to be the characteristic
