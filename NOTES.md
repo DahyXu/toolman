@@ -1,3 +1,43 @@
+## 2026-09-02 — improved the pages that can actually earn an impression
+
+Only eight pages are indexed, so those eight are the only pages capable of
+appearing in a search result at all. Audited them specifically rather than the
+site as a whole:
+
+| page | words | h2 |
+|---|---|---|
+| / | 1,085 | 9 |
+| /color/ | 1,063 | 2 |
+| /convert/ | 842 | 7 |
+| /dev/ | 559 | 4 |
+| /markdown-to-html/ | 464 | 6 |
+| /port/ | 426 | 3 |
+| /tools/ | 404 | 5 |
+| /color/228b22/ | 360 | 6 |
+| **/file/** | **294** | **11** |
+
+`/file/` stood out: 294 words under eleven headings, because nine of them were
+bare category labels sitting above a table. Two sections of actual prose for a
+hub gating 34 pages, and one of only eight pages Google has taken.
+
+Rewrote it to 992 words: a magic-number table for identifying a file when the
+extension is missing or wrong, a format-choice table for images with the
+reasoning rather than just the properties, the same-content-different-extension
+traps (.jpg/.jpeg are identical, .doc/.docx are not remotely), and the two
+invisible differences in text files — encoding and line endings.
+
+Verified every hex signature and its ASCII rendering by computation rather than
+from memory: all ten correct.
+
+**The broken-link check paid for itself again.** Three of the format links I
+added pointed at `/file/jpg/`, `/file/png/` and `/file/gif/`, which do not
+exist — that section deliberately covers the less common formats. The audit
+named all three immediately. Removed the links, kept the names.
+
+One thing to remember when verifying a deploy: an un-busted URL comes back from
+Cloudflare's edge cache and can report the old content. The first check said the
+new section was not live; a cache-busting query string showed it was.
+
 ## 2026-09-02 — the thin pages, and a slug bug hiding among them
 
 Ran the content-depth report properly for the first time and worked the tail

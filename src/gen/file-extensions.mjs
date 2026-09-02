@@ -272,7 +272,50 @@ ${list.map(([ext, name]) => `<tr><td><a href="/file/${ext}/"><strong>.${ext}</st
 <h2>The extension is a hint, not a fact</h2>
 <p>A file's extension is just the end of its name — renaming <code>photo.png</code> to <code>photo.jpg</code> changes nothing about the bytes inside. What programs actually rely on is the <em>magic number</em>, the first few bytes of the file: <code>%PDF</code> for a PDF, <code>PK</code> for anything ZIP-based, <code>\\x89PNG</code> for a PNG. On Unix, <code>file somefile</code> reports what a file really is regardless of its name.</p>
 <h2>Formats that are secretly ZIP files</h2>
-<p>DOCX, XLSX, PPTX, EPUB, JAR, APK and IPA are all ZIP archives with a mandated internal layout. Rename any of them to <code>.zip</code>, extract it, and you can read the XML or class files inside — genuinely useful when a document will not open and you need to recover the text.</p>`,
+<p>DOCX, XLSX, PPTX, EPUB, JAR, APK and IPA are all ZIP archives with a mandated internal layout. Rename any of them to <code>.zip</code>, extract it, and you can read the XML or class files inside — genuinely useful when a document will not open and you need to recover the text.</p>
+
+<h2>Identifying a file by its first bytes</h2>
+<p>If an extension is missing or wrong, the signature at the start of the file is what actually settles the question. These are the ones worth recognising on sight:</p>
+<table>
+<thead><tr><th>First bytes</th><th>As text</th><th>Format</th></tr></thead>
+<tbody>
+<tr><td><code>89 50 4E 47</code></td><td><code>.PNG</code></td><td>PNG</td></tr>
+<tr><td><code>FF D8 FF</code></td><td>—</td><td>JPEG</td></tr>
+<tr><td><code>47 49 46 38</code></td><td><code>GIF8</code></td><td>GIF</td></tr>
+<tr><td><code>25 50 44 46</code></td><td><code>%PDF</code></td><td>PDF</td></tr>
+<tr><td><code>50 4B 03 04</code></td><td><code>PK..</code></td><td>ZIP, and everything built on it</td></tr>
+<tr><td><code>52 61 72 21</code></td><td><code>Rar!</code></td><td>RAR</td></tr>
+<tr><td><code>1F 8B</code></td><td>—</td><td>gzip</td></tr>
+<tr><td><code>52 49 46 46</code></td><td><code>RIFF</code></td><td>WAV or AVI — the next four bytes say which</td></tr>
+<tr><td><code>00 00 00 .. 66 74 79 70</code></td><td><code>....ftyp</code></td><td>MP4, MOV, HEIC and relatives</td></tr>
+<tr><td><code>7F 45 4C 46</code></td><td><code>.ELF</code></td><td>Linux executable</td></tr>
+<tr><td><code>4D 5A</code></td><td><code>MZ</code></td><td>Windows executable — the initials of a DOS engineer</td></tr>
+</tbody></table>
+<p>On macOS or Linux, <code>file something</code> reads these for you. On Windows, <code>certutil -dump</code> or any hex editor will show the first line. A file whose signature does not match its extension is either misnamed or deliberately disguised, and the second case is worth taking seriously in an email attachment.</p>
+
+<h2>Choosing an image format</h2>
+<p>Most "which format should I use" questions come down to three properties: whether the compression throws information away, whether transparency is supported, and whether animation is.</p>
+<table>
+<thead><tr><th>Format</th><th>Compression</th><th>Transparency</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td>JPEG</td><td>Lossy</td><td>No</td><td>Photographs, where a little quality loss is invisible and the saving is large</td></tr>
+<tr><td>PNG</td><td>Lossless</td><td>Yes</td><td>Screenshots, logos, anything with sharp edges or flat colour</td></tr>
+<tr><td><a href="/file/webp/">WebP</a></td><td>Either</td><td>Yes</td><td>The web, where it beats both of the above by roughly 25–30% at the same quality</td></tr>
+<tr><td><a href="/file/svg/">SVG</a></td><td>Not applicable</td><td>Yes</td><td>Icons and diagrams — it is text describing shapes, so it scales to any size</td></tr>
+<tr><td>GIF</td><td>Lossless, 256 colours</td><td>1-bit only</td><td>Almost nothing any more; a short video file is smaller and looks better</td></tr>
+<tr><td><a href="/file/avif/">AVIF</a></td><td>Lossy or lossless</td><td>Yes</td><td>Smaller than WebP again, with support now broad enough to use with a fallback</td></tr>
+</tbody></table>
+<p>The mistake that costs the most is saving a screenshot as JPEG. Lossy compression works by discarding detail the eye is unlikely to miss in a photograph, and it is exactly wrong for text and sharp edges — you get visible smudging around every letter and a <em>larger</em> file than PNG would have produced. The reverse mistake, a photograph saved as PNG, is merely wasteful rather than ugly.</p>
+<p>Converting between them never recovers what was lost. A JPEG re-saved as PNG keeps every compression artefact and simply stops adding new ones; the damage is already in the pixels.</p>
+
+<h2>Why the same content has several extensions</h2>
+<p>Some pairs are genuinely the same format under different names, and some only look that way. <code>.jpg</code> and <code>.jpeg</code> are identical — the three-letter version exists because early Windows filesystems allowed no more. <code>.htm</code> and <code>.html</code> are the same for the same reason. <code>.tif</code> and <code>.tiff</code> likewise.</p>
+<p>Others are traps. <code>.doc</code> and <code>.docx</code> are completely different formats: the first is a binary format from the 1990s, the second a ZIP of XML introduced in 2007. <code>.xls</code> and <code>.xlsx</code> differ the same way. Renaming one to the other produces a file that nothing can open, which is the single most common cause of "the file is corrupted" when someone has tried to fix a compatibility problem by editing the name.</p>
+
+<h2>Text files and the invisible differences</h2>
+<p>A plain text file has no header, so nothing inside it declares its encoding or line endings. Two files that look identical can differ in both, and both differences cause real problems.</p>
+<p><strong>Encoding</strong> is usually UTF-8 now, but files produced by older Windows software may be in a regional codepage, which is why text sometimes arrives with <code>Ã©</code> where <code>é</code> should be — that is UTF-8 bytes being read as Latin-1. A byte-order mark at the start (<code>EF BB BF</code>) marks a file as UTF-8 explicitly, and is helpful to Windows and an annoyance to Unix tools, which will treat it as content.</p>
+<p><strong>Line endings</strong> are a single newline on Unix and macOS, and a carriage return plus newline on Windows. Git normally hides this from you, and a diff showing every line as changed is the usual sign that it has not.</p>`,
   });
 
   return pages;
