@@ -1,3 +1,37 @@
+## 2026-09-02 — indexation went from 8 pages to about 448
+
+Went back to the actual bottleneck rather than more content polish, and the
+picture has changed materially since this morning.
+
+**`site:toolman.top` now reports about 448 results.** It reported 8 this
+morning. Verified it is not a display artefact: page 11 of the results still
+carries the 448 figure and lists deep pages — `/convert/pc-to-em/`,
+`/convert/px-to-percent/`, `/convert/pints-to-gallons/` — so Google has indexed
+hundreds of the unit-pair pages, not just hubs.
+
+New in the indexed set since this morning: `/color-converter/` (a tool page),
+`/convert/` (confirmed), `/image/`, `/color/1877f2/`, `/color/afdf20/`,
+`/paper/letter/`. The pattern has broadened from hubs to leaves.
+
+`site:toolman.top/chmod/` returns nothing, which is right — that section is a
+few hours old.
+
+**GSC has moved too, slightly.** Impressions 1 → **2**, and the data window
+advanced from 8/30 to **8/31**, last updated five hours ago. The site launched
+on 9/1, so the window still ends the day before launch: none of the 448 indexed
+pages have had a chance to appear in reported impressions yet. That arrives with
+the 9/1 data, around 9/3.
+
+**Request-indexing could not be operated.** The inspection box finally accepted
+input by setting the value through the native setter and dispatching input and
+Enter events — synthetic typing never worked. `/chmod/` came back "Google 无法
+识别此网址", never crawled, which is expected for a section built today. Clicking
+"请求编入索引" produced no confirmation and no quota message, so I cannot say
+whether it was submitted, and I am not going to claim it was.
+
+That lever is marginal now in any case. Indexation grew fifty-six-fold in a day
+without it, and IndexNow pushes all 6,674 URLs on every deploy.
+
 ## 2026-09-02 — the numbers we tell people about ourselves had drifted
 
 Two smaller things after the section-by-section read.
