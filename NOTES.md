@@ -28,12 +28,19 @@ Also confirmed the remaining conversion queries are properly served —
 minutes", and `240000 ms to min` is covered on the milliseconds page. Those
 needed nothing.
 
-Three smaller gaps found in the same sweep and left for now: the QR page
-discusses error correction without naming levels L and H, the base converter
-does not say "base 36" in prose, and the image compressor never mentions
-resizing. None is wrong, unlike the token counter — they are only missing
-vocabulary, and I would rather add that when a query shows someone looking for
-it than guess.
+The same sweep flagged three more, and **all three were my own probe being
+wrong.** I checked before acting, and none was a gap:
+
+- The QR page does name the error-correction levels — "L — 7%, M — 15%,
+  Q — 25%, H — 30%". My probe looked for the literal string "level L".
+- The base converter says "Base 36". My probe looked for lowercase.
+- The image compressor has a whole section headed "Resizing beats compressing"
+  and a Max width control. My probe looked for "resize" and missed "Resizing".
+
+So the sweep produced four flags, one real and serious, three artefacts of
+case-sensitive exact matching. Worth recording because the natural next step
+after a sweep is to act on its output, and three quarters of this one would have
+been edits to pages that were already fine.
 
 ## 2026-09-03 — impressions doubled, and the query data keeps redirecting me
 
