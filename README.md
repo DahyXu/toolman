@@ -71,6 +71,12 @@ Adding a tool means dropping one file into `src/tools/`. The build picks it up,
 generates the page, adds it to the category index, the tool list, the home page,
 the search index and the sitemap.
 
+## Reading the numbers
+
+Search Console, `site:` counts and the sitemap report all have traps that look
+like faults and are not. [CHECKING.md](CHECKING.md) records the ones this
+project hit, with the tell for each.
+
 ## Commands
 
 ```bash
