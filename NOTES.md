@@ -1,3 +1,40 @@
+## 2026-09-03 — the token counter named no models in its HTML
+
+The two query-driven gaps so far (password length, uuidv7) shared a shape: a
+tool with a configurable parameter whose page never discussed specific values of
+it. Rather than wait for the next query to point at the next one, I checked all
+the parameterised tools against the terms someone would search them with.
+
+That turned up something worse than a vocabulary gap. **The AI token counter's
+model table was rendered entirely by script**, so the static HTML contained no
+"GPT-4o", no "Claude", no "Gemini" — on a page whose entire subject is token
+counts for those models, and whose own title promises them. Google does execute
+JavaScript, but as a deferred second pass; the first-pass HTML named none of the
+things the page is about.
+
+The list now lives at module scope and is rendered server-side, with the script
+interpolating the same array so the two cannot drift. The static rows carry the
+model, its characters-per-token ratio and its input price — the facts that do
+not depend on what the visitor types — and the script fills in the token count
+and cost on input. Verified from the deployed HTML with script tags stripped:
+all three model families are there.
+
+Checked the tool still works rather than assuming: 44 characters, 9 words,
+GPT-4o 10 tokens at 4.40 characters per token, no console errors. Those match
+the figures I verified against a real BPE tokenizer yesterday.
+
+Also confirmed the remaining conversion queries are properly served —
+`1440 seconds to minutes` has its own page answering "1,440 seconds = 24
+minutes", and `240000 ms to min` is covered on the milliseconds page. Those
+needed nothing.
+
+Three smaller gaps found in the same sweep and left for now: the QR page
+discusses error correction without naming levels L and H, the base converter
+does not say "base 36" in prose, and the image compressor never mentions
+resizing. None is wrong, unlike the token counter — they are only missing
+vocabulary, and I would rather add that when a query shows someone looking for
+it than guess.
+
 ## 2026-09-03 — impressions doubled, and the query data keeps redirecting me
 
 **24-hour view: 34 impressions, up from 14 yesterday. 15 queries, up from 7.**

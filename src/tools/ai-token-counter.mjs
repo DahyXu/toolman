@@ -1,3 +1,16 @@
+// Model pricing per million tokens, input and output. Shared between the
+// server-rendered table and the script so the two cannot drift apart.
+const MODELS = [
+  ['GPT-4o / GPT-4.1', 'gpt', 2.50, 10.00],
+  ['GPT-4o mini', 'gpt', 0.15, 0.60],
+  ['Claude Sonnet', 'claude', 3.00, 15.00],
+  ['Claude Haiku', 'claude', 0.80, 4.00],
+  ['Gemini 2.5 Flash', 'gemini', 0.30, 2.50],
+  ['Gemini 2.5 Pro', 'gemini', 1.25, 10.00],
+  ['Llama 3.1 70B', 'llama', 0.60, 0.60],
+];
+const FAM = { gpt: 1.00, claude: 1.08, gemini: 0.98, llama: 1.05 };
+
 export default {
   slug: 'ai-token-counter',
   cat: 'ai',
@@ -24,7 +37,7 @@ export default {
   <h2>Estimated tokens by model</h2>
   <table>
     <thead><tr><th>Model</th><th>Tokens</th><th>Chars / token</th><th>Est. cost</th></tr></thead>
-    <tbody id="rows"></tbody>
+    <tbody id="rows">${MODELS.map(([name, fam, pin]) => `<tr><td>${name}</td><td>—</td><td>${(4 / FAM[fam]).toFixed(2)}</td><td>$${pin.toFixed(2)} / 1M input</td></tr>`).join('')}</tbody>
   </table>
   <p class="muted" id="note">Estimates use per-family heuristics calibrated on English, code and CJK text. Real counts from the provider tokenizer are typically within a few percent.</p>
 </div>`,
@@ -66,17 +79,9 @@ export default {
   script: `
 const $=s=>document.querySelector(s),I=$('#in');
 // price per 1M tokens [input, output]
-const MODELS=[
-  ['GPT-4o / GPT-4.1',        'gpt',   2.50, 10.00],
-  ['GPT-4o mini',             'gpt',   0.15,  0.60],
-  ['Claude Sonnet',           'claude',3.00, 15.00],
-  ['Claude Haiku',            'claude',0.80,  4.00],
-  ['Gemini 2.5 Flash',        'gemini',0.30,  2.50],
-  ['Gemini 2.5 Pro',          'gemini',1.25, 10.00],
-  ['Llama 3.1 70B',           'llama', 0.60,  0.60],
-];
+const MODELS=${JSON.stringify(MODELS)};
 // relative token weight per family vs the baseline heuristic
-const FAM={gpt:1.00,claude:1.08,gemini:0.98,llama:1.05};
+const FAM=${JSON.stringify(FAM)};
 
 function estimate(t){
   if(!t)return 0;
