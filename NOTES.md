@@ -1,3 +1,33 @@
+## 2026-09-02 — four category titles were repeating themselves
+
+Went back to the eight pages Google has actually indexed, since those are the
+only pages that can earn an impression today, and read their titles rather than
+counting their words.
+
+`/dev/` read **"Developer Tools — Free Online Developer Tools | Toolman"**. The
+shared template was `${name} — Free Online ${name}`, so four of the five
+category pages said their own name twice and nothing else:
+
+    Developer Tools — Free Online Developer Tools
+    Text Tools      — Free Online Text Tools
+    Image Tools     — Free Online Image Tools
+    AI Tools        — Free Online AI Tools
+
+`/convert/` read properly only because it had been overridden by hand at some
+point, which is what hid the pattern.
+
+Each category now carries its own tail describing what is in it, which is also
+closer to how the thing is searched for:
+
+    Developer Tools — Formatters, Encoders & Validators
+    Text Tools      — Word Count, Diff, Case & Markdown
+    Image Tools     — Compress & Convert in Your Browser
+    AI Tools        — Token Counting & Prompt Cost
+
+The audit never flagged this: it checks for missing titles, duplicate titles
+across pages, and titles over 65 characters. A title that is unique, present and
+short can still be useless, and no length check will say so.
+
 ## 2026-09-02 — the sitemap ranking had drifted from the site
 
 Stopped adding pages. The site is 6,674 pages on a two-day-old domain with no

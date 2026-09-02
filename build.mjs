@@ -283,7 +283,7 @@ for (const c of Object.values(CATEGORIES)) {
   }
 
   write(`/${c.slug}/`, page({
-    title: `${c.name} — Free Online ${c.name} | ${SITE.name}`,
+    title: `${c.name} — ${c.tail ? c.tail : `${list.length} Free Online Tools`} | ${SITE.name}`,
     desc: `${c.desc} ${list.length} free tools that run in your browser — no upload, no sign-up.`,
     path: `/${c.slug}/`,
     h1: c.name,

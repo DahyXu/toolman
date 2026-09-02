@@ -12,9 +12,9 @@ export const SITE = {
 
 // Tool categories used for navigation and hub pages
 export const CATEGORIES = {
-  dev: { slug: 'dev', name: 'Developer Tools', desc: 'Formatters, converters, generators and validators for developers.' },
-  text: { slug: 'text', name: 'Text Tools', desc: 'Count, convert, compare and transform text.' },
+  dev: { slug: 'dev', name: 'Developer Tools', tail: 'Formatters, Encoders & Validators', desc: 'Formatters, converters, generators and validators for developers.' },
+  text: { slug: 'text', name: 'Text Tools', tail: 'Word Count, Diff, Case & Markdown', desc: 'Count, convert, compare and transform text.' },
   convert: { slug: 'convert', name: 'Converters', desc: 'Convert units, colors, time and data formats.' },
-  image: { slug: 'image', name: 'Image Tools', desc: 'Compress, resize and convert images in your browser.' },
-  ai: { slug: 'ai', name: 'AI Tools', desc: 'Utilities for working with large language models.' },
+  image: { slug: 'image', name: 'Image Tools', tail: 'Compress & Convert in Your Browser', desc: 'Compress, resize and convert images in your browser.' },
+  ai: { slug: 'ai', name: 'AI Tools', tail: 'Token Counting & Prompt Cost', desc: 'Utilities for working with large language models.' },
 };
