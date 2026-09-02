@@ -72,14 +72,32 @@ const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').r
 function inline(s){
   s=esc(s);
   s=s.replace(/\`([^\`]+)\`/g,(m,c)=>'<code>'+c+'</code>');
-  s=s.replace(/!\\[([^\\]]*)\\]\\(([^)\\s]+)(?:\\s+"[^"]*")?\\)/g,'<img src="$2" alt="$1">');
-  s=s.replace(/\\[([^\\]]+)\\]\\(([^)\\s]+)(?:\\s+"[^"]*")?\\)/g,'<a href="$2" rel="nofollow noopener">$1</a>');
+  // A URL may contain one level of balanced parentheses — Wikipedia titles do
+  // this constantly — so stopping at the first ")" truncates real links.
+  var URLPAT=/((?:[^()\\s]|\\([^()\\s]*\\))+)/.source;
+  // The generated tags are parked here so the emphasis rules below cannot reach
+  // inside an href and turn its underscores into <em>.
+  var held=[];
+  var hold=function(html){held.push(html);return '\\u0000'+(held.length-1)+'\\u0000'};
+  // Only schemes that cannot execute. Anything else keeps the text and drops
+  // the link, which is safer than emitting an href nobody should paste.
+  var safeUrl=function(u){
+    var t=u.trim().replace(/&amp;/g,'&');
+    return /^(https?:|mailto:|tel:|ftp:|#|\\/|\\.)/i.test(t) ? t : null;
+  };
+  s=s.replace(new RegExp('!\\\\[([^\\\\]]*)\\\\]\\\\('+URLPAT+'(?:\\\\s+"[^"]*")?\\\\)','g'),function(m,alt,u){
+    var safe=safeUrl(u); return safe? hold('<img src="'+safe+'" alt="'+alt+'">') : alt;
+  });
+  s=s.replace(new RegExp('\\\\[([^\\\\]]+)\\\\]\\\\('+URLPAT+'(?:\\\\s+"[^"]*")?\\\\)','g'),function(m,text,u){
+    var safe=safeUrl(u); return safe? hold('<a href="'+safe+'" rel="nofollow noopener">'+text+'</a>') : text;
+  });
   s=s.replace(/(^|[^*])\\*\\*([^*]+)\\*\\*/g,'$1<strong>$2</strong>');
   s=s.replace(/(^|[^_])__([^_]+)__/g,'$1<strong>$2</strong>');
   s=s.replace(/(^|[^*])\\*([^*\\n]+)\\*/g,'$1<em>$2</em>');
   s=s.replace(/(^|[^_])_([^_\\n]+)_/g,'$1<em>$2</em>');
   s=s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
   s=s.replace(/  $/,'<br>');
+  s=s.replace(/\\u0000(\\d+)\\u0000/g,function(m,i){return held[+i]});
   return s;
 }
 function md(src){
