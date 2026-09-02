@@ -159,8 +159,8 @@ function pairPage(a, b, all) {
 <h2>About ${b.ab}</h2>
 <p><strong>${b.name}</strong> (${b.ab}) is ${offStr(b.off)}. It is used in ${b.where}.</p>
 
-<h2>A warning about daylight saving</h2>
-<p>The abbreviations on this page each denote a single fixed offset, so every figure here is exact. What changes is <em>which</em> abbreviation a place uses. New York is on ${'EST'} in January and EDT in July, so "New York time" moves by an hour twice a year while EST and EDT themselves never move. When you schedule across zones, name the city rather than the abbreviation, or use UTC — that is what calendar software does internally.</p>
+<h2>Does this gap change with the seasons?</h2>
+${seasonNote(a, b, d)}
 
 ${FAQ.html}
 
@@ -168,6 +168,52 @@ ${FAQ.html}
 <ul class="linklist">${siblings}</ul>
 <p><a href="/convert/time-zones/">All time zone converters</a> · <a href="/timestamp-converter/">Unix timestamp converter</a></p>`,
   };
+}
+
+
+// Standard/daylight partners. An abbreviation here is a fixed offset by
+// definition, but the region behind it usually is not — which is the single
+// most useful thing a conversion page between two of them can point out.
+const DST_PARTNER = {
+  est: ['edt', 'March to November'], edt: ['est', 'November to March'],
+  cst: ['cdt', 'March to November'], cdt: ['cst', 'November to March'],
+  mst: ['mdt', 'March to November'], mdt: ['mst', 'November to March'],
+  pst: ['pdt', 'March to November'], pdt: ['pst', 'November to March'],
+  gmt: ['bst', 'late March to late October'], bst: ['gmt', 'late October to late March'],
+  cet: ['cest', 'late March to late October'], cest: ['cet', 'late October to late March'],
+  eet: ['eest', 'late March to late October'], eest: ['eet', 'late October to late March'],
+  aest: ['aedt', 'October to April'], aedt: ['aest', 'April to October'],
+};
+
+function seasonNote(a, b, diff) {
+  const byId = (id) => Z.find((z) => z.id === id);
+  const out = [];
+  const pa = DST_PARTNER[a.id], pb = DST_PARTNER[b.id];
+
+  if (!pa && !pb) {
+    out.push(`Neither ${a.ab} nor ${b.ab} shifts with the seasons, so this ${Math.abs(diff)}-hour difference holds all year. That is unusual enough to be worth relying on: most cross-continental gaps move twice a year.`);
+  } else {
+    const parts = [];
+    if (pa) {
+      const q = byId(pa[0]);
+      if (q) parts.push(`the region on ${a.ab} switches to ${q.ab} (UTC${q.off >= 0 ? '+' : '\u2212'}${Math.abs(q.off)}) from ${pa[1]}`);
+    }
+    if (pb) {
+      const q = byId(pb[0]);
+      if (q) parts.push(`the region on ${b.ab} switches to ${q.ab} (UTC${q.off >= 0 ? '+' : '\u2212'}${Math.abs(q.off)}) from ${pb[1]}`);
+    }
+    if (parts.length) {
+      out.push(`<strong>This gap is seasonal.</strong> The abbreviations themselves are fixed offsets, but ${parts.join(', and ')}. So the ${Math.abs(diff)}-hour figure on this page is correct for the part of the year when both places are actually on these abbreviations, and changes by an hour outside it.`);
+      if (pa && pb) {
+        out.push('Because both sides shift, there are also short windows each spring and autumn when one has changed and the other has not — the two regions do not switch on the same date. A recurring meeting set during one of those windows is an hour out for a week or two, which is the most common way this catches people.');
+      } else {
+        const fixed = pa ? b : a;
+        out.push(`${fixed.ab} does not shift, so the whole change comes from one side. A recurring meeting fixed in ${fixed.ab} will appear to move by an hour for everyone on the other side, twice a year, without anyone changing anything.`);
+      }
+    }
+  }
+  out.push(`This is the reason scheduling systems store an IANA zone such as <code>${a.ab === 'UTC' ? 'Etc/UTC' : 'Region/City'}</code> rather than an offset or an abbreviation: the zone knows its own rules and the offset does not.`);
+  return out.map((x) => `<p>${x}</p>`).join('');
 }
 
 export default async function () {

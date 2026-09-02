@@ -1,3 +1,34 @@
+## 2026-09-02 — the 848 timezone pages were missing the thing that matters
+
+Chased the largest section rather than the worst score: `/convert/` is 4,200
+pages and its worst pair was two timezone conversions, of which there are 848 —
+an order of magnitude more pages than cron's 59.
+
+Each pair page carried one **identical** paragraph warning that abbreviations
+are fixed offsets while places switch. True, generic, and on all 848 pages.
+Replaced it with the version that is actually about the two zones in question,
+derived from a standard/daylight partner map:
+
+- SGT to CST — the gap is 14 hours, but the region on CST moves to CDT from
+  March to November, so the figure only holds for part of the year.
+- UTC to JST — neither shifts, so 9 hours holds all year. Worth saying,
+  because it is unusual.
+- PST to EST — both shift, and they do not switch on the same date, so there
+  are short windows each spring and autumn when a recurring meeting is an hour
+  out. That is the most common way this catches people, and no page said it.
+
+This is a replacement rather than an addition: shared prose out, per-pair prose
+in. The similarity metric barely moved (87% either way, and already in the "~"
+band rather than the "✗" one) because the hour-by-hour table dominates the
+vocabulary. The content is better regardless — the metric was the reason I
+looked, not the reason to make the change.
+
+**My own dead-code check earned its keep again.** I had drafted a `NO_DST` set
+listing zones that never shift and then written the logic off the absence of a
+`DST_PARTNER` entry instead, leaving the set defined and never read. The audit
+named it immediately. Removed — two lists holding the same information is how
+they drift apart.
+
 ## 2026-09-02 — why the child sitemaps say "cannot fetch", and per-port content
 
 **The sitemap question, answered from git history rather than guessed.** The
