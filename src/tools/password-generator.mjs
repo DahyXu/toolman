@@ -40,7 +40,37 @@ export default {
   <div class="big" id="phrase" style="margin-top:10px"></div>
   <p class="muted" id="pstrength"></p>
 </div>`,
-  about: `<h2>What actually makes a password strong</h2>
+  about: `<h2>How many characters is enough?</h2>
+<p>The generator defaults to 16, and the honest answer to "is 8 enough" is no. With the full character set here — 26 lowercase, 26 uppercase, 10 digits and 25 symbols, so 87 possibilities per position — each character adds about 6.44 bits. That gives:</p>
+<table>
+<thead><tr><th>Length</th><th>Entropy</th><th>Time to crack offline</th></tr></thead>
+<tbody>
+<tr><td>8</td><td>52 bits</td><td><strong>about 27 minutes</strong></td></tr>
+<tr><td>12</td><td>77 bits</td><td>roughly 3,000 years</td></tr>
+<tr><td>15</td><td>97 bits</td><td>around 2 billion years</td></tr>
+<tr><td>16</td><td>103 bits</td><td>around 170 billion years</td></tr>
+<tr><td>20</td><td>129 bits</td><td>longer than the universe has existed, by a wide margin</td></tr>
+<tr><td>24 or more</td><td>155+ bits</td><td>the number stops meaning anything</td></tr>
+</tbody>
+</table>
+<p>Those figures assume an <em>offline</em> attack at a trillion guesses per second — someone has stolen the password database and is running it against fast hardware. That is the scenario worth designing for, because it is the one where the attacker has no rate limit.</p>
+
+<h2>Where the crack-time numbers stop applying</h2>
+<p>Three caveats, because a table like the one above is easy to over-read.</p>
+<p><strong>The hash matters more than the length, up to a point.</strong> A trillion guesses per second is realistic against a fast hash such as unsalted SHA-256. Against bcrypt, scrypt or Argon2 — which exist precisely to be slow — the same hardware manages thousands or millions of guesses per second, not trillions. A 12-character password behind Argon2 is far safer than a 16-character one behind MD5. You rarely get to choose, which is why length is the lever you do control.</p>
+<p><strong>Online attacks are a different problem.</strong> Guessing against a live login is limited by the service's rate limiting and lockout, so even a weak password survives far longer there. The offline case is the one that has actually leaked billions of real passwords.</p>
+<p><strong>None of this applies to a password you reused.</strong> If the same password protects two accounts and one of them leaks, its entropy is irrelevant — the attacker does not need to guess it. Length protects against guessing, and only a password manager protects against reuse.</p>
+
+<h2>Practical answers</h2>
+<ul>
+<li><strong>8 characters is not enough</strong> for anything that matters, whatever the site's minimum says. It is inside the range a determined attacker brute-forces on stolen hashes.</li>
+<li><strong>12 is a reasonable floor</strong> when something imposes a limit and you cannot go higher.</li>
+<li><strong>16 is the sensible default</strong>, which is why it is the default here. It costs nothing extra when a password manager types it for you.</li>
+<li><strong>Beyond about 20 there is no security argument left</strong> — the difference between 129 bits and 206 bits is the difference between two impossibilities. Longer is only worth choosing if a policy demands it.</li>
+</ul>
+<p>If you have to type the password by hand rather than paste it, use the passphrase generator above instead. Four or five random words are easier to type accurately and reach comparable entropy at a length no one would choose to type as random characters.</p>
+
+<h2>What actually makes a password strong</h2>
 <p>Strength is measured in <strong>entropy</strong> — the number of equally likely possibilities an attacker must search. It is <code>length × log₂(alphabet size)</code>. Length dominates: adding one character to a 62-symbol alphabet multiplies the search space by 62, while adding symbols to a fixed-length password barely moves the needle.</p>
 <table>
 <tr><th>Entropy</th><th>Verdict</th></tr>

@@ -1,3 +1,40 @@
+## 2026-09-02 — first real query data, and it corrected me
+
+The 3-month performance view reads 2 impressions, which is misleading: its data
+window ends 8/31, the day before launch. The **24-hour view** is near real time
+and shows **14 impressions** in the last day. The site is earning impressions
+now; the headline number simply cannot see them yet.
+
+More useful than the count, the seven queries behind it:
+
+    240000 ms to min                    1
+    14b8a6                              1
+    #4da6ff                             1
+    16pt to mm                          1
+    8 character password generator      1
+    password generator 8 characters     1
+    password generator 15 characters    1
+
+**What this confirms.** Two are bare hex codes, which is exactly the pattern I
+measured earlier — arbitrary colours rank because nothing competes for them.
+
+**What it corrected.** Three of seven are length-specific password-generator
+queries. I had spent the day reasoning about reference matrices and had not
+considered that a tool page would pick up long-tail traffic of its own. The page
+has a length slider defaulting to 16 and **did not contain the string "8
+characters" anywhere** — it answered none of the three queries that reached it.
+
+Added a section that does, with figures computed from the generator's own
+87-character set at log2(87) = 6.443 bits per character: 8 characters is 52 bits
+and falls in about 27 minutes to an offline attack at a trillion guesses a
+second; 16 is 103 bits; past 20 the numbers stop meaning anything. Plus the
+three caveats that make the table honest — that the hash matters more than the
+length up to a point, that online attacks are rate-limited and a different
+problem, and that none of it applies to a reused password.
+
+No new pages. The queries pointed at a gap in a page that already existed, which
+is what real data is for. Page went from about 700 words to 1,070.
+
 ## 2026-09-02 — the colour coverage is aimed at the right half
 
 Checked whether the section that ranks is composed of the pages that *can*
