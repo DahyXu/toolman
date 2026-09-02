@@ -1,3 +1,57 @@
+## 2026-09-02 — the site ranks #1 for something
+
+Indexed does not mean ranking, so I measured the second thing rather than
+assuming it followed from the first.
+
+**Head terms: nowhere.** "pints to gallons", "px to percent converter",
+"228B22 hex color", "inches of mercury to millimeters of mercury", "ansi d paper
+size in pixels" — none in the top 9 to 14. Expected on a two-day-old domain with
+no backlinks.
+
+**Obscure long tail: page one.**
+
+| query | rank |
+|---|---|
+| `169c16 color code` | **1** |
+| `afdf20 color` | **4** |
+| `1877f2 color` | outside 12 |
+| `228B22 hex color` | outside 12 |
+
+The split is not random. `#1877F2` is Facebook's blue and `#228B22` is Forest
+Green — named colours with established pages behind them. `#169C16` and
+`#AFDF20` are arbitrary hex codes nobody has written about, so there is nothing
+to outrank. The site is not being suppressed; it is simply new, and it wins
+where nothing else is competing.
+
+The pattern does **not** extend to the other sections yet. Even a genuinely
+niche conversion like inHg to mmHg has established sites on it, and paper sizes
+do too. Colour hex codes are unusual in having millions of queries with no
+incumbent at all.
+
+**Where the indexing actually is**, by section:
+
+| section | indexed | total |
+|---|---|---|
+| /convert/ | 228 | 4,199 |
+| /cooking/ | 152 | 990 |
+| /color/ | 46 | 681 |
+
+So the two page-one rankings come from 46 indexed colour pages. There are 635
+more not yet crawled, and that is where near-term impressions will come from.
+
+Checked whether discovery is the limit and it is not: every colour page is in
+the sitemap, the hub links to all 681, IndexNow submits them on every deploy,
+and each colour page links to ten related colours, so the crawl graph is dense.
+What remains is Google's crawl rate on a new domain, which is time rather than
+anything I can configure.
+
+Worth being explicit about a temptation I did not take. The obvious move from
+this finding is to generate tens of thousands more obscure hex pages, since they
+demonstrably rank. That is exactly the same-day burst of templated pages on a
+domain with nothing vouching for it that got the site in the r/SEO thread
+suppressed. The 681 that exist already rank; the constraint is crawl rate, not
+page supply.
+
 ## 2026-09-02 — indexation went from 8 pages to about 448
 
 Went back to the actual bottleneck rather than more content polish, and the
