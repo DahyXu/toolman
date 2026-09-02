@@ -54,7 +54,7 @@ function pairPage(a, b, all) {
       .join('');
 
   const FAQ = faq([
-    { q: `What is 16${A} in ${B}?`, a: `16${A} equals <strong>${fmt(16 * k)}${B}</strong> at a 16&nbsp;px root font size.` },
+    { q: `What is 16${A} in ${B}?`, a: `16${A} equals <strong>${fmt(16 * k)}${B}</strong>${anyRel ? ' at a 16&nbsp;px root font size' : ', and that does not change with the font size because both units are absolute'}.` },
     { q: `How do I convert ${A} to ${B}?`,
       a: `Multiply the ${A} value by ${fmt(k)}. Going the other way, multiply the ${B} value by ${fmt(1 / k)}.` },
     anyRel
@@ -71,7 +71,7 @@ function pairPage(a, b, all) {
   return {
     path,
     title: `${titleA} to ${titleB} Converter — CSS Unit Calculator | Toolman`,
-    desc: `Convert ${A} to ${B} for CSS. 1${A} = ${fmt(k)}${B} at the default 16 px root font size${anyRel ? ', adjustable below' : ''}. Includes the formula and a full conversion table.`,
+    desc: `Convert ${A} to ${B} for CSS. 1${A} = ${fmt(k)}${B}${anyRel ? ' at the default 16 px root font size, adjustable below' : ', a fixed ratio'}. Includes the formula and a full conversion table.`,
     h1: `Convert ${A} to ${B}`,
     crumbs: [
       { name: 'Converters', path: '/convert/' },
@@ -79,13 +79,13 @@ function pairPage(a, b, all) {
       { name: `${titleA} to ${titleB}`, path },
     ],
     jsonld: [FAQ.schema],
-    body: `<p class="muted">At the browser default root font size of 16&nbsp;px, <strong>1${A} = ${fmt(k)}${B}</strong>. Change the base below if your project uses a different root size.</p>
+    body: `<p class="muted">${anyRel ? `At the browser default root font size of 16&nbsp;px, <strong>1${A} = ${fmt(k)}${B}</strong>. Change the base below if your project uses a different root size.` : `<strong>1${A} = ${fmt(k)}${B}</strong>. Both are absolute CSS units, so this ratio is fixed — the root font size does not affect it.`}</p>
 <div class="tool">
   <div class="grid2">
     <div><label for="a">${A}</label><input type="text" id="a" inputmode="decimal" value="16"></div>
     <div><label for="b">${B}</label><input type="text" id="b" inputmode="decimal"></div>
   </div>
-  <div class="row"><label style="margin:0">Root font size <input type="number" id="base" value="16" min="1" max="64" step="0.5" style="width:90px"> px</label>
+  <div class="row">${anyRel ? `<label style="margin:0">Root font size <input type="number" id="base" value="16" min="1" max="64" step="0.5" style="width:90px"> px</label>` : `<input type="hidden" id="base" value="16">`}
   <span class="muted" id="note"></span></div>
   <p class="big" id="eq"></p>
 </div>

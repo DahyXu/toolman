@@ -1,3 +1,37 @@
+## 2026-09-02 — a page earning impressions was contradicting itself
+
+Followed the remaining two conversion queries from the live data. `240000 ms to
+min` is served properly. `16pt to mm` lands on `/convert/pt-to-mm/`, which was
+wrong in its first sentence.
+
+It read **"At the browser default root font size of 16 px, 1pt = 0.352778mm"**,
+which asserts a dependency that does not exist. A point is 1/72 of an inch and a
+millimetre is a millimetre; the ratio is fixed whatever the font size. Root font
+size only affects `rem` and `em`.
+
+The generator already knew. It carries a `rel` flag per unit, and a paragraph
+further down each page said, correctly, "Both units are absolute in CSS, so this
+ratio never changes regardless of font size or user settings." So the page
+asserted a dependency in its opening line and denied it three sections later.
+The intro, the meta description and one FAQ answer all interpolated the root
+font size unconditionally; they now branch on the same flag the rest of the page
+was already using.
+
+**And the widget had an inert control.** Every CSS unit page rendered a "Root
+font size" input, but the conversion function ignores it for absolute units —
+`aRel ? aPx*base/16 : aPx`. On a pt-to-mm page you could type in that box all
+day and nothing would move. Hidden on absolute pairs, kept on relative ones.
+
+Verified the arithmetic afterwards from the definitions rather than from the
+page: 16/72 of an inch is 5.6444 mm, which is what 16pt now converts to.
+
+That is the fourth page this session found saying one thing in one place and the
+opposite in another — the colour pages calling #000000 a near-black grey under
+an H1 reading "Black", the Roman numeral page calling 1,990 a year, the category
+titles repeating their own name, and now this. Self-contradiction seems to be
+the characteristic failure of generated prose, and no checker I have looks for
+it.
+
 ## 2026-09-02 — first real query data, and it corrected me
 
 The 3-month performance view reads 2 impressions, which is misleading: its data
