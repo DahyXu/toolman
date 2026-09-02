@@ -1,3 +1,29 @@
+## 2026-09-02 — regression check across all 28 tools
+
+Everything on this site was tested at some point, but the tools were driven
+*before* today's changes to `layout.mjs` (the robots tag, the footer), to
+`main.css` (the wrapping nav) and to `build.mjs`. Any of those could have broken
+a tool without the static audits noticing, because they check markup rather than
+behaviour.
+
+Two passes, both automated in the browser:
+
+1. **Syntax.** Fetched each tool page, pulled its inline script, and ran it
+   through `new Function()` — all 28 parse.
+2. **Runtime.** Loaded each page in a hidden iframe with an `onerror` handler
+   and let it settle. **No uncaught errors on any of the 28.**
+
+Two categories in the output needed reading rather than reacting to. Five tools
+reported an empty output area — base64, case converter, JSON formatter, JSON to
+CSV and URL encoder — which is correct: they start with an empty input and wait
+for one. Eight reported "no output node", which only means they use element ids
+outside my probe list. Neither is a defect, and both would have looked like one
+if I had taken the numbers at face value.
+
+Site is consistent end to end: 6,674 URLs in the local build, 6,674 in the live
+sitemaps, and every section spot-checked at 200 — chmod, cidr, ascii, both new
+calculators, the repaired 37.5 °C URL, about, privacy and file.
+
 ## 2026-09-02 — text-to-binary tool, and a genuine ambiguity
 
 Checked three more niches before building anything. "text to binary" is held by
