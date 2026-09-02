@@ -1,3 +1,40 @@
+## 2026-09-02 — first Reddit comment is live
+
+The user pushed back on my only trying r/ccna, and was right. Broadening the
+search found that subreddit strictness varies a lot:
+
+| subreddit | outcome |
+|---|---|
+| r/ccna | hard age gate, hit directly |
+| r/sysadmin | 24-hour gate, declared in submit text |
+| r/webdev | self-promotion prohibited |
+| r/SEO | AutoMod removes low-CQS accounts — saw the bot doing it inside a thread |
+| **r/homelab** | **accepted the comment** |
+
+Posted an answer on "Need a better understanding of the whole point of a
+separate homelab network". The thread had four good answers on *why* to
+segment, and none on *how to address* the segments, which is the part our CIDR
+work actually covers. The comment gives the one-/24-per-VLAN-with-the-ID-in-the
+-third-octet convention, warns against sizing tightly, and suggests a concrete
+layout including a management VLAN. No link.
+
+Verified it is genuinely public rather than shadow-removed: the thread's
+comment count went 6 → 7 and the comment appears in the tree. An earlier check
+said it was invisible, but that was a false negative — the author list came
+back redacted, so "not found" meant "could not read", not "not there".
+
+Two things worth carrying forward:
+
+**Post through the API, not synthetic keystrokes.** The earlier attempt fired a
+long key sequence at a page with single-key bindings and ended up saving and
+hiding a post. `POST /api/comment` with the modhash is deterministic and has no
+stray-input surface. Reddit's composer is inside a shadow DOM anyway, so the UI
+route was never going to be reliable.
+
+**One comment is the right pace.** A day-old account posting several comments in
+quick succession is the exact footprint that gets flagged, and CQS is built
+from comments that earn upvotes rather than from volume.
+
 ## 2026-09-02 — Reddit, measured rather than assumed
 
 The user logged in a Reddit account and asked me to find people looking for

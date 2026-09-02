@@ -44,11 +44,18 @@ headline.
 | r/ccna | Hard block: "Your account isn't old enough yet." Self-promo additionally requires being an *active contributor* — "no drive by self-promotion" | the dialog itself; the subreddit's written rules |
 | r/sysadmin | "accounts less than 24 hours old will be unable to post" | the subreddit's own submit text |
 | r/webdev | self-promotion prohibited | the subreddit's own submit text |
+| r/SEO | AutoModerator removes comments from accounts with a low CQS (Contributor Quality Score) | a bot removal seen inside a thread |
+| **r/homelab** | **nothing — a comment posted and is publicly visible** | verified: thread comment count 6 → 7 |
 | r/SideProject | no gate found | — |
 
-An account created today cannot comment in a moderated technical subreddit at
-all, with or without a link. This is not a caution — r/ccna returned it as an
-error. Wait out the age gate before trying again.
+Gates are mostly invisible until you hit them: only r/sysadmin declares one in
+its submit text, and r/ccna's did not appear until the attempt. But they are
+not universal — **r/homelab accepted a comment from this one-day-old account**,
+so the rule is per-subreddit strictness, not a blanket lockout.
+
+CQS is the thing to grow, and it is built from comments that get upvoted, not
+from votes cast. Upvoting to build standing does nothing for it and, done
+systematically, is vote manipulation.
 
 **The sequence that works** is the one r/ccna's rule spells out: become a
 contributor first, link later. Comments that answer a question and contain no
