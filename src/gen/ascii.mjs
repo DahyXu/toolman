@@ -183,7 +183,7 @@ ${FAQ.html}
 
 <h2>Nearby codes</h2>
 <ul class="linklist">${near.map((x) => `<li><a href="/ascii/${x}/">ASCII ${x} — ${esc(CONTROL[x] ? CONTROL[x][0] : glyph(x))}</a></li>`).join('')}</ul>
-<p><a href="/ascii/">Full ASCII table</a> · <a href="/number-base-converter/">Number base converter</a></p>`,
+<p><a href="/ascii/">Full ASCII table</a> · <a href="/text-to-binary/">Text to binary converter</a> · <a href="/number-base-converter/">Number base converter</a></p>`,
     });
   }
 
@@ -199,6 +199,7 @@ ${FAQ.html}
       { name: 'ASCII', path: '/ascii/' },
     ],
     body: `<p class="muted">All 128 codes, with the control characters explained rather than left as blank cells.</p>
+<p class="muted">To see a whole string in binary, hex and UTF-8 bytes at once, use the <a href="/text-to-binary/">text to binary converter</a>.</p>
 
 <h2>Control characters (0–31)</h2>
 <table><thead><tr><th style="width:4em">Dec</th><th style="width:4em">Hex</th><th style="width:6em">Binary</th><th style="width:4em">Abbr</th><th>Name</th></tr></thead><tbody>

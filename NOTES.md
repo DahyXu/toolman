@@ -1,3 +1,44 @@
+## 2026-09-02 — text-to-binary tool, and a genuine ambiguity
+
+Checked three more niches before building anything. "text to binary" is held by
+rapidtables, "sql formatter" by dpriver/codebeautify/red-gate, and "http header
+reference" by MDN, W3C and OWASP. None is the clean opening chmod and CIDR were.
+
+Built the text converter anyway, for a reason that does not depend on winning
+the head term: it completes the ASCII section, and its per-character breakdown
+links each code to its `/ascii/N/` page and back. Tool pages are also what
+Google has actually been indexing here.
+
+The differentiator is showing every representation at once — binary, hex,
+decimal, octal, HTML entities and real UTF-8 bytes — rather than one conversion.
+Verified against known values: "Hi" is 01001000 01101001, and "é☃" comes out as
+3 characters and 6 bytes with the combining acute as CC 81 and the snowman as
+E2 98 83, which is correct and is what a one-byte-per-character tool gets wrong.
+
+**A real decode bug, and it is not fixable by guessing better.** `72 105` is the
+decimal for "Hi". It decoded to `:E`, because my format detection tried octal
+first and every digit in `72 105` is a valid octal digit. The input is genuinely
+ambiguous — it is valid decimal *and* valid octal and means different things in
+each.
+
+The fix is not a cleverer heuristic. Auto-detection now prefers decimal, which
+is what people actually paste, **and the decoder names the format it read** so a
+wrong guess is visible rather than silent, with an explicit format list to
+override it. `48 69` is hex for "Hi" and also valid decimal; it reads as decimal
+and says so, which is the honest outcome for input that carries no marker.
+
+Also fixed a related case: `4869` with no separators was rejected, because a
+single group parsed as one number (18537) rather than as two hex bytes. It now
+falls through to fixed-width grouping when reading the groups as written yields
+something that is not a byte.
+
+**The escaping trap caught me again — fourth time.** Writing the tool's inline
+JavaScript through a shell heredoc, `\s` reached the file as `\s`, and the
+template literal then emitted a bare `s`, so `/[\s,]+/` shipped as `/[s,]+/`
+and every decode failed. The rule I already wrote down and did not follow: for
+anything containing backslashes, use the editor, not a heredoc. Fixed with Edit
+and verified by reading the emitted JavaScript rather than the source.
+
 ## 2026-09-02 — ASCII reference, 129 pages
 
 Third target picked the same way as chmod and CIDR: check who currently ranks
