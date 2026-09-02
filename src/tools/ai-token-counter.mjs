@@ -88,7 +88,7 @@ function estimate(t){
     if(m[1]) n+=m[1].length*1.0;                       // CJK: ~1 token per char
     else if(m[2]){                                      // words
       const L=m[2].length;
-      n+= L<=4?1 : L<=8?Math.ceil(L/4.2)+0.15 : Math.ceil(L/3.6);
+      n+= L<=6?1 : L<=10?2 : Math.ceil(L/5);
     }
     else if(m[3]) n+=Math.ceil(m[3].length/2.6);        // digit runs
     else if(m[4]){                                      // whitespace

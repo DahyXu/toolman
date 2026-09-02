@@ -59,18 +59,25 @@ const sortKeys=v=>Array.isArray(v)?v.map(sortKeys):(v&&typeof v==='object'?Objec
 function lineCol(t,p){const s=t.slice(0,p).split('\\n');return s.length+':'+(s[s.length-1].length+1)}
 function parse(){
   const t=I.value.trim();
-  if(!t){M.textContent='Waiting for input…';M.className='muted';return null}
+  // Leaving the previous result on screen next to an error message invites
+  // copying output that does not correspond to the current input.
+  if(!t){O.value='';M.textContent='Waiting for input…';M.className='muted';return null}
   try{const v=JSON.parse(t);M.textContent='✓ Valid JSON — '+t.length.toLocaleString()+' characters';M.className='ok';return {v,t}}
   catch(e){
     const m=/position (\\d+)/.exec(e.message);
-    M.textContent='✗ '+e.message+(m?' (line:col '+lineCol(t,+m[1])+')':'');M.className='err';return null}
+    O.value='';M.textContent='✗ '+e.message+(m?' (line:col '+lineCol(t,+m[1])+')':'');M.className='err';return null}
 }
 function run(act){
   const ind=$('#ind').value==='\\t'?'\\t':+$('#ind').value;
   if(act==='clear'){I.value='';O.value='';parse();return}
   if(act==='sample'){I.value='{"name":"Toolman","tags":["json","free"],"nested":{"b":2,"a":1},"ok":true,"count":42}';act='format'}
   if(act==='copy'){O.select();document.execCommand('copy');M.textContent='Copied to clipboard';M.className='ok';return}
-  if(act==='unescape'){try{O.value=JSON.parse(I.value.trim().startsWith('"')?I.value.trim():JSON.stringify(I.value));M.textContent='Unescaped';M.className='ok'}catch(e){M.textContent='✗ '+e.message;M.className='err'}return}
+  if(act==='unescape'){try{
+    var s=I.value.trim(), BS=String.fromCharCode(92);
+    if(!(s.charAt(0)==='"'&&s.charAt(s.length-1)==='"'&&s.length>1))
+      s='"'+s.split(String.fromCharCode(13)).join(BS+'r').split(String.fromCharCode(10)).join(BS+'n').split(String.fromCharCode(9)).join(BS+'t')+'"';
+    O.value=JSON.parse(s);M.textContent='Unescaped';M.className='ok'
+  }catch(e){M.textContent='✗ Not an escaped JSON string — '+e.message;M.className='err'}return}
   const r=parse(); if(!r)return;
   if(act==='format')O.value=JSON.stringify(r.v,null,ind);
   else if(act==='minify')O.value=JSON.stringify(r.v);

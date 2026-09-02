@@ -1,3 +1,56 @@
+## 2026-09-02 (later still) — drove all 25 tools in a browser
+
+Never verified anything but the QR encoder. Loaded each tool against a local
+server and drove it with real input, checking output against known answers
+rather than reading the code.
+
+**Verified correct** — hash generator (SHA-256/384/512, SHA-1, MD5, CRC32 all
+match the published digests for "abc"), base64 (UTF-8 round trip and a proper
+error on invalid input), URL encoder, number base converter, roman numerals
+(9 cases including IV, XL, CD, MMMCMXCIX), percentage calculator (all six
+calculators), timestamp converter (1700000000 to 2023-11-14T22:13:20Z with the
+right local offset), JWT decoder, colour converter (HEX/RGB/HSL/HSV/CMYK and
+both contrast ratios recomputed by hand), word counter (17 words, 79 chars,
+every platform length limit), age calculator (9,682 days across a leap-day
+birth, exact), JSON to CSV (RFC 4180 quoting), regex tester (matches, indices,
+capture groups, replacement), text diff (LCS), markdown converter, UUID
+generator (10 unique, all valid v4), password generator, AI token counter.
+
+**Three real defects, all fixed:**
+
+1. **The JSON formatter's Unescape button did nothing** and reported success.
+   `JSON.parse(s.startsWith('"') ? s : JSON.stringify(s))` — for input that is
+   not already quoted, stringify escapes it and parse turns it straight back,
+   so the branch was the identity function. Now wraps the text in quotes and
+   parses that, escaping real newlines and tabs first. Built with
+   `String.fromCharCode(92)` rather than literal backslashes, because this is
+   inside a template literal where a backslash needs four levels of escaping —
+   the exact trap that corrupted generated JS three times earlier.
+
+2. **The cron explainer rendered `0 9-17 * * 1-5` as "At 1x9 times per day".**
+   A template artifact: the fallback multiplied the minute count by the hour
+   count. Contiguous hour runs now read as a range — "At minute 0 past every
+   hour from 09:00 through 17:00, on Monday, ...".
+
+3. **The AI token counter contradicted its own reference table.** The page
+   states English prose runs ~4 characters per token; the calculator produced
+   3.38, because five-letter words were charged two tokens. Corrected to
+   one token up to six letters, two up to ten. It now scores the standard
+   pangram at exactly 10 and "Hello, world!" at exactly 4, both matching a real
+   BPE tokenizer, with prose at 4.46 chars/token.
+
+Also cleared stale output in the JSON formatter: an invalid input left the
+previous result on screen beside the error, which invites copying output that
+does not match the input.
+
+**Two false alarms I nearly reported as bugs.** The URL and Base64 tools looked
+like their decode buttons were encoding — actually a two-pane design where
+decode runs right-to-left, and I had put the encoded text in the plain-text
+pane. Checked the source before claiming a defect. The `Math.random` hit in the
+UUID generator was the FAQ text saying it does *not* use `Math.random`; the
+code uses `crypto.getRandomValues` throughout, and the password generator does
+rejection sampling to avoid modulo bias.
+
 ## 2026-09-02 (later) — the real reason /convert/ is not indexed
 
 I was wrong this morning to conclude there was no technical defect left. There

@@ -117,6 +117,13 @@ function human(f,idx,sets){
   if(s.length<=6)return s.map(label).join(', ');
   return s.length+' selected values';
 }
+function hourPhrase(hr){
+  const two=n=>String(n).padStart(2,'0');
+  if(hr.length===1)return two(hr[0])+':00';
+  const contiguous=hr.every((h,i)=>i===0||h===hr[i-1]+1);
+  if(contiguous)return 'every hour from '+two(hr[0])+':00 through '+two(hr[hr.length-1])+':00';
+  return 'hours '+hr.map(two).join(', ');
+}
 function describe(sets,parts){
   const [mi,hr,dom,mon,dow]=sets;
   let time;
@@ -130,7 +137,8 @@ function describe(sets,parts){
   else if(parts[1]==='*')time='at minutes '+mi.join(', ')+' of every hour';
   else if(mi.length===1&&hr.length<=4)time='at '+hr.map(h=>two(h)+':'+two(mi[0])).join(' and ');
   else if(/^\\*\\/(\\d+)$/.test(parts[0]))time='every '+/^\\*\\/(\\d+)$/.exec(parts[0])[1]+' minutes'+(parts[1]==='*'?'':' during hours '+hr.join(', '));
-  else time='at '+mi.length+'×'+hr.length+' times per day';
+  else if(mi.length===1)time='at minute '+mi[0]+' past '+hourPhrase(hr);
+  else time='at minutes '+mi.join(', ')+' past '+hourPhrase(hr);
   let day='';
   const domAll=parts[2]==='*',dowAll=parts[4]==='*';
   if(domAll&&dowAll)day='every day';
