@@ -1,3 +1,48 @@
+## 2026-09-02 (evening) — /convert/ is indexed, and lastmod never worked
+
+**`/convert/` is now indexed.** This morning URL Inspection said "已抓取 - 尚未编入索引"
+(crawled, not indexed); it now says "网页已编入索引". That is the hub gating 4,200
+pages. The `site:` listing still shows the old 8 URLs — it lags the inspection
+tool, which reads live index status, so inspection is the one to trust.
+
+`/cooking/` is still "Google 无法识别此网址" — never crawled, no referring page
+detected. It gates 991 pages.
+
+**Found a real structural imbalance.** Counting inbound internal links per hub:
+
+| hub | pages gated | inbound links |
+|---|---|---|
+| /convert/ /color/ /image/ /text/ /ai/ | — | 6,545 (in the top nav) |
+| /cooking/ | 991 | 992 |
+| /roman/ | 328 | 328 |
+| /cron/ /http/ /port/ /file/ /paper/ /chmod/ /cidr/ | 254 | 31–60 |
+
+Internal link count is one of the clearest signals of which pages a site
+considers important, and the site was saying the opposite of what is true.
+Added the reference hubs to the site-wide footer: every one now has 6,545
+inbound links and is linked from all eight pages Google has already indexed.
+
+**Then found that the lastmod fix never worked at all.** The footer change
+dirtied all 6,544 content hashes, which is what sent me looking. Two problems:
+
+1. The hash covered the whole body including header, nav and footer, so a
+   chrome change marked every page as modified. Now stripped, the same way
+   `<head>` already was.
+2. Much worse: the sitemap writes `${now}` — the build date — for every URL.
+   `lastmodOf()` was computed and then **used nowhere**. `grep` confirms it:
+   defined at line 550, zero call sites. The entire content-hashing mechanism
+   has been dead code since it was written, and every deploy has been telling
+   Google all 6,500 pages changed that day.
+
+Fixed, and the dates restored from the committed stamp file so the footer
+change did not falsely date everything today. The sitemaps now carry real
+per-page dates: 3,349 URLs at 2026-09-01 and 3,195 at 2026-09-02.
+
+Worth naming the pattern: this is the third time a fix of mine looked complete
+and was not, and the second time the checker I wrote could not see the problem
+it was written to find. `scripts/sitemap-check.mjs` validates that lastmod is a
+well-formed date — which `${now}` always was.
+
 ## 2026-09-02 — CIDR subnet calculator and a 33-page prefix reference
 
 The second target from the research. Same reasoning as chmod: low-authority

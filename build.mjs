@@ -531,7 +531,11 @@ for (const u of urls) {
     // Hash the body only: the <head> carries the shared inline stylesheet, so
     // a CSS tweak would otherwise mark all 6,000 pages as modified.
     const html = fs.readFileSync(file, 'utf8');
-    const body = html.slice(html.indexOf('<body>'));
+    const body = html
+      .slice(html.indexOf('<body>'))
+      .replace(/<header[\s\S]*?<\/header>/g, '')
+      .replace(/<nav[\s\S]*?<\/nav>/g, '')
+      .replace(/<footer[\s\S]*?<\/footer>/g, '');
     hash = crypto.createHash('sha1').update(body).digest('hex').slice(0, 16);
   } catch { /* page written outside dist, fall through to today's date */ }
   const prev = prevStamps[u];
@@ -580,7 +584,7 @@ const prio = (u) => PRIORITY[rank(u)];
 chunks.forEach((c, i) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${c.map((u) => `<url><loc>${SITE.origin}${u}</loc><lastmod>${now}</lastmod><priority>${prio(u)}</priority></url>`).join('\n')}
+${c.map((u) => `<url><loc>${SITE.origin}${u}</loc><lastmod>${lastmodOf(u)}</lastmod><priority>${prio(u)}</priority></url>`).join('\n')}
 </urlset>`;
   fs.writeFileSync(path.join(dist, chunks.length === 1 ? 'sitemap.xml' : `sitemap-${i + 1}.xml`), xml);
 });

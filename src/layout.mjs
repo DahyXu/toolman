@@ -195,7 +195,10 @@ ${o.body}
 <footer class="site">
   <div class="wrap">
     <p><strong>${SITE.name}</strong> — ${SITE.tagline}. Everything runs locally in your browser; your data never leaves your device.</p>
-    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/convert/">Converters</a><a href="/color/">Colors</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
+    <nav class="links" aria-label="Reference sections">
+      <a href="/convert/">Converters</a><a href="/cooking/">Cooking</a><a href="/color/">Colors</a><a href="/http/">HTTP codes</a><a href="/port/">Ports</a><a href="/cron/">Cron</a><a href="/chmod/">Permissions</a><a href="/cidr/">CIDR</a><a href="/file/">File formats</a><a href="/paper/">Paper sizes</a><a href="/roman/">Roman numerals</a>
+    </nav>
+    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
   </div>
 </footer>
 <script>(function(){var k='tm-theme';document.addEventListener('click',function(e){var b=e.target.closest('[data-theme-toggle]');if(!b)return;var d=document.documentElement,n=d.dataset.theme==='dark'?'light':'dark';d.dataset.theme=n;try{localStorage.setItem(k,n)}catch(_){}});})();</script>
