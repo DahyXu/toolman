@@ -1,6 +1,10 @@
 import { INGREDIENTS, VOL, WT, AMOUNTS } from '../data/ingredients.mjs';
 import { esc, faq } from '../layout.mjs';
 
+// A quantity under one takes the singular in English — 1/2 cup, 3/4 cup —
+// exactly as one does. Only amounts above one are plural.
+const unitFor = (v, vol) => (v <= 1 ? vol.name : vol.plural);
+
 const round = (n) => (n >= 100 ? Math.round(n) : n >= 10 ? +n.toFixed(1) : +n.toFixed(2));
 const fmt = (n) => round(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
 
@@ -38,7 +42,7 @@ export default async function () {
         const slugAmt = a.label.replace(/[ /]/g, '-');
         amountIndex.push({
           path: `/cooking/${slugAmt}-${vol.id}-${ing.id}-to-grams/`,
-          label: `${a.label} ${a.v === 1 ? vol.name : vol.plural} of ${ing.name} to grams`,
+          label: `${a.label} ${unitFor(a.v, vol)} of ${ing.name} to grams`,
           amount: a, vol,
         });
       }
@@ -48,7 +52,7 @@ export default async function () {
       const { amount: a, vol } = entry;
       const grams = a.v * vol.c * gPerCup;
       const oz = grams / 28.3495;
-      const unitWord = a.v === 1 ? vol.name : vol.plural;
+      const unitWord = unitFor(a.v, vol);
       const label = `${a.label} ${unitWord} of ${ing.name}`;
 
       const siblings = amountIndex.filter((x) => x.path !== entry.path).slice(0, 26);

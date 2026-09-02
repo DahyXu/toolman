@@ -1,3 +1,34 @@
+## 2026-09-02 — 450 cooking pages said "1/2 cups"
+
+Read the last unchecked section, `/cooking/`. The arithmetic holds: a cup of
+all-purpose flour is 125 g, 1 1/2 cups is 188 g, and a tablespoon is 1/16 of a
+cup, so 1 1/2 tablespoons is 11.7 g. All correct.
+
+The grammar was not. **450 pages read "1/2 cups of all-purpose flour"**, and the
+same in their titles and descriptions. English takes the singular for any
+quantity below one — half a cup, 3/4 cup — and the pluralisation test was
+`v === 1`, which is true only for exactly one. Anything under one fell through
+to the plural.
+
+`"1/2 cup flour in grams"` is a query people actually type, so this was on the
+phrasing that matters most in the section. Now:
+
+    1/2 cup of all-purpose flour        (was "1/2 cups")
+    3/4 cup of all-purpose flour        (was "3/4 cups")
+    1/2 tablespoon of butter            (was "1/2 tablespoons")
+    1 cup of all-purpose flour          unchanged
+    1 1/2 cups of all-purpose flour     unchanged, correctly plural
+
+One helper, `unitFor(v, vol)`, used by both places that build the phrase, so the
+title and the heading cannot disagree later.
+
+That closes the reading pass over every generated section. Five rounds, and
+every round found something the audit called clean: category titles repeating
+their own name, 602 descriptions cut mid-sentence, three FAQ grammar bugs,
+#000000 described as a near-black grey, years written 1,990, and now 450 pages
+with a plural after a fraction. Not one of them was a missing tag, a broken
+link, or a length violation — the things a checker can see.
+
 ## 2026-09-02 — years were written 1,990
 
 Read the Roman numeral section at its edges. The arithmetic is right everywhere
