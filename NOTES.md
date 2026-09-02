@@ -1,3 +1,32 @@
+## 2026-09-02 — read the FAQ edge cases, found three grammar bugs
+
+Continued reading rather than measuring, this time sampling FAQ answers at the
+boundaries of each generated range — the values where a template is most likely
+to produce something a human would not write.
+
+Three real defects, all invisible to every check I have:
+
+- **`/cidr/32/`: "1 addresses in total, of which 1 is usable."** The usable
+  count was pluralised and the total was not.
+- **`/ascii/32/`: "Space, the space character"** read as "Space, the character
+  space", because the code point's name and its glyph label are the same word
+  for whitespace and the template printed both.
+- **`/chmod/000/`: "It sets owner to no access, group to no access, others to no
+  access."** Correct, and three times longer than it needed to be. Now "It
+  grants no access to anyone — not even the owner, who can still change the
+  permissions back, because that right comes from ownership rather than from
+  these bits", which is both shorter and says something worth knowing.
+
+Also checked the case I expected to be wrong and was not: `/convert/1-kilograms-
+to-pounds/` renders "1 kilogram to pounds" in its H1 and title. The singular was
+already handled; only the URL slug carries the plural.
+
+The pattern from the last few rounds holds. Every one of these passes the audit:
+the titles are unique and short, the descriptions are present and within length,
+the structured data matches the page. A generated sentence can satisfy every
+mechanical constraint and still be one no person would write, and the only way
+to find that is to read the output at the edges of its ranges.
+
 ## 2026-09-02 — 602 meta descriptions were being cut mid-sentence
 
 Kept reading rather than measuring, after the category-title finding, and hit a

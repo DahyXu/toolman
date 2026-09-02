@@ -130,7 +130,7 @@ export default async function () {
               : `The character ${glyph(n)}.`);
 
     const FAQ = faq([
-      { q: `What is ASCII ${n}?`, a: `${esc(name)}${ctrl ? ` (<code>${ctrl[0]}</code>), a control character` : `, the character <code>${esc(glyph(n))}</code>`}. In hexadecimal it is <code>0x${hex(n)}</code>, in octal <code>0${oct(n)}</code>, and in binary <code>${bin(n)}</code>.` },
+      { q: `What is ASCII ${n}?`, a: `${esc(name)}${ctrl ? ` (<code>${ctrl[0]}</code>), a control character` : n === 32 ? ', the space character' : `, the character <code>${esc(glyph(n))}</code>`}. In hexadecimal it is <code>0x${hex(n)}</code>, in octal <code>0${oct(n)}</code>, and in binary <code>${bin(n)}</code>.` },
       { q: `How do I type ASCII ${n}?`, a: ctrlKey ? `Press <strong>${ctrlKey}</strong> in a terminal. In a string literal you can write it as ${escSeq ? `<code>${escSeq}</code> or ` : ''}<code>\\\\x${hex(n)}</code> in most languages.` : `Type <code>${esc(glyph(n))}</code> directly. In a string literal it can also be written <code>\\\\x${hex(n)}</code>, and in HTML as <code>&amp;#${n};</code>${ent ? ` or <code>&amp;${ent};</code>` : ''}.` },
       { q: `Is ASCII ${n} printable?`, a: isCtrl(n) ? 'No. Codes 0 to 31 and 127 are control characters — they were instructions to a teleprinter rather than marks on paper, and most terminals show nothing for them.' : 'Yes. Codes 32 to 126 are the printable range, which is every character ASCII can actually display.' },
     ]);
