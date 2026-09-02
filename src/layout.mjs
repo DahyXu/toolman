@@ -81,9 +81,23 @@ const SUFFIX = ` | ${SITE.name}`;
 // brand suffix rather than the descriptive part — Google appends the site name
 // itself anyway.
 function fitTitle(t) {
-  if (t.length <= 60 || !t.endsWith(SUFFIX)) return t;
-  const trimmed = t.slice(0, -SUFFIX.length);
-  return trimmed.length >= 20 ? trimmed : t;
+  if (t.length > 60 && t.endsWith(SUFFIX)) {
+    const trimmed = t.slice(0, -SUFFIX.length);
+    if (trimmed.length >= 20) t = trimmed;
+  }
+  // A trailing parenthetical is normally the abbreviation, which repeats what
+  // the spelled-out name already said. It is the first thing worth losing when
+  // the title would otherwise be truncated by the search result.
+  if (t.length > 65) {
+    const shorter = t.replace(/\s*\([^()]*\)\s*$/, '');
+    if (shorter.length >= 20) t = shorter;
+  }
+  // Then the explanatory tail after the dash, which is boilerplate.
+  if (t.length > 65) {
+    const shorter = t.replace(/\s+[—-]\s+.*$/, '');
+    if (shorter.length >= 25) t = shorter;
+  }
+  return t;
 }
 
 // Google shows roughly 155 characters of a description. Anything past that is
@@ -155,7 +169,7 @@ export function page(o) {
 <meta name="twitter:title" content="${esc(o.title)}">
 <meta name="twitter:description" content="${esc(o.desc)}">
 <meta name="twitter:image" content="${SITE.origin}/og.jpg">
-<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="robots" content="${o.noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1'}">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

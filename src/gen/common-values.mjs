@@ -95,6 +95,90 @@ function feetValue(v, fromId) {
   };
 }
 
+
+// Something concrete about the quantity itself. Pages for the same value in
+// different target units otherwise differ only by a unit name and some digits,
+// which is the weakest kind of programmatic page. This depends on the physical
+// amount, so it gives each starting value its own paragraph.
+function senseOf(catKey, baseValue, fromLabel) {
+  const R = {
+    length: [
+      [0.005, 'thinner than a pencil'],
+      [0.02, 'about the width of a thumb'],
+      [0.1, 'roughly the width of a hand'],
+      [0.3, 'about the long edge of a sheet of A4 paper'],
+      [1, 'a little under the height of a kitchen counter'],
+      [1.8, 'around the height of an adult'],
+      [2.5, 'about the height of a room'],
+      [10, 'roughly the width of a tennis court'],
+      [30, 'about the length of a swimming pool'],
+      [110, 'a little over the length of a football pitch'],
+      [1000, 'a ten-minute walk'],
+      [5000, 'a comfortable hour on foot'],
+      [42195, 'the distance of a marathon'],
+      [Infinity, 'a distance better measured on a map than on foot'],
+    ],
+    weight: [
+      [0.005, 'about the mass of a sheet of paper'],
+      [0.1, 'roughly a bar of chocolate'],
+      [1, 'about a bag of sugar'],
+      [5, 'roughly a house cat'],
+      [15, 'about a full airline carry-on'],
+      [23, 'the usual airline checked-baggage limit'],
+      [50, 'a sack of cement'],
+      [100, 'within the range of an adult human'],
+      [300, 'about an upright piano'],
+      [800, 'roughly a small car'],
+      [Infinity, 'a load for machinery rather than a person'],
+    ],
+    volume: [
+      [0.005, 'about a teaspoon'],
+      [0.25, 'roughly a mug'],
+      [1, 'a standard bottle of water'],
+      [5, 'about a large kitchen bucket'],
+      [50, 'roughly a car fuel tank'],
+      [Infinity, 'a tank rather than a container'],
+    ],
+    time: [
+      [60, 'about a minute'],
+      [3600, 'an hour'],
+      [86400, 'a day'],
+      [604800, 'a week'],
+      [2629746, 'about a month'],
+      [Infinity, 'a span measured in years'],
+    ],
+    data: [
+      [1e4, 'about a page of plain text'],
+      [1e6, 'roughly a high-quality photograph'],
+      [1e8, 'about a short video'],
+      [1e10, 'a few hours of streaming'],
+      [Infinity, 'more than most laptops hold'],
+    ],
+    area: [
+      [1, 'about the footprint of a desk'],
+      [50, 'roughly a small flat'],
+      [1000, 'about a large garden'],
+      [10000, 'roughly two football pitches'],
+      [Infinity, 'a parcel of land rather than a room'],
+    ],
+    speed: [
+      [1.5, 'walking pace'],
+      [5, 'a steady run'],
+      [15, 'cycling'],
+      [30, 'urban traffic'],
+      [70, 'motorway speed'],
+      [Infinity, 'faster than road traffic'],
+    ],
+  };
+  const table = R[catKey];
+  if (!table) return '';
+  const v = Math.abs(baseValue);
+  for (const [max, phrase] of table) {
+    if (v <= max) return `In everyday terms, ${fromLabel} is ${phrase}.`;
+  }
+  return '';
+}
+
 function valuePage(from, to, raw, all) {
   const fv = feetValue(raw, from.id);
   const v = fv.num;
@@ -115,6 +199,7 @@ function valuePage(from, to, raw, all) {
   }
 
   const h1 = `${valLabel} to ${toP}`;
+  const sense = senseOf(from.catKey, v * from.f, valLabel);
 
   const FAQ = faq([
     { q: `How many ${toP} is ${valLabel}?`,
@@ -169,6 +254,7 @@ function valuePage(from, to, raw, all) {
 
 <h2>Nearby values</h2>
 <table><thead><tr><th>${title(fromP)}</th><th>${title(toP)}</th></tr></thead><tbody>${near.join('')}</tbody></table>
+${sense ? `<p class="muted">${sense}</p>` : ''}
 
 <h2>About these units</h2>
 <p><strong>${cap(from.name)} (${from.sym})</strong> — ${from.d}</p>

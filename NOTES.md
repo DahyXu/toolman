@@ -1,3 +1,32 @@
+## 2026-09-02 — duplicate-content risk, 404 indexability, title truncation
+
+`scripts/similarity.mjs` found the weakest pages on the site: two 352-word
+sibling conversion pages that differed by only 27 words, nearly all of them
+numbers and unit names. Added a sentence tied to the physical quantity rather
+than the unit it is expressed in, so pages in a clone group say something
+different rather than the same thing with a different unit name. Largest clone
+group went 34 → 32 pages; distinct skeletons 3,839 → 4,045.
+
+Two of my first reference points were simply wrong — 180 lb read as "roughly a
+grand piano" (a grand piano is 300–500 kg) and 10 kg as the airline checked
+limit (it is 23 kg). Rewrote both scales with more bands and checked eight
+values by hand before shipping.
+
+**The 404 page was serving `index,follow`.** Cloudflare Pages returns it for
+every unmatched URL, so Google was free to index an unbounded set of URLs that
+all render the same page. `layout.mjs` now takes a `noindex` flag and the 404
+sets it; verified live at an arbitrary bad URL. `scripts/audit.mjs` now skips
+noindex pages when checking title and description length, since those cannot
+appear in a search result.
+
+12 titles exceeded 65 characters and were being truncated in results.
+`fitTitle()` now drops a trailing parenthetical (the abbreviation, which
+repeats the spelled-out name) and then the boilerplate tail after the dash.
+All 6,478 titles are now within range; audit reports zero problems in every
+category.
+
+Deployed and pushed 6,478 URLs to IndexNow (HTTP 200).
+
 # Operating notes
 
 Running log of what has actually been observed, so decisions are not re-argued

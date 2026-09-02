@@ -36,6 +36,10 @@ for (const f of files) {
   const canon = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
   const h1all = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => m[1].replace(/<[^>]+>/g, '').trim());
 
+  // A noindex page will never appear in a search result, so its title and
+  // description length are not defects. It still counts for link checking.
+  const noindex = /<meta name="robots" content="[^"]*noindex/.test(html);
+  if (!noindex) {
   pages.set(url, { title, desc, canon });
 
   if (!title) problems.noTitle.push(url);
@@ -53,6 +57,7 @@ for (const f of files) {
   if (!h1all.length) problems.noH1.push(url);
   if (h1all.length > 1) problems.multiH1.push(`${url} (${h1all.length})`);
   if (h1all[0]) (h1s.get(h1all[0]) || h1s.set(h1all[0], []).get(h1all[0])).push(url);
+  }
 
   // internal links — strip code samples first, hrefs inside <pre>/<code> are
   // documentation, not navigation.

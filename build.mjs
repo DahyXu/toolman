@@ -413,6 +413,7 @@ fs.writeFileSync(path.join(dist, '404.html'), page({
   title: `Page not found | ${SITE.name}`,
   desc: 'The page you are looking for does not exist.',
   path: '/404',
+  noindex: true,
   h1: 'Page not found',
   body: `<p>That page does not exist. Try the <a href="/tools/">full tool list</a> or go back <a href="/">home</a>.</p>`,
 }));
@@ -424,7 +425,7 @@ fs.writeFileSync(path.join(dist, 'search-index.json'), JSON.stringify(searchInde
 
 write('/search/', page({
   title: `Search — ${SITE.name}`,
-  desc: `Search ${searchIndex.length} tools, converters and reference pages on ${SITE.name}.`,
+  desc: `Search ${searchIndex.length} browser-based tools, unit converters, colour codes, HTTP status codes and other reference pages on ${SITE.name}. Results appear as you type.`,
   path: '/search/',
   h1: 'Search',
   crumbs: [{ name: 'Search', path: '/search/' }],
