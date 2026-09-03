@@ -1,3 +1,32 @@
+## Ring sizes: the section that should not have per-item pages
+
+Built 22 pages, one per half size from US 3 to 13, and the similarity report
+came back at **97% worst, 91% average — the worst number any section has had**.
+
+The cause was the familiar one, for the fourth time in a day: the same advice
+about band width and about fingers swelling, repeated on all 22. Moving it to
+the hub took it to 94%. Still failing.
+
+At that point the honest reading is not "needs more differentiation" but
+**"these pages should not exist"**. A ring size is a point on a linear scale. A
+battery page has a chemistry, a voltage and a device; a tyre page has its own
+set of equivalent fitments and its own speedometer arithmetic; a ring size page
+has a number, and the number is already in the hub's table. There is nothing for
+it to say that the row above it does not.
+
+So the per-size pages are gone and the section is a single 617-word hub with the
+full chart, which is what the content actually supports. That is my own written
+rule applied to my own work — *when a section will not differentiate, cut pages
+rather than pad them* — and it is the first time today I have followed it before
+shipping rather than after.
+
+The formula still earns its keep on the hub: the ISO size **is** the inside
+circumference in millimetres, the US scale is 36.537 + 2.5535 × size (matching
+eleven published values to within 0.15 mm, checked on every build), and the UK
+letter advances once per half US size. Those three rules replace every printed
+conversion chart, which is a better thing to give a reader than 22 pages that
+each restate one row of it.
+
 ## Tyre sizes, and the number that explains why one car takes three of them
 
 A tyre marking is three measurements that people read as a part number.
