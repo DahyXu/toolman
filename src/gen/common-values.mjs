@@ -139,14 +139,11 @@ function senseOf(catKey, baseValue, fromLabel) {
       [50, 'roughly a car fuel tank'],
       [Infinity, 'a tank rather than a container'],
     ],
-    time: [
-      [60, 'about a minute'],
-      [3600, 'an hour'],
-      [86400, 'a day'],
-      [604800, 'a week'],
-      [2629746, 'about a month'],
-      [Infinity, 'a span measured in years'],
-    ],
+    // No time rungs. A gram or a byte needs a familiar object to stand next to
+    // it, which is what this whole feature is for, but the time units already
+    // are the everyday ones — so the line could only restate the conversion
+    // ("1 day is a day") or contradict it, and it did both: 1,440 seconds was
+    // called "an hour" when the page's own answer, 24 minutes, sat above it.
     data: [
       [1e4, 'about a page of plain text'],
       [1e6, 'roughly a high-quality photograph'],
@@ -173,10 +170,29 @@ function senseOf(catKey, baseValue, fromLabel) {
   const table = R[catKey];
   if (!table) return '';
   const v = Math.abs(baseValue);
-  for (const [max, phrase] of table) {
-    if (v <= max) return `In everyday terms, ${fromLabel} is ${phrase}.`;
+  if (!(v > 0)) return '';
+
+  // The numbers above are the magnitude of the thing named — a bar of chocolate
+  // is 100 g, a marathon is 42195 m, the baggage limit is 23 kg — not an upper
+  // bound. Selecting the first rung that v fell under therefore described every
+  // value as the rung above it: 113 g came out as "about a bag of sugar", which
+  // is a kilogram and nine times too heavy. A reader judges "roughly like" on a
+  // ratio, so pick the rung nearest in log space.
+  const rungs = table.filter(([m]) => Number.isFinite(m));
+  const beyond = table.find(([m]) => !Number.isFinite(m));
+  const first = rungs[0], last = rungs[rungs.length - 1];
+
+  // Outside the ends of the scale there is no honest comparison to make. Past
+  // the top the catch-all phrase says exactly that; below the bottom, nothing
+  // in the list is the right size, so say nothing rather than something wrong.
+  if (v > last[0] * 2) return beyond ? `In everyday terms, ${fromLabel} is ${beyond[1]}.` : '';
+  if (v < first[0] / 2) return '';
+
+  let best = first;
+  for (const r of rungs) {
+    if (Math.abs(Math.log(v / r[0])) < Math.abs(Math.log(v / best[0]))) best = r;
   }
-  return '';
+  return `In everyday terms, ${fromLabel} is ${best[1]}.`;
 }
 
 function valuePage(from, to, raw, all) {

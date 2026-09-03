@@ -1,3 +1,49 @@
+## The "everyday terms" comparison was one rung wrong on 2,186 pages
+
+GSC showed `4 oz to grams butter` and `4 oz in grams butter`, so I opened the
+page they were landing on. The maths was right and one sentence was not:
+
+> In everyday terms, 4 ounces is about a bag of sugar.
+
+4 ounces is 113 g. A bag of sugar is a kilogram.
+
+The numbers in the comparison table are the *magnitude of the thing named* — a
+bar of chocolate 0.1 kg, a bag of sugar 1 kg, the airline baggage limit 23 kg,
+a marathon 42195 m, all exact. The selector treated them as upper bounds and
+returned the first rung the value fell under, so every value was described as
+the rung above it, up to ten times too large. It only read correctly when a
+value landed exactly on a rung, which is why 100 grams looked fine and nothing
+downstream ever flagged it.
+
+Now it picks the nearest rung in log space, which is how a reader judges
+"roughly like", and says nothing at all below the smallest rung, where no
+object in the list is the right size. 4 ounces is a bar of chocolate.
+
+Verifying that fix surfaced a worse one in the same feature:
+
+> In everyday terms, 1 day is a day.
+
+and, on the very page `1440 seconds to minutes` was ranking for:
+
+> In everyday terms, 1,440 seconds is an hour.
+
+1,440 seconds is 24 minutes — the page's own answer, in its own H1, directly
+above a sentence contradicting it. The whole time category is now gone. The
+point of the feature is to put a familiar object next to a unit that carries no
+intuition, a gram or a byte; seconds and hours *are* the everyday terms, so the
+line could only restate the conversion or distort it, and it did both.
+
+2,186 pages carried the sentence, 1,819 still do, and none of them now says
+something the reader can check and find false.
+
+Two audits were sitting right next to this and caught nothing. The contradiction
+checker looks for a number written two ways and for a title repeating itself; it
+does not know that "1,440 seconds" and "an hour" are the same kind of claim. The
+lesson stands from last time and I will stop re-learning it: **the audits catch
+malformed pages, not wrong ones.** Both defects here were found by reading a page
+that live query data pointed at — which is now the cheapest source of leads I
+have, because it says which pages a stranger actually opened.
+
 ## Title Case was useless on the exact inputs the page invites
 
 The case converter offers Title Case and camelCase side by side, so the obvious
