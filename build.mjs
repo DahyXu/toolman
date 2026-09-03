@@ -415,6 +415,7 @@ ${allToolsBody}
 <li><a href="/bakeware/"><b>Baking tin sizes</b><span>Area, volume and which tin substitutes for which — and what it does to the time.</span></a></li>
 <li><a href="/paper-weight/"><b>Paper weight</b><span>GSM to lb — and why 80 lb text and 80 lb cover are different papers.</span></a></li>
 <li><a href="/bedding/"><b>Bedding sizes</b><span>Duvet and comforter dimensions, and how far each hangs over the bed.</span></a></li>
+<li><a href="/shoe-size/"><b>Shoe sizes</b><span>US, UK and EU with the foot length each fits — measure first, convert second.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
@@ -441,7 +442,7 @@ write('/about/', page({
 <h2>What is here</h2>
 <ul>
 <li><strong><a href="/tools/">Interactive tools</a></strong> — formatters, encoders, hash and QR generators, image compression, regex and cron builders. Each is one self-contained page.</li>
-<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/lumber/">lumber sizes</a>, <a href="/battery/">battery sizes</a>, <a href="/awg/">wire gauges</a>, <a href="/thread/">metric threads</a>, <a href="/tyre/">tyre sizes</a>, <a href="/ring-size/">ring sizes</a>, <a href="/bakeware/">baking tin sizes</a>, <a href="/paper-weight/">paper weights</a>, <a href="/bedding/">bedding sizes</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
+<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/lumber/">lumber sizes</a>, <a href="/battery/">battery sizes</a>, <a href="/awg/">wire gauges</a>, <a href="/thread/">metric threads</a>, <a href="/tyre/">tyre sizes</a>, <a href="/ring-size/">ring sizes</a>, <a href="/bakeware/">baking tin sizes</a>, <a href="/paper-weight/">paper weights</a>, <a href="/bedding/">bedding sizes</a>, <a href="/shoe-size/">shoe sizes</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
 </ul>
 
 <h2>How correctness is checked</h2>

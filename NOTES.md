@@ -1,3 +1,46 @@
+## Impressions doubled without a single new page being indexed
+
+192 → **373 impressions**, 115 → **259 queries**, in a few hours. I assumed the
+sections built today had started to land. They have not:
+
+    site:toolman.top              ~1,090
+    site:toolman.top/resolution/       0
+    site:toolman.top/battery/          0
+
+Nothing built today is in the index yet. **The doubling came entirely from the
+same ~1,090 pages matching more queries** — impressions per indexed page went
+from 0.18 to 0.34.
+
+That is a different mechanism from the one I had been reasoning about, and it
+matters for the forecast: I had been modelling growth as *pages indexed × a
+fixed yield*, and the yield is not fixed. It rises as Google works out what an
+established page is about. So there are two curves running, and everything built
+today is still entirely ahead of us.
+
+## Shoe sizes: the ring-size lesson, applied without the detour
+
+Built 33 pages, one per half size. The report came back at **96% worst, 91%
+average** — the same as the ring sizes, for the same reason. A shoe size is a
+point on a linear scale.
+
+The comparison worth holding onto is *paper*, which has the identical page
+structure and scores 65%. The difference is not the template: it is that a sheet
+of paper has a use of its own to describe and a shoe size does not. Structure
+is not what makes a section duplicate — **having nothing per-item to say is**.
+
+So the per-size pages are gone and the section is one 761-word hub. This time I
+cut on the first measurement rather than trying to rescue it first, which is
+what the rule is for.
+
+The hub keeps the parts worth having, all verified against six published rows
+before shipping: **EU sizes measure the last, not the foot**, which is why EU
+42.5 goes with a 27 cm foot; **US men's and women's are offset by 1.5**, so a
+"size 8" is two different shoes; and **UK differs from US by half a size in
+men's and two sizes in women's** — no single offset to remember. One size step
+is 0.85 cm, so half a size is four millimetres, which is less than a foot swells
+over a day. That last figure is the honest limit of the whole exercise and the
+page says so.
+
 ## Paper weight, where "80 lb" names two papers 83% apart
 
 An American basis weight is the weight of 500 sheets **at that grade's basis
