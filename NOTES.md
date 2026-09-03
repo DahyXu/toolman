@@ -1,3 +1,61 @@
+## Metric threads, and a number that is arithmetic rather than a chart
+
+"What drill for M6" is a question people look up every time, and the answer is a
+subtraction: **tapping drill = major diameter − pitch**. M6 coarse is a 1.0 mm
+pitch, so 5.0 mm. M8 is 1.25, so 6.75 — sold as 6.8, because 6.75 is not a drill
+anyone stocks. The rule reproduces every published tapping chart from M2 to M24
+within the rounding those charts apply, and the generator checks all thirteen on
+every build.
+
+The section carries two things the arithmetic cannot give.
+
+**The clearance hole is the one people reverse.** The tapping drill goes in the
+part being threaded; the clearance hole goes in the part the bolt passes
+through. Drilling the clearance size and then trying to tap it leaves a hole
+with no thread in it, and that is a common enough mistake to be worth a sentence
+on every page.
+
+**An M10 bolt takes either a 16 mm or a 17 mm spanner.** DIN 933 specifies 17
+across the flats and ISO 4017 specifies 16; the threads are identical and only
+the head differs. The same split happens at M12 and M14. This is exactly the
+shape of the UK/US King bed collision — a name that means one thing and a
+measurement that means two — and it is why a socket set that covers 8, 10, 13,
+17, 19 occasionally meets a bolt it cannot grip. Both numbers are printed rather
+than one being chosen.
+
+One restraint carried over from the wire gauge section: everything that is a
+standard rather than a calculation is stated as such, and where two standards
+disagree the page says so instead of picking the one that makes the table
+tidier.
+
+## Click depth is not the problem — measured rather than assumed
+
+With 7,483 pages and roughly a seventh indexed, the obvious suspect is crawl
+depth: pages buried five or six clicks from the home page get reached last and
+often not at all. So I measured it instead of guessing.
+
+    0 clicks          1
+    1 click          98
+    2 clicks       3254   43.5%
+    3 clicks       2818   37.7%
+    4 clicks       1312   17.5%   ← deepest on the site
+    unreachable       0
+
+**Nothing is deeper than four clicks and nothing is unreachable.** 82% of the
+site is within three. The deepest sections are the two largest, `convert` at an
+average of 2.99 and `cooking` at 2.91, which is what you would expect and is
+fine.
+
+So internal structure is not the constraint, and that hypothesis is closed. What
+remains is crawl *rate* on a domain that is three days old, which is time and
+external signal rather than anything in the repository — and the sitemap only
+started delivering URLs to Google today, so the clock on that started this
+morning rather than on launch.
+
+Worth having built the measurement anyway: `scripts/depth-map.mjs` will say
+immediately if a future section lands stranded, which is the failure the CSS
+unit pages and the resolution pages both had before the footer link was added.
+
 ## Wire gauge: a section that is one formula, and a constant worth guarding
 
 AWG is not a table. The diameter of gauge n is
