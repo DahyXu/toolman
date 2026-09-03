@@ -126,7 +126,7 @@ ${FAQ.html}
 
   pages.push({
     path: '/door-size/',
-    title: 'Standard Door Sizes — UK and US Leaf, Rough Opening and Clear Width | Toolman',
+    title: 'Door Sizes — Leaf, Rough Opening and Clear Width | Toolman',
     desc: 'Every standard door size with its leaf dimensions, the rough opening it needs and the clear width it gives. British "metric" doors are exact inch sizes — 762 mm is 30 inches.',
     h1: 'Door sizes',
     crumbs: [{ name: 'Door sizes', path: '/door-size/' }],
