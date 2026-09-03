@@ -1,3 +1,46 @@
+## Zero URLs had ever reached Google through a sitemap
+
+Asked again why the child sitemaps still showed 无法抓取, I went and read the
+table properly instead of repeating what I had already written, and found I had
+understated it.
+
+The four children had been submitted on 1 September, hours before the split
+that created them, and returned 404. What I had recorded as a cosmetic stale
+record was worse than that: their **上次读取时间 was blank**, so no read had ever
+completed, and **已发现的网页 was 0 on every row including the index**, which
+read 成功 on 2 September. Sitemap discovery had delivered nothing at all. Every
+page Google has indexed so far it found by following links from the home page.
+
+Search Console genuinely has no delete — I opened the ⋮ menu on a failed row to
+check rather than assert it again, and it holds two greyed-out "view indexing"
+items and nothing else. Resubmitting the same URL is accepted silently without
+triggering a fetch. So the only clean record is a URL that has never failed:
+the children moved to `/sitemaps/pages-N.xml`, with the index and robots.txt
+pointing there, while the old paths keep serving the same bytes so any retry
+against a poisoned record gets a 200 rather than a second 404.
+
+Google fetched all four within seconds of submission:
+
+| sitemap | status | pages discovered |
+|---|---|---|
+| pages-1.xml | 成功 | 2,000 |
+| pages-2.xml | 成功 | 2,000 |
+| pages-3.xml | 成功 | 2,000 |
+| pages-4.xml | 成功 | 884 |
+
+6,884, matching the build exactly, against 0 for the two days before.
+
+Two things to carry forward. **A submitted-before-it-existed sitemap poisons its
+own URL permanently**, so never submit one before deploying it. And I had
+answered this question once already from my own notes and got it half wrong:
+the note said "they block nothing", which was an inference from the red status
+line, not from the 已发现的网页 column sitting at 0 right next to it. The column
+that answers the question was on screen the first time and I did not read it.
+
+While in the file, the sitemap checker was globbing `dist/sitemap*.xml`, which
+after the move validated the leftover copies nobody reads and skipped the four
+the index actually names. It now follows the index.
+
 ## The "everyday terms" comparison was one rung wrong on 2,186 pages
 
 GSC showed `4 oz to grams butter` and `4 oz in grams butter`, so I opened the

@@ -50,21 +50,26 @@ of the count, and the count is an estimate. For whether one specific page is
 indexed, use URL Inspection instead — it reads live index status and disagreed
 with `site:` more than once here.
 
-## Four child sitemaps show 无法抓取, and that is stale
+## The child sitemaps had never been read at all — fixed 3 September
 
-`sitemap-1.xml` through `sitemap-4.xml` were submitted on 1 September before
-they existed — the sitemap was split into chunks at 23:32 that night, after the
-site first deployed. Google fetched them, got a 404, and recorded the failure.
-Their **last-read time is blank**, not old, which is the tell: no read ever
-completed, so this is not a fetch that failed recently.
+`sitemap-1.xml` … `sitemap-4.xml` were submitted on 1 September before they
+existed and returned 404. The tell was not the red status but the two columns
+next to it: **上次读取时间 blank** (no read ever completed, so this is not a
+recent failure) and **已发现的网页 0 on every row, index included**. Nothing had
+ever reached Google through a sitemap.
 
-Nothing is wrong now. All five return HTTP 200 with `Content-Type:
-application/xml`, robots.txt lists them all, and the index at `sitemap.xml`
-reads 成功 and lists all four children. Google reaches them through the index.
-The current Search Console UI has no delete option for a submitted sitemap and
-resubmitting an existing one is accepted silently without creating a new record,
-so those four red lines will clear on Google's own retry schedule or not at all.
-They block nothing.
+Search Console has no delete for a submitted sitemap — the row's ⋮ menu holds
+only two greyed-out "view indexing" links — and resubmitting the same URL is
+accepted silently without a fetch. The fix is a URL it has never failed on. The
+children now live at `/sitemaps/pages-N.xml`; all four were read within seconds
+and reported 2,000 / 2,000 / 2,000 / 884 pages discovered. The old paths still
+serve the same bytes so a retry gets a 200.
+
+The four original red rows cannot be removed and will stay in the list forever.
+They now point at files nothing references.
+
+**Never submit a sitemap to Search Console before it is deployed.** The 404 is
+recorded against that URL and there is no way to clear it.
 
 ## Reddit
 
