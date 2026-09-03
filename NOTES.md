@@ -1,3 +1,41 @@
+## Bed sizes, and a duplicate H1 the suite reported but did not gate
+
+The finite-namespace rule again, on the everyday side where the queries actually
+are: 19 mattress sizes across North America, the UK and continental Europe.
+
+The section is worth having because the names collide and collide the wrong way.
+**A UK King is 150 cm wide and a US King is 193** — a 43 cm difference, which is
+larger than the gap between a UK Single and a UK Small Double. The largest bed
+sold as standard in Britain, the Super King at 180 cm, is still 13 cm narrower
+than an ordinary American King. Nothing in the word "King" warns anyone.
+
+Sizes are stored in the unit their standard is written in — inches for North
+America, centimetres for the UK and Europe — and converted once, rather than
+stored pre-converted and rounded twice. I cross-checked both directions against
+the published figures before shipping, which caught a claim of my own: I had
+written that a US Full and a UK Double are "within 2 cm in both directions" and
+the width difference is 2.2 cm. The page now gives 137.2 × 190.5 against
+135 × 190 and lets the reader see it.
+
+The section came out at 55% average sibling overlap, 69% worst — second best on
+the site after screen resolutions, for the same reason: most of the page is
+derived, and the part that is not is genuinely different per row.
+
+**The audit found a duplicate H1 and passed anyway.** Two pages were headed
+"King bed size", one American and one British, competing for exactly the query
+that most needs disambiguating. The check has always existed and always printed;
+`dupH1` was simply absent from the `fatal` sum, so the suite exited 0 with the ✗
+on screen. That is the second time today a check has been decorative — after
+`audit.mjs` ending in an unconditional `process.exit(0)` — and both were found by
+reading the output rather than by trusting the exit code. Headings are now
+qualified where a name is shared, and `dupH1` counts.
+
+**Cloudflare Pages propagation, twice mistaken for a bug.** A new path returns
+404 for roughly the first minute after a deploy. `/resolution/` did it earlier
+today and I went looking through `dist` for a missing file; `/bed-size/` did it
+again and I checked `_redirects`. Both were fine both times. **Wait a minute
+before verifying a new path, and do not treat an immediate 404 as evidence.**
+
 ## The similarity report was averaging two unrelated page families together
 
 `/convert/` holds three things that share nothing but a URL prefix: 2,710

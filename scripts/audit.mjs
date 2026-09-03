@@ -137,7 +137,7 @@ line('descriptions under 70 chars', problems.shortDesc, 3);
 line('descriptions over 175 chars', problems.longDesc, 3);
 
 const fatal = problems.noTitle.length + problems.noDesc.length + problems.noCanonical.length +
-  problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length + unreachable.length + problems.dupRobots.length;
+  problems.noH1.length + dupTitles.length + dupDescs.length + dupH1.length + brokenLinks.length + orphans.length + unreachable.length + problems.dupRobots.length;
 console.log(`\n${fatal === 0 ? '✓ no indexing blockers' : '✗ ' + fatal + ' issues that can block indexing'}\n`);
 // Exit non-zero so this is a gate and not a decoration. Every one of these
 // scripts printed its failures and then exited 0, which meant `npm run check`
