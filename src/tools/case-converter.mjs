@@ -57,13 +57,16 @@ export default {
 const $=s=>document.querySelector(s),I=$('#in'),O=$('#out');
 const SMALL=new Set(['a','an','the','and','but','or','nor','for','so','yet','at','by','in','of','on','to','up','as','if','per','via','off','out','from','into','over','with']);
 function words(t){return t.replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g,'$1 $2').split(/[\\s_\\-.]+/).filter(Boolean)}
+// Prose keeps its hyphens; identifiers get their case changes and underscores
+// opened into spaces so that Title and Sentence case have words to work with.
+function readable(t){return t.replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g,'$1 $2').replace(/_+/g,' ')}
 const C={
   upper:t=>t.toUpperCase(),
   lower:t=>t.toLowerCase(),
-  title:t=>t.toLowerCase().replace(/[^\\s]+/g,(w,i,s)=>{
-    const first=i===0, last=i+w.length>=s.trimEnd().length;
+  title:t=>readable(t).toLowerCase().replace(/[^\\s]+/g,(w,i,s)=>{
+    const first=i===0||/[.!?:]\\s+$/.test(s.slice(0,i)), last=i+w.length>=s.trimEnd().length;
     return (!first&&!last&&SMALL.has(w.replace(/[^a-z]/g,'')))?w:w.charAt(0).toUpperCase()+w.slice(1)}),
-  sentence:t=>t.toLowerCase().replace(/(^\\s*|[.!?]\\s+|\\n\\s*)([a-z])/g,(m,p,c)=>p+c.toUpperCase()).replace(/\\bi\\b/g,'I'),
+  sentence:t=>readable(t).toLowerCase().replace(/(^\\s*|[.!?]\\s+|\\n\\s*)([a-z])/g,(m,p,c)=>p+c.toUpperCase()).replace(/\\bi\\b/g,'I'),
   camel:t=>words(t).map((w,i)=>i?w.charAt(0).toUpperCase()+w.slice(1).toLowerCase():w.toLowerCase()).join(''),
   pascal:t=>words(t).map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(''),
   snake:t=>words(t).map(w=>w.toLowerCase()).join('_'),

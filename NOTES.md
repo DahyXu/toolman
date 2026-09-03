@@ -1,3 +1,40 @@
+## Title Case was useless on the exact inputs the page invites
+
+The case converter offers Title Case and camelCase side by side, so the obvious
+thing to paste is an identifier. Every one of them came back wrong:
+
+| input | was | now |
+|---|---|---|
+| `userAccountId` | Useraccountid | User Account Id |
+| `XMLHttpRequest` | Xmlhttprequest | Xml Http Request |
+| `HTTP_STATUS_CODE` | Http_status_code | Http Status Code |
+
+`words()` finds identifier boundaries correctly and only the programming cases
+used it. Title and Sentence case split on whitespace, so an identifier arrived
+as one long word. Routing them through `words()` was the wrong fix — it discards
+separators, and "state-of-the-art design" has to keep its hyphens in a title.
+A separate `readable()` opens only the two boundaries that carry no meaning in
+prose, a case change and an underscore, and leaves everything else alone.
+
+Testing the fix surfaced a second one: "the quick brown fox. **a** second one".
+A minor word is lowercased unless it is first or last, which is the standard
+rule and ignores that a word after a full stop opens a sentence wherever it sits
+in the string. Now `[.!?:]` before it counts as a first word — the colon
+included, because Chicago and AP both capitalise a subtitle's first word.
+`3:1` is untouched, since the rule requires whitespace after.
+
+Three process notes, all previously recorded and all repeated here anyway:
+
+- The template-literal escape trap, 5th occurrence. `\s` written into a `.mjs`
+  template literal reaches the browser as `s` and matches a literal letter. The
+  file's other regexes all use `\s`. Reading the emitted JS out of
+  `dist/case-converter/index.html` caught it; the source looked right.
+- `sed -i 's/!?]/!?:]/'` applies per line, so it also hit the Sentence case rule
+  two lines down, where a colon must *not* capitalise — "the answer is: yes"
+  stays lowercase. Reverted that line alone. A substitution narrow enough to
+  look safe still needs its blast radius checked.
+- The colon rule was verified against `3:1` before shipping, not after.
+
 ## 2026-09-03 — the Markdown converter mangled ordinary Wikipedia links
 
 No fresh Reddit threads today in any domain I have actually verified — subnets,
