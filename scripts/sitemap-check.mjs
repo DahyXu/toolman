@@ -92,3 +92,4 @@ for (const f of files) {
 }
 
 console.log(`\n${fatal === 0 ? '✓ sitemaps conform to the protocol' : '✗ ' + fatal + ' problems'}\n`);
+process.exit(fatal === 0 ? 0 : 1);

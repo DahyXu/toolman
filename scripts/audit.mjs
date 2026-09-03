@@ -139,4 +139,8 @@ line('descriptions over 175 chars', problems.longDesc, 3);
 const fatal = problems.noTitle.length + problems.noDesc.length + problems.noCanonical.length +
   problems.noH1.length + dupTitles.length + dupDescs.length + brokenLinks.length + orphans.length + unreachable.length + problems.dupRobots.length;
 console.log(`\n${fatal === 0 ? '✓ no indexing blockers' : '✗ ' + fatal + ' issues that can block indexing'}\n`);
-process.exit(0);
+// Exit non-zero so this is a gate and not a decoration. Every one of these
+// scripts printed its failures and then exited 0, which meant `npm run check`
+// passed with 152 unreachable pages on screen — and meant that reading
+// "exit: 0" as proof the suite passed was reading nothing at all.
+process.exit(fatal === 0 ? 0 : 1);

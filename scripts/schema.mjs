@@ -121,3 +121,4 @@ for (const [k, v] of Object.entries(problems)) {
   if (v.length > 4) console.log(`    … and ${v.length - 4} more`);
 }
 console.log(`\n${total === 0 ? '✓ structured data is clean' : '✗ ' + total + ' structured-data problems'}\n`);
+process.exit(total === 0 ? 0 : 1);

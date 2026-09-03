@@ -131,9 +131,102 @@ ${anyRel ? `<p>Because ${a.rel && b.rel ? 'both units are' : (a.rel ? a.sym : b.
 
 ${FAQ.html}
 
+${VALUE_PAIRS.some(([x, y]) => x === a.id && y === b.id) ? `
+<h2>Common ${A} values in ${B}</h2>
+<p>Each of these has its own page with the working, the value at other font sizes and the neighbouring conversions.</p>
+<ul class="linklist">${COMMON.map((v) => `<li><a href="/convert/${v}-${a.id}-to-${b.id}/">${v}${A} to ${B}</a></li>`).join('')}</ul>
+` : ''}
 <h2>Related CSS unit conversions</h2>
 <ul class="linklist">${siblings}</ul>
 <p><a href="/convert/css-units/">All CSS unit converters</a> · <a href="/convert/">All converters</a></p>`,
+  };
+}
+
+// Pairs that get a page per value. Nobody searches "pc to percent" with a number
+// in front of it, but "16px to rem" is one of the most-typed conversions in
+// front-end work, and Search Console has already shown "16pt to mm" arriving
+// here and landing on the pair page — which answers it inside a nineteen-row
+// table rather than in its title.
+const VALUE_PAIRS = [['px', 'rem'], ['rem', 'px'], ['px', 'pt'], ['pt', 'px'],
+  ['px', 'em'], ['em', 'px'], ['pt', 'mm'], ['mm', 'pt']];
+
+// Root font sizes worth showing. 16 is the browser default; 14 and 18 are the
+// two most common overrides in design systems; 20 and 24 are what a visitor who
+// has raised their browser's default font size is actually running.
+const ROOTS = [14, 16, 18, 20, 24];
+
+function valuePage(a, b, v, all) {
+  const k = a.px / b.px;
+  // Which font size the relative side of this pair is actually measured against.
+  // rem looks at the root element; em looks at the element it is written on, and
+  // inherits the root only when nothing above it has changed the size. Calling
+  // both of them "the root font size" is wrong for em, and wrong in the way that
+  // matters, since compounding through nesting is the whole difference.
+  const relUnit = a.rel ? a : b.rel ? b : null;
+  const basis = !relUnit ? '' : relUnit.id === 'rem' ? 'the root element' : relUnit.id === 'em' ? "the element's own font size, inherited from its parent unless it sets one" : "the parent element's font size";
+  const basisShort = !relUnit ? '' : relUnit.id === 'rem' ? 'root font size' : 'font size';
+  const out = v * k;
+  const A = a.sym, B = b.sym;
+  const anyRel = a.rel || b.rel;
+  const path = `/convert/${v}-${a.id}-to-${b.id}/`;
+
+  // For a relative pair the answer is only true at one root size, and saying so
+  // in a table is the whole reason this page is worth more than the ratio.
+  const rootRows = anyRel
+    ? ROOTS.map((r) => {
+      const pa = a.rel ? (a.id === 'percent' ? r / 100 : r) : a.px;
+      const pb = b.rel ? (b.id === 'percent' ? r / 100 : r) : b.px;
+      return `<tr${r === 16 ? ' style="font-weight:600"' : ''}><td>${r} px${r === 16 ? ' (default)' : ''}</td><td>${fmt(v * (pa / pb))}${B}</td></tr>`;
+    }).join('')
+    : '';
+
+  const near = COMMON.filter((x) => x !== v).map((x) => Math.abs(x - v) <= Math.max(8, v * 0.5) ? x : null).filter(Boolean).slice(0, 8);
+  const nearRows = [...near, v].sort((x, y) => x - y)
+    .map((x) => `<tr${x === v ? ' style="font-weight:600"' : ''}><td>${x === v ? `${x}${A}` : `<a href="/convert/${x}-${a.id}-to-${b.id}/">${x}${A}</a>`}</td><td>${fmt(x * k)}${B}</td></tr>`).join('');
+
+  const FAQ = faq([
+    { q: `What is ${v}${A} in ${B}?`, a: `<strong>${fmt(out)}${B}</strong>${anyRel ? ` at the default 16 px ${basisShort}` : ''}.` },
+    { q: `How is ${v}${A} converted to ${B}?`, a: `Multiply by ${fmt(k)}: ${v} × ${fmt(k)} = ${fmt(out)}. To go back, multiply ${fmt(out)} by ${fmt(1 / k)}.` },
+    anyRel
+      ? { q: `Is ${fmt(out)}${B} always the answer?`,
+          a: `No. ${relUnit.sym} is relative to ${basis}, so ${v}${A} is ${fmt(out)}${B} only while that is 16 px. The table above gives the value at the sizes you are most likely to meet.` }
+      : { q: `Does zoom or font size change ${v}${A}?`,
+          a: `No. ${A} and ${B} are both absolute CSS units, so the ratio is fixed and ${v}${A} is ${fmt(out)}${B} in every context.` },
+  ]);
+
+  const titleA = a.id === 'px' ? 'PX' : a.id.toUpperCase();
+  const titleB = b.id === 'px' ? 'PX' : b.id.toUpperCase();
+
+  return {
+    path,
+    title: `${v}${A} to ${B} — ${fmt(out)}${B} | Toolman`,
+    desc: `${v}${A} equals ${fmt(out)}${B}${anyRel ? ` at a 16 px ${basisShort}` : ''}. Shows the formula, the value at other ${anyRel ? `${basisShort}s` : 'common values'} and a table of nearby conversions.`,
+    h1: `${v}${A} to ${B}`,
+    crumbs: [
+      { name: 'Converters', path: '/convert/' },
+      { name: 'CSS units', path: '/convert/css-units/' },
+      { name: `${titleA} to ${titleB}`, path: `/convert/${a.id}-to-${b.id}/` },
+      { name: `${v}${A}`, path },
+    ],
+    jsonld: [FAQ.schema],
+    body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${v}${A} = ${fmt(out)}${B}</strong></p>
+<p class="muted">${anyRel ? `At the browser default ${basisShort} of 16&nbsp;px. Change it and this number changes — see below.` : `${A} and ${B} are both absolute CSS units, so this ratio never changes.`}</p>
+
+<h2>How it is calculated</h2>
+<p>One ${A} is ${fmt(k)}${B}, so:</p>
+<pre><code>${v}${A} × ${fmt(k)} = ${fmt(out)}${B}</code></pre>
+<p>Reversing it, ${fmt(out)}${B} × ${fmt(1 / k)} returns ${v}${A}.</p>
+${anyRel ? `
+<h2>${v}${A} at other ${basisShort}s</h2>
+<p>${relUnit ? relUnit.sym : ''} is measured against ${basis}, so the answer above holds only while that is 16&nbsp;px.${relUnit && relUnit.id === 'rem' ? " A visitor who has raised their browser's default — the accessibility setting rem exists to respect — is reading your page at one of the larger rows." : " Nested elements each compound on their parent, so this is the value for one level, not for the whole tree."}</p>
+<table><thead><tr><th>${basisShort.charAt(0).toUpperCase() + basisShort.slice(1)}</th><th>${v}${A} equals</th></tr></thead><tbody>${rootRows}</tbody></table>
+` : ''}
+<h2>Nearby values</h2>
+<table><thead><tr><th>${A}</th><th>${B}</th></tr></thead><tbody>${nearRows}</tbody></table>
+
+${FAQ.html}
+
+<p><a href="/convert/${a.id}-to-${b.id}/">The full ${titleA} to ${titleB} converter →</a> · <a href="/convert/css-units/">All CSS unit converters</a></p>`,
   };
 }
 
@@ -142,6 +235,13 @@ export default async function () {
   const pairs = [];
   for (const a of U) for (const b of U) if (a !== b) pairs.push([a, b]);
   for (const [a, b] of pairs) pages.push(pairPage(a, b, U));
+
+  const byId = new Map(U.map((u) => [u.id, u]));
+  for (const [aId, bId] of VALUE_PAIRS) {
+    const a = byId.get(aId), b = byId.get(bId);
+    if (!a || !b) { console.warn('unknown css unit pair', aId, bId); continue; }
+    for (const v of COMMON) pages.push(valuePage(a, b, v, U));
+  }
 
   pages.push({
     path: '/convert/css-units/',

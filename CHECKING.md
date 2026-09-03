@@ -98,10 +98,16 @@ npm run audit       # audits only, against the current dist/
 npm run audit:full  # adds content depth and duplicate-content analysis
 ```
 
-The audits fail the build on missing or duplicate metadata, broken internal
+The audits exit non-zero on missing or duplicate metadata, broken internal
 links, pages unreachable from the home page, invalid structured data, missing
 accessible names, dead top-level declarations, and pages that contradict
-themselves.
+themselves. `depth` and `similarity` are advisory and always exit 0 — read
+their output, do not gate on it.
+
+This paragraph described behaviour the code did not have until 3 September:
+`audit.mjs` ended in an unconditional `process.exit(0)`, so `npm run check`
+passed with 152 unreachable pages printed on screen. **An exit code is only
+evidence once you have seen it fail.**
 
 They will not catch a sentence that is grammatical, unique, correctly sized and
 still wrong. Six defects this session were found only by reading the output at

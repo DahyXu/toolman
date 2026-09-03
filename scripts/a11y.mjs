@@ -96,3 +96,8 @@ report('controls with no accessible name', unnamed);
 report('images without alt', noAlt);
 report('skipped heading levels', skipped);
 console.log(`\n${unnamed.length + noAlt.length + skipped.length === 0 ? '✓ no accessibility problems found' : ''}\n`);
+
+// A control with no accessible name is not a style problem — it is a control a
+// screen reader cannot announce and a search engine cannot label. Gate on it.
+const a11yFatal = unnamed.length + noAlt.length;
+process.exitCode = a11yFatal ? 1 : 0;

@@ -1,3 +1,36 @@
+## The audit suite was reporting, not gating — and I was quoting its exit code
+
+`scripts/audit.mjs` ended with an unconditional `process.exit(0)`. It computed
+`fatal`, printed `✗ 152 issues that can block indexing`, and exited clean.
+`schema.mjs` and `sitemap-check.mjs` had no exit handling at all.
+
+This matters beyond the scripts. I have been running `npm run audit` after every
+change this session and reporting **"audit exit: 0"** as evidence the change was
+sound. That number was 0 whether the suite passed or not. It was not weak
+evidence, it was no evidence, and I quoted it perhaps ten times.
+
+`CHECKING.md` also stated that the audits "fail the build on missing or
+duplicate metadata, broken internal links, pages unreachable from the home
+page…" — describing behaviour the code did not have.
+
+All five now exit non-zero on their own fatal condition, and `a11y.mjs` gained
+one: a control with no accessible name is a control a screen reader cannot
+announce, which is a defect and not a note.
+
+One correction inside the correction. I said none of the scripts exited
+non-zero. `contradiction.mjs` and `dead-code.mjs` already set
+`process.exitCode` and were already real gates — my grep pattern
+(`process.exitCode *= *[0-9]`) did not match `process.exitCode = total ? 1 : 0`,
+so they were missing from the survey I based the claim on. I added redundant
+`process.exit()` calls to both before noticing and removed them. **The tool that
+produced the evidence was wrong in the same direction as the conclusion**, which
+is the second time today: the similarity report's heading, and now this grep.
+
+The gate immediately earned itself. The 152 new CSS unit value pages were
+unreachable from the home page — nothing linked them, exactly the island problem
+from earlier in the project — and the first `✗` I have seen the suite refuse to
+pass on was that one. Fixed by listing the value pages on their pair page.
+
 ## I read my own similarity report backwards and told the user so
 
 The report's heading said **"unique text per page, by section"**. The number
