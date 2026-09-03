@@ -1,3 +1,33 @@
+## Battery sizes: the generator checked its own data and found a real error
+
+Twenty-two cells, and the fact worth leading with is that **the code is the
+size**. A CR2032 is 20 mm across and 3.2 mm thick; a CR1620 is 16 by 2.0; an
+18650 is 18 by 65.0. The first two digits are the diameter in millimetres and
+the rest is the thickness or length in tenths. Almost nobody knows this, and it
+turns "is a CR2025 the same as a CR2032" from a lookup into arithmetic.
+
+Because the rule exists, the generator does not store dimensions for those
+cells — it decodes them from the designation, and compares the result against
+any dimensions given by hand. That comparison caught something on the first run:
+
+    LR1130: name decodes to 11×3 mm, table says 11.6×3.1
+
+The table was right and my decoder was wrong. The **alkaline and silver-oxide
+button cells are not named the same way** — an LR1130's digits are a rounded
+nominal, not a measurement, so LR and SR had no business in the decode pattern.
+Left in, every LR page would have asserted a size wrong in both dimensions
+while explaining, confidently, that the digits are the measurement.
+
+The check now fails the build rather than exporting a list, and I planted a
+wrong dimension to confirm it fires before trusting the clean run.
+
+The section came out at **42% average sibling overlap, 71% worst — the best of
+any generated section on the site**, and I did not do anything special to make
+that happen. Each cell has a genuinely different paragraph, a different alias
+list, and different neighbours. That is the whole technique, and the sections
+that score well are simply the ones where the per-item facts were interesting
+enough to write about.
+
 ## Lumber sizes, and the same mistake for the third time today
 
 "2x4 actual size" is one of the most-searched dimension questions there is, and
