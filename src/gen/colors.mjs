@@ -1,4 +1,5 @@
 import { esc, faq } from '../layout.mjs';
+import TW from '../data/tailwind-palette.mjs';
 
 // 148 CSS named colors — the canonical list every browser ships.
 const NAMED = {
@@ -128,6 +129,7 @@ function colorPage(hex, name) {
   const cw = contrast(rgb, { r: 255, g: 255, b: 255 });
   const cb = contrast(rgb, { r: 0, g: 0, b: 0 });
   const family = hueName(hsl.h, hsl.s, hsl.l);
+  const tw = TW[hex] || null;
   const article = (d) => (d.startsWith('pure ') ? '' : 'a ');
   const desc = family === 'pure white' || family === 'pure black'
     ? family
@@ -181,6 +183,7 @@ function colorPage(hex, name) {
 </div>
 <p class="muted">The swatch above shows ${H} with its hex code written on it in white and in black, so you can see which of the two is legible before reading the measured ratios below.</p>
 <p class="muted">${H} is a <strong>${desc}</strong>${near.exact ? `. It is the CSS named color <strong>${near.name}</strong>` : `, closest to the CSS named color <a href="/color/${near.hex}/">${near.name}</a> (#${near.hex.toUpperCase()})`}.</p>
+${tw ? `<p class="muted">It is also a Tailwind CSS default: <strong>${tw.join('</strong> and <strong>')}</strong>${tw.length > 1 ? ', two shades that share the same value' : ''}. That means you can write <code>bg-${tw[0]}</code> or <code>text-${tw[0]}</code> directly, with no arbitrary-value brackets and no entry in your theme config.</p>` : ''}
 
 <h2>Color values</h2>
 <table><tbody>
@@ -216,8 +219,8 @@ ${swatchRow(harmony)}
 .element { color: rgb(${rgb.r} ${rgb.g} ${rgb.b}); }
 .element { color: hsl(${hsl.h} ${hsl.s}% ${hsl.l}%); }
 
-/* Tailwind arbitrary value */
-&lt;div class="bg-[${H}] text-${cw > cb ? 'white' : 'black'}"&gt;
+/* Tailwind${tw ? '' : ' arbitrary value'} */
+&lt;div class="${tw ? `bg-${tw[0]}` : `bg-[${H}]`} text-${cw > cb ? 'white' : 'black'}"&gt;
 
 /* SCSS variable */
 $brand: ${H};</code></pre>
@@ -252,6 +255,16 @@ export default async function () {
     'fcb900','00d084','8ed1fc','0693e3','abb8c3','eb144c','f78da7','9900ef','003366','006400',
     '4b0082','800020','36454f','708090','fffdd0','f5f5dc','fa8072','40e0d0','e6e6fa','ffd700'];
   for (const hex of POPULAR) {
+    if (done.has(hex)) continue;
+    done.add(hex);
+    seeds.push([hex, null]);
+  }
+
+  // 2b) the whole Tailwind default palette. The hand-picked list above had 36 of
+  // its 241 values, and three of the four colour queries earning impressions in
+  // Search Console were among those 36 — the other 205 could not appear in the
+  // data because they had no page to appear on.
+  for (const hex of Object.keys(TW)) {
     if (done.has(hex)) continue;
     done.add(hex);
     seeds.push([hex, null]);
