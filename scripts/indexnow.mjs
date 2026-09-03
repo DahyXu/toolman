@@ -39,9 +39,13 @@ if (!urls.length) {
 console.log(`Submitting ${urls.length} URLs to IndexNow as ${HOST} (key ${KEY.slice(0, 8)}…)`);
 
 // Verify the key file is actually reachable first; IndexNow rejects otherwise.
-const check = await fetch(`${ORIGIN}/${KEY}.txt`).catch(() => null);
+// Swallowing the reason here cost twenty minutes once: the file was serving 200
+// to curl while this printed "network error" and named the wrong cause.
+let checkErr = null;
+const check = await fetch(`${ORIGIN}/${KEY}.txt`).catch((e) => { checkErr = e; return null; });
 if (!check || !check.ok) {
-  console.error(`✗ Key file ${ORIGIN}/${KEY}.txt is not reachable (${check ? check.status : 'network error'}).`);
+  const why = check ? `HTTP ${check.status}` : `${checkErr?.name}: ${checkErr?.message}${checkErr?.cause ? ` (${checkErr.cause.code || checkErr.cause.message})` : ''}`;
+  console.error(`✗ Key file ${ORIGIN}/${KEY}.txt is not reachable (${why}).`);
   console.error('  Deploy the site first — IndexNow verifies ownership through that file.');
   process.exit(1);
 }
