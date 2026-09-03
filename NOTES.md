@@ -1,3 +1,39 @@
+## Lumber sizes, and the same mistake for the third time today
+
+"2x4 actual size" is one of the most-searched dimension questions there is, and
+the answer — 1½ × 3½ inches — is the kind of fact this site should own. Eighteen
+board sizes, with the rule computed rather than transcribed: a nominal inch
+finishes at ¾, 2 to 6 inches lose ½, 8 and above lose ¾. I checked the computed
+rule against thirteen published dressed sizes before shipping rather than after.
+
+That caught nothing, but reading the output did. The generator was producing:
+
+> Three 2x4s laid side by side are 10½ inches wide, not 12. Over a 3-foot run
+> that is a gap of 4 inches.
+
+The first sentence is right. The second glues together two unrelated
+expressions — `r.w * 8 / 12` for the "3-foot run" and `(r.w - r.aw) * 8` for the
+"4 inches" — so the two numbers in it have nothing to do with each other. It
+reads like a fact and is arithmetic noise. Now: eight boards are 28 inches
+rather than 32, four inches short, which is one claim and checks out.
+
+**And then I made the shared-prose mistake again.** Every lumber page carried
+the same two paragraphs explaining why the names differ, which took the section
+to 92% sibling overlap — after doing exactly this with the ARCH sheets earlier
+today, and again with the oven pages an hour after that. Each time the instinct
+was that a thin page needs more words; each time the metric said the opposite,
+because identical text on two pages raises a Jaccard overlap rather than
+lowering it.
+
+The fix, again: the explanation moved to the hub, and each board got a paragraph
+about what that board is actually for — 2x4 for wall studs, 2x10 for stair
+stringers because cutting the notches leaves so little material, 2x12 for spans
+because doubling a joist's depth raises its stiffness eightfold while doubling
+its width only doubles it. 92% → 83%.
+
+I have now written this rule into CHECKING.md, because knowing it three times in
+one session evidently was not enough.
+
 ## Bed sizes, and a duplicate H1 the suite reported but did not gate
 
 The finite-namespace rule again, on the everyday side where the queries actually

@@ -90,6 +90,37 @@ Timing matters more than volume: the r/homelab comment was useful and sat at
 score 1 because the thread was already twelve hours old when it went up. Aim for
 threads under about three hours.
 
+## Shared prose on item pages makes duplicate content worse, not better
+
+Three times in one session I wrote an explanatory paragraph into a generated
+item page — the ARCH sheets, the oven settings, the lumber boards — and each
+time it pushed the section over the 90% duplicate threshold. The instinct is
+that a thin page needs more words. It does not: it needs more *different* words.
+
+The metric is a Jaccard overlap, so text identical on two pages grows the
+intersection and the union together and the ratio goes **up**. Adding 200 shared
+words to a 400-word page makes two siblings more alike, not less.
+
+| section | with shared prose | after |
+|---|---|---|
+| paper (ARCH) | 91% | 85% |
+| oven | 96% | 79% |
+| lumber | 92% | 83% |
+
+The rule, written down because knowing it three times was not enough:
+
+- **Explanation that is the same for every item goes on the hub**, with a link
+  from each item page.
+- **An item page carries only what is true of that item** — its numbers, and one
+  paragraph about what it is actually for.
+- When a section will not differentiate, **cut pages rather than pad them**. The
+  oven section went from 40 pages to 28 because the twelve Fahrenheit ones were
+  restating the Celsius ones, and that was the fix, not more prose.
+
+The per-item paragraph in a data file has now worked five times — ports, paper,
+time zones, lumber, and the resolution notes. It is the only technique here that
+has never made things worse.
+
 ## Running the checks
 
 ```bash

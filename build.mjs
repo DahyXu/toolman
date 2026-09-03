@@ -406,6 +406,7 @@ ${allToolsBody}
 <li><a href="/screen-size/"><b>Screen sizes</b><span>TV and monitor dimensions in inches and cm, and what a step up really adds.</span></a></li>
 <li><a href="/oven/"><b>Oven temperatures</b><span>Gas mark, °C, °F and the fan equivalent — and why the numbers are rounded.</span></a></li>
 <li><a href="/bed-size/"><b>Bed sizes</b><span>US, UK and European mattress dimensions — and why the names do not travel.</span></a></li>
+<li><a href="/lumber/"><b>Lumber sizes</b><span>Nominal against actual — a 2x4 is 1½ × 3½ inches, and here is every other board.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
@@ -432,7 +433,7 @@ write('/about/', page({
 <h2>What is here</h2>
 <ul>
 <li><strong><a href="/tools/">Interactive tools</a></strong> — formatters, encoders, hash and QR generators, image compression, regex and cron builders. Each is one self-contained page.</li>
-<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
+<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/lumber/">lumber sizes</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
 </ul>
 
 <h2>How correctness is checked</h2>
