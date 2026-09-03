@@ -41,7 +41,7 @@ function pairPage(a, b, all) {
   const titleA = a.id === 'px' ? 'PX' : a.id === 'percent' ? 'Percent' : a.id.toUpperCase();
   const titleB = b.id === 'px' ? 'PX' : b.id === 'percent' ? 'Percent' : b.id.toUpperCase();
 
-  const rows = COMMON.map(
+  const rows = valuesFor(a.id, b.id).map(
     (v) => `<tr><td>${v}${A}</td><td>${fmt(v * k)}${B}</td></tr>`
   ).join('');
 
@@ -134,7 +134,7 @@ ${FAQ.html}
 ${VALUE_PAIRS.some(([x, y]) => x === a.id && y === b.id) ? `
 <h2>Common ${A} values in ${B}</h2>
 <p>Each of these has its own page with the working, the value at other font sizes and the neighbouring conversions.</p>
-<ul class="linklist">${COMMON.map((v) => `<li><a href="/convert/${v}-${a.id}-to-${b.id}/">${v}${A} to ${B}</a></li>`).join('')}</ul>
+<ul class="linklist">${valuesFor(a.id, b.id).map((v) => `<li><a href="/convert/${v}-${a.id}-to-${b.id}/">${v}${A} to ${B}</a></li>`).join('')}</ul>
 ` : ''}
 <h2>Related CSS unit conversions</h2>
 <ul class="linklist">${siblings}</ul>
@@ -148,7 +148,23 @@ ${VALUE_PAIRS.some(([x, y]) => x === a.id && y === b.id) ? `
 // here and landing on the pair page — which answers it inside a nineteen-row
 // table rather than in its title.
 const VALUE_PAIRS = [['px', 'rem'], ['rem', 'px'], ['px', 'pt'], ['pt', 'px'],
-  ['px', 'em'], ['em', 'px'], ['pt', 'mm'], ['mm', 'pt']];
+  ['px', 'em'], ['em', 'px'], ['pt', 'mm'], ['mm', 'pt'],
+  // "pixel to mm" turned up in Search Console landing on the bare pair page —
+  // the same gap millimetres-to-metres and millimetres-to-feet both had. The
+  // physical-unit pairs get values too, since a designer converting a canvas to
+  // a print size asks for a specific number rather than a ratio.
+  ['px', 'mm'], ['mm', 'px'], ['px', 'cm'], ['cm', 'px'], ['px', 'in'], ['in', 'px']];
+
+// COMMON is a list of font sizes, which is right for px→rem and wrong for
+// px→mm: nobody asks what 14 pixels is in millimetres, they ask about a canvas.
+// The physical pairs get sizes a canvas or a print actually comes in.
+const PHYSICAL = new Set(['px-mm', 'mm-px', 'px-cm', 'cm-px', 'px-in', 'in-px']);
+const CANVAS_PX = [1, 10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 800, 1000, 1080, 1200, 1500, 1920];
+const CANVAS_PHYS = [1, 2, 5, 10, 15, 20, 25, 30, 40, 50, 100, 150, 200, 250, 300];
+const valuesFor = (aId, bId) => {
+  if (!PHYSICAL.has(`${aId}-${bId}`)) return COMMON;
+  return aId === 'px' ? CANVAS_PX : CANVAS_PHYS;
+};
 
 // Root font sizes worth showing. 16 is the browser default; 14 and 18 are the
 // two most common overrides in design systems; 20 and 24 are what a visitor who
@@ -180,7 +196,7 @@ function valuePage(a, b, v, all) {
     }).join('')
     : '';
 
-  const near = COMMON.filter((x) => x !== v).map((x) => Math.abs(x - v) <= Math.max(8, v * 0.5) ? x : null).filter(Boolean).slice(0, 8);
+  const near = valuesFor(a.id, b.id).filter((x) => x !== v).map((x) => Math.abs(x - v) <= Math.max(8, v * 0.5) ? x : null).filter(Boolean).slice(0, 8);
   const nearRows = [...near, v].sort((x, y) => x - y)
     .map((x) => `<tr${x === v ? ' style="font-weight:600"' : ''}><td>${x === v ? `${x}${A}` : `<a href="/convert/${x}-${a.id}-to-${b.id}/">${x}${A}</a>`}</td><td>${fmt(x * k)}${B}</td></tr>`).join('');
 
@@ -240,7 +256,7 @@ export default async function () {
   for (const [aId, bId] of VALUE_PAIRS) {
     const a = byId.get(aId), b = byId.get(bId);
     if (!a || !b) { console.warn('unknown css unit pair', aId, bId); continue; }
-    for (const v of COMMON) pages.push(valuePage(a, b, v, U));
+    for (const v of valuesFor(aId, bId)) pages.push(valuePage(a, b, v, U));
   }
 
   pages.push({
