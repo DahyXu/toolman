@@ -638,12 +638,27 @@ chunks.forEach((c, i) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${c.map((u) => `<url><loc>${SITE.origin}${u}</loc><lastmod>${lastmodOf(u)}</lastmod><priority>${prio(u)}</priority></url>`).join('\n')}
 </urlset>`;
-  fs.writeFileSync(path.join(dist, chunks.length === 1 ? 'sitemap.xml' : `sitemap-${i + 1}.xml`), xml);
+  if (chunks.length === 1) { fs.writeFileSync(path.join(dist, 'sitemap.xml'), xml); return; }
+  // The children live under /sitemaps/ because the original /sitemap-N.xml URLs
+  // were submitted to Search Console on 1 September, hours before the split that
+  // created them, and returned 404. Those records are stuck: their last-read
+  // time is still blank, the status is still 无法抓取, and zero URLs have ever
+  // been discovered through a sitemap — every page Google has found, it found by
+  // following links. Search Console has no delete, and resubmitting the same URL
+  // is accepted silently without triggering a fetch, so the only way to get a
+  // clean record is a URL it has never failed on.
+  fs.mkdirSync(path.join(dist, 'sitemaps'), { recursive: true });
+  fs.writeFileSync(path.join(dist, 'sitemaps', `pages-${i + 1}.xml`), xml);
+  // The old paths keep serving the same content. Nothing references them now,
+  // but if Google ever retries one of its failed records it will get a 200
+  // instead of another 404.
+  fs.writeFileSync(path.join(dist, `sitemap-${i + 1}.xml`), xml);
 });
+const CHILD = (i) => `${SITE.origin}/sitemaps/pages-${i + 1}.xml`;
 if (chunks.length > 1) {
   fs.writeFileSync(path.join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${chunks.map((_, i) => `<sitemap><loc>${SITE.origin}/sitemap-${i + 1}.xml</loc><lastmod>${now}</lastmod></sitemap>`).join('\n')}
+${chunks.map((_, i) => `<sitemap><loc>${CHILD(i)}</loc><lastmod>${now}</lastmod></sitemap>`).join('\n')}
 </sitemapindex>`);
 }
 
@@ -652,7 +667,7 @@ ${chunks.map((_, i) => `<sitemap><loc>${SITE.origin}/sitemap-${i + 1}.xml</loc><
 // the index is slow to be processed.
 const sitemapLines = [`Sitemap: ${SITE.origin}/sitemap.xml`];
 if (chunks.length > 1) {
-  for (let i = 0; i < chunks.length; i++) sitemapLines.push(`Sitemap: ${SITE.origin}/sitemap-${i + 1}.xml`);
+  for (let i = 0; i < chunks.length; i++) sitemapLines.push(`Sitemap: ${CHILD(i)}`);
 }
 fs.writeFileSync(path.join(dist, 'robots.txt'),
   `User-agent: *\nAllow: /\n\n${sitemapLines.join('\n')}\n`);

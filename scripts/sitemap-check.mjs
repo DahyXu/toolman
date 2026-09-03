@@ -13,7 +13,17 @@ import path from 'node:path';
 const dist = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..', 'dist');
 const HOST = 'https://toolman.top';
 
-const files = fs.readdirSync(dist).filter((f) => /^sitemap.*\.xml$/.test(f)).sort();
+// Collect what the index actually points at, not what happens to sit in dist/.
+// The children moved to /sitemaps/ and the old top-level files stayed behind to
+// serve any Search Console retry; globbing the root would have validated the
+// copies nobody reads and skipped the ones the index names.
+const files = [];
+const seenFiles = new Set();
+const add = (rel) => { if (!seenFiles.has(rel) && fs.existsSync(path.join(dist, rel))) { seenFiles.add(rel); files.push(rel); } };
+add('sitemap.xml');
+const indexXml = fs.existsSync(path.join(dist, 'sitemap.xml')) ? fs.readFileSync(path.join(dist, 'sitemap.xml'), 'utf8') : '';
+for (const m of indexXml.matchAll(/<sitemap>\s*<loc>([^<]+)<\/loc>/g)) add(m[1].replace(HOST + '/', ''));
+for (const f of fs.readdirSync(dist)) if (/^sitemap.*\.xml$/.test(f)) add(f);
 let fatal = 0;
 
 for (const f of files) {

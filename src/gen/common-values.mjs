@@ -63,6 +63,10 @@ const PAIRS = [
   ['meters', 'centimeters', 'small'], ['centimeters', 'meters', 'small'],
   ['kilometers', 'meters', 'distance'], ['meters', 'kilometers', 'distance'],
   ['millimeters', 'centimeters', 'small'], ['centimeters', 'millimeters', 'small'],
+  // Added on evidence, not guesswork: Search Console showed "1000 mm to meter",
+  // "100 mm to meter" and "how do i convert mm to m" landing on the bare pair
+  // page, because this list had never given millimetres and metres any values.
+  ['millimeters', 'meters', 'small'], ['meters', 'millimeters', 'small'],
   ['kilograms', 'grams', 'weight'], ['grams', 'kilograms', 'small'],
   ['pounds', 'ounces', 'weight'], ['ounces', 'pounds', 'small'],
   ['liters', 'milliliters', 'volume'], ['milliliters', 'liters', 'volume'],
@@ -368,7 +372,17 @@ for (const [fromId, toId, setName] of PAIRS) {
 const tempSlug = (v) => (v < 0 ? 'minus-' : '') + String(Math.abs(v)).replace('.', '-');
 
 export const TEMP_PAIRS = [['celsius', 'fahrenheit'], ['fahrenheit', 'celsius'], ['celsius', 'kelvin'], ['kelvin', 'celsius']];
-const tempValues = (aId) => SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
+// A thermometer reads in tenths and this set went 37, 37.5, 38. Search Console
+// showed "37.0 c to f", "37.2 c to fahrenheit" and "37.2 c to f" within a single
+// day, all landing on a neighbouring whole degree — someone checking a fever was
+// being handed the wrong number by a tenth or two. Both bands cover the range a
+// thermometer actually shows, in the two scales people own.
+const band = (lo, hi) => Array.from({ length: Math.round((hi - lo) * 10) + 1 }, (_, i) => +(lo + i / 10).toFixed(1));
+const FEVER = { celsius: band(36, 40), fahrenheit: band(97, 104) };
+const tempValues = (aId) => {
+  const base = SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
+  return [...new Set([...base, ...(FEVER[aId] || [])])].sort((a, b) => a - b);
+};
 export const tempIndex = new Map();
 for (const [aId, bId] of TEMP_PAIRS) {
   const a = TEMPS.find((t) => t.id === aId), b = TEMPS.find((t) => t.id === bId);
