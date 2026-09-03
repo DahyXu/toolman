@@ -27,7 +27,7 @@ Three process notes, all previously recorded and all repeated here anyway:
 
 - The template-literal escape trap, 5th occurrence. `\s` written into a `.mjs`
   template literal reaches the browser as `s` and matches a literal letter. The
-  file's other regexes all use `\s`. Reading the emitted JS out of
+  file's other regexes all use `\\s`. Reading the emitted JS out of
   `dist/case-converter/index.html` caught it; the source looked right.
 - `sed -i 's/!?]/!?:]/'` applies per line, so it also hit the Sentence case rule
   two lines down, where a colon must *not* capitalise — "the answer is: yes"
