@@ -121,6 +121,26 @@ The per-item paragraph in a data file has now worked five times — ports, paper
 time zones, lumber, and the resolution notes. It is the only technique here that
 has never made things worse.
 
+## A check that has never failed is not a check
+
+Every consistency check in this repo was written after a real error got through,
+and every one of them passed on its first run. That proves nothing. Three of them
+passed because they were broken:
+
+- **bakeware name check** — a heredoc turned `` into a literal backspace
+  (0x08), so the regex required a control character and matched nothing. Found
+  with `cat -A`, which prints it as `^H`.
+- **paper consistency check** — compared the first dimension in each paragraph
+  against that sheet, so it flagged four correct comparisons and no errors.
+- **contradiction self-test** — the planted string did not match because the
+  real HTML had `<strong>` tags inside it.
+
+So: **plant the exact error the check exists to catch, watch it fail, then
+restore.** Two lines of work, and it is the difference between a gate and a
+decoration. The ones that have earned their place this way found, between them,
+a wrong resistivity constant, two mislabelled tins, a gas mark mapped by the
+wrong column, and 152 unreachable pages.
+
 ## Running the checks
 
 ```bash

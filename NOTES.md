@@ -1,3 +1,41 @@
+## A check that could not fail, and what it found once it could
+
+The baking tin section names every tin twice — "23 × 33 cm / 9 × 13 in" in the
+label and 228.6 × 330.2 in the data — and nothing joined the two. The very first
+row I wrote was **"20 × 30 cm / 9 × 13 in" over a 23 × 33 cm tin**: correct in
+inches, wrong in centimetres, and it would have shipped as an authoritative
+figure on the page whose entire job is that figure.
+
+So I wrote a check that every dimension in a name must match the tin. It passed.
+
+It passed because the heredoc had turned `` into an **actual backspace
+character**, 0x08, so the regex demanded a control byte after "cm" and matched
+nothing in the file. `cat -A` was what found it — `(cm|in)^H/g`. The check ran on
+every build, examined 22 tins, found zero problems by construction, and reported
+success.
+
+This is the escaping trap again, and it is the worst version of it I have hit.
+The earlier ones produced visibly wrong output — a literal `s` in a regex, a
+sentence that read oddly. This one produced *silence*, which is indistinguishable
+from working. **I would have shipped it and trusted it**, and the only reason I
+did not is the rule from this morning: a clean run means nothing until a planted
+failure has been seen.
+
+Once fixed, it found things immediately:
+
+- `loaf-small` labelled "21 × 11 cm" over a 215 × 115 mm tin — my error.
+- `springform-26cm` labelled "26 cm / 10 in" — 10 inches is 25.4 cm, so that
+  imperial name was simply wrong and is now gone.
+- Six rows where "20 cm" and "8 in" name the same tin. **Those are not errors**,
+  and the check was right to raise them: 8 inches is 203.2 mm and 20 cm is 200,
+  so a tin sold under both names differs by 3 mm and about 3% in area depending
+  on where it was made. That is now a section on the hub, because it is exactly
+  the kind of small discrepancy that ruins a bake when it compounds with an oven
+  running cool and a fan the recipe did not account for.
+
+The check handed me two corrections and one genuinely interesting fact, all in
+its first working run — after being completely inert for its first three.
+
 ## 109 queries, and paper is now the biggest family on the site
 
 Impressions 119 → 183 and queries 64 → 109 in a few hours. Grouped:
