@@ -1,3 +1,45 @@
+## Paper weight, where "80 lb" names two papers 83% apart
+
+An American basis weight is the weight of 500 sheets **at that grade's basis
+size**, and the basis sizes differ: bond is measured at 17 × 22 inches, text at
+25 × 38, cover at 20 × 26. So **80 lb text is 118 gsm and 80 lb cover is 216** —
+a brochure page and a business card, carrying the same number on the label.
+Nothing on the packet says the figures are not comparable.
+
+That is the section's whole argument for gsm, which is grams per square metre:
+one number, no grade, no basis size.
+
+The conversion is computed and checked against ten published values on every
+build, which caught my own error immediately: the first version divided grams by
+square metres and printed **kilograms** per square metre, so every figure was a
+thousand times too small — 20 lb bond came out at 0.1 gsm. Every page would have
+been internally consistent and uniformly wrong.
+
+Three problems the gates caught after that, in order:
+
+**87 broken links.** The cross-grade table linked every grade at the same pound
+figure, but a page exists only where that grade is *sold* at that weight — 100 lb
+text is a real paper and 100 lb bond is not. The links are now conditional on
+the page existing.
+
+**93% sibling overlap between 75 gsm and 80 gsm.** The use note came from a band
+lookup, so both fell in the same band and got the same paragraph — the shared
+prose problem for the fifth time today. One sentence per weight instead of one
+per band took it to 86%.
+
+**A conversion that is right and useless.** 300 gsm is arithmetically 203 lb
+text, and text paper stops around 100 lb. Printed plainly that invites someone
+to order something that does not exist, so figures outside the range a grade is
+actually sold in are now marked "not made at this weight".
+
+And a note on my own testing. I planted a 10× unit error to check the conversion
+guard, saw no failure, and concluded the guard was broken. It was not — the
+`python3 -c` I used to plant the error had not run, so the file was never
+modified and I was testing the clean version. **Third variety today of the tool
+that produced the evidence being the thing at fault**: first a mislabelled
+metric, then a grep that missed two matches, now a plant that never landed. The
+check itself fires correctly and I have now seen it do so.
+
 ## A check that could not fail, and what it found once it could
 
 The baking tin section names every tin twice — "23 × 33 cm / 9 × 13 in" in the
