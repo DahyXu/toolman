@@ -67,6 +67,11 @@ const PAIRS = [
   // "100 mm to meter" and "how do i convert mm to m" landing on the bare pair
   // page, because this list had never given millimetres and metres any values.
   ['millimeters', 'meters', 'small'], ['meters', 'millimeters', 'small'],
+  // Both added on live query evidence, same as the pair above: "conversion mm
+  // to ft" and "convert millimeter to feet" were landing on a bare pair page,
+  // as was "how many cubic litres in a cubic metre".
+  ['millimeters', 'feet', 'small'], ['feet', 'millimeters', 'small'],
+  ['cubic-meters', 'liters', 'volume'], ['liters', 'cubic-meters', 'volume'],
   ['kilograms', 'grams', 'weight'], ['grams', 'kilograms', 'small'],
   ['pounds', 'ounces', 'weight'], ['ounces', 'pounds', 'small'],
   ['liters', 'milliliters', 'volume'], ['milliliters', 'liters', 'volume'],

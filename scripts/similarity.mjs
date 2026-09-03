@@ -92,6 +92,12 @@ console.log('\nvocabulary shared with sibling pages (lower is better)');
 const family = (url) => {
   const parts = url.split('/').filter(Boolean);
   const section = parts[0];
+  // /paper/a4/ and /paper/a4/pixels/ are different page types under one prefix,
+  // and the sampler compares neighbours alphabetically — so it was pairing a
+  // size page against a pixel page and reporting 23%, a number that looked like
+  // a large improvement and measured nothing. Same failure as lumping the
+  // convert families together, in the flattering direction this time.
+  if (section === 'paper') return parts.length > 2 && parts[2] === 'pixels' ? 'paper:pixels' : 'paper';
   if (section !== 'convert' || parts.length < 2) return section;
   const slug = parts[1];
   if (/^[0-9]/.test(slug)) return 'convert:values';

@@ -160,7 +160,7 @@ export default async function () {
 </tbody></table>
 
 <h2>${name} in pixels</h2>
-<p>Pixel dimensions depend entirely on the resolution you are working at — there is no single "pixel size" for a sheet of paper.</p>
+<p>Pixel dimensions depend entirely on the resolution you are working at — there is no single "pixel size" for a sheet of paper. <a href="/paper/${id}/pixels/">Every resolution, with file sizes and canvas setup →</a></p>
 <table><thead><tr><th>Resolution</th><th>Pixels</th><th>Use</th></tr></thead><tbody>
 <tr><td>72 DPI</td><td>${px(w, 72)} × ${px(h, 72)}</td><td>Screen preview only — far too coarse to print</td></tr>
 <tr><td>150 DPI</td><td>${px(w, 150)} × ${px(h, 150)}</td><td>Draft printing, internal documents</td></tr>
@@ -223,6 +223,75 @@ ${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</
 <li><a href="/image-compressor/"><b>Image compressor</b><span>Resize and compress images before placing them in a layout.</span></a></li>
 </ul>`,
   });
+
+
+  // Nine of the site's live queries ask for a paper size in pixels — "a4 in px",
+  // "a2 pixels size", "a4 resolution", "a2 print dimensions" — and they were all
+  // landing on the parent page, whose title says millimetres. A page that
+  // answers the question in its title should do better, and the numbers are
+  // entirely its own: the pixel count and the file size both scale with the
+  // square of the DPI, so an A0 at 300 DPI is 418 MB where an A4 is 26.
+  const DPIS = [72, 96, 150, 200, 300, 400, 600, 1200];
+  for (const [name, id, w, h, series, note] of SIZES) {
+    const at = (dpi) => ({ w: px(w, dpi), h: px(h, dpi) });
+    const mb = (dpi) => { const p = at(dpi); return (p.w * p.h * 3) / 1048576; };
+    const fmb = (v) => (v >= 1024 ? `${(v / 1024).toFixed(2)} GB` : v >= 10 ? `${Math.round(v)} MB` : `${v.toFixed(1)} MB`);
+    const p300 = at(300), p72 = at(72);
+
+    const PXFAQ = faq([
+      { q: `What is ${name} in pixels?`,
+        a: `There is no single answer — it depends on the resolution. At the print standard of 300 DPI, ${name} is <strong>${p300.w} × ${p300.h} pixels</strong>. On screen at 72 DPI it is only ${p72.w} × ${p72.h}.` },
+      { q: `What resolution should an ${name} document be?`,
+        a: `<strong>300 DPI</strong> for anything going to a commercial printer, which makes the canvas ${p300.w} × ${p300.h} pixels. 150 DPI (${at(150).w} × ${at(150).h}) is acceptable for a draft or an internal document. Large formats read from a distance can go lower — a poster viewed from two metres looks sharp at 150 DPI, and dropping to it here saves ${fmb(mb(300) - mb(150))} of file.` },
+      { q: `How big is an ${name} file at 300 DPI?`,
+        a: `About <strong>${fmb(mb(300))}</strong> uncompressed at 24-bit colour — ${p300.w} × ${p300.h} × 3 bytes. Compression brings that down a great deal for flat artwork and very little for a photograph, which is why a print-ready ${name} PDF is usually tens of megabytes.` },
+      { q: `How many megapixels is ${name} at 300 DPI?`,
+        a: `${((p300.w * p300.h) / 1e6).toFixed(1)} megapixels. For comparison, ${name} at 600 DPI is ${((at(600).w * at(600).h) / 1e6).toFixed(1)} MP — quadruple, because doubling the resolution doubles both dimensions.` },
+    ]);
+
+    pages.push({
+      path: `/paper/${id}/pixels/`,
+      title: `${name} in Pixels — ${p300.w} × ${p300.h} at 300 DPI | Toolman`,
+      desc: `${name} is ${p300.w} × ${p300.h} pixels at 300 DPI, ${at(150).w} × ${at(150).h} at 150 and ${p72.w} × ${p72.h} at 72. Pixel dimensions at every common resolution, with file sizes.`,
+      h1: `${name} in pixels`,
+      crumbs: [{ name: 'Paper sizes', path: '/paper/' }, { name, path: `/paper/${id}/` }, { name: 'In pixels', path: `/paper/${id}/pixels/` }],
+      jsonld: [PXFAQ.schema],
+      body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${p300.w} × ${p300.h} px</strong></p>
+<p class="muted">at 300 DPI, the print standard · ${name} is ${w} × ${h} mm · ${((p300.w * p300.h) / 1e6).toFixed(1)} megapixels</p>
+
+<h2>${name} at every resolution</h2>
+<p>A sheet of paper has no pixel size of its own. It has a physical size — ${w} × ${h} mm, or ${r2(IN(w))} × ${r2(IN(h))} inches — and a pixel count only appears once you choose how many pixels go in each inch.</p>
+<table><thead><tr><th>Resolution</th><th>Pixels</th><th>Megapixels</th><th>Uncompressed 24-bit</th><th>Use</th></tr></thead><tbody>
+${DPIS.map((d) => {
+        const q = at(d);
+        const use = d <= 96 ? 'Screen only — visibly soft in print'
+          : d === 150 ? 'Drafts, internal documents, large-format viewed from a distance'
+          : d === 200 ? 'Acceptable for office printing'
+          : d === 300 ? 'The commercial print standard'
+          : d === 400 ? 'Fine detail and small type'
+          : d === 600 ? 'Line art, technical drawings, archival scanning'
+          : 'Archival and reproduction work';
+        return `<tr${d === 300 ? ' style="font-weight:600"' : ''}><td>${d} DPI</td><td>${q.w} × ${q.h}</td><td>${((q.w * q.h) / 1e6).toFixed(1)} MP</td><td>${fmb(mb(d))}</td><td class="muted">${use}</td></tr>`;
+      }).join('')}
+</tbody></table>
+
+<h2>What the file size means for ${name}</h2>
+<p>At 300 DPI an uncompressed ${name} is <strong>${fmb(mb(300))}</strong>, and at 600 DPI it is ${fmb(mb(600))} — four times as much, because doubling the resolution doubles both dimensions. That squaring is the reason large formats become unwieldy so quickly: the same 300 DPI that produces a manageable file at small sizes produces ${fmb(mb(300))} here.</p>
+<p>If a file is going to a printer, ask what they want before choosing. 300 DPI is the safe default and 150 is often enough for anything read from more than arm's length.</p>
+
+<h2>Setting up the canvas</h2>
+<pre><code>Width:      ${p300.w} px
+Height:     ${p300.h} px
+Resolution: 300 pixels/inch
+Colour:     CMYK for print, RGB for screen
+Bleed:      3 mm on every edge → ${px(w + 6, 300)} × ${px(h + 6, 300)} px</code></pre>
+<p>The bleed figure is the one people forget: artwork that runs to the edge must extend 3 mm past it on all four sides, so the working canvas is larger than the finished sheet.</p>
+
+${PXFAQ.html}
+
+<p><a href="/paper/${id}/">${name} in millimetres, inches and points</a> · <a href="/paper/">All paper sizes</a> · <a href="/resolution/">Screen resolutions</a></p>`,
+    });
+  }
 
   return pages;
 }

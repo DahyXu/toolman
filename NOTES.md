@@ -1,3 +1,50 @@
+## 109 queries, and paper is now the biggest family on the site
+
+Impressions 119 → 183 and queries 64 → 109 in a few hours. Grouped:
+
+| family | queries |
+|---|---|
+| **paper sizes** | **~29** |
+| temperature | ~26 |
+| roman numerals | ~10 |
+| length / mm | ~9 |
+| time | ~8 |
+| colour | ~7 |
+
+Paper produces 29 queries from 59 pages. It is the section I have improved most
+deliberately and it is now the largest earner, which is the first time the
+causal story and the numbers have lined up rather than one being inferred from
+the other.
+
+Three actionable gaps came straight out of the list.
+
+**Nine queries want paper in pixels** — "a4 in px", "a2 pixels size", "a4
+resolution", "a2 print dimensions", "a4 page size px", "a4 measurements in
+pixels" — and every one of them was landing on a page whose title says
+millimetres. There is now a page per size at `/paper/<id>/pixels/` that answers
+the question in its title. The numbers are entirely its own, because pixel count
+and file size both scale with the *square* of the DPI: A4 at 300 DPI is
+2480 × 3508 and 26 MB uncompressed, while A0 is 9933 × 14043 and **399 MB**.
+That squaring is the useful thing to say and it differs per sheet.
+
+**"conversion mm to ft" and "convert millimeter to feet"** were landing on a bare
+pair page with no value pages — the same gap millimetres-to-metres had this
+morning, found the same way. Likewise "how many cubic litres in a cubic metre".
+Both pairs now have values.
+
+**The similarity metric lied in the flattering direction.** With the pixel pages
+added, `paper` reported **23% average, 27% worst** — an enormous apparent
+improvement. It was not: the sampler compares alphabetical neighbours, and
+`/paper/a4/` now sits next to `/paper/a4/pixels/`, so it was measuring the
+distance between two different page *types* and calling it sibling overlap. Split
+apart, the real numbers are 65% for the size pages and 78% for the pixel pages.
+
+This is the same defect I fixed for `/convert/` a few hours ago, recurring the
+moment a new page type appeared under an existing prefix — and it is worth
+noting that **the first time it hid a problem and this time it invented a
+success**. A metric that moves a long way for a reason you have not identified
+is telling you about itself, not about the thing you changed.
+
 ## Ring sizes: the section that should not have per-item pages
 
 Built 22 pages, one per half size from US 3 to 13, and the similarity report
