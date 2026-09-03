@@ -152,9 +152,14 @@ function colorPage(hex, name) {
     return { hex: rgb2hex(c.r, c.g, c.b), label };
   });
 
+  // A Tailwind palette colour has a name people search — "tailwind teal 500" —
+  // and it was only in the body. The hex pages are the biggest earning family on
+  // the site, so the strongest identifier a colour has belongs in the title.
   const title = name
     ? `${name.charAt(0).toUpperCase() + name.slice(1)} Color — ${H} Hex, RGB & HSL | Toolman`
-    : `${H} Hex Color — RGB, HSL, CMYK & Shades | Toolman`;
+    : tw
+      ? `${H} — Tailwind ${tw[0]} | Hex, RGB, HSL & Contrast`
+      : `${H} Hex Color — RGB, HSL, CMYK & Shades | Toolman`;
 
   const FAQ = faq([
     { q: `What color is ${H}?`,
@@ -174,7 +179,7 @@ function colorPage(hex, name) {
   return {
     path: `/color/${hex}/`,
     title,
-    desc: `${H} is ${article(desc)}${desc}. Its RGB is (${rgb.r}, ${rgb.g}, ${rgb.b}). See HSL, CMYK, WCAG contrast, tints, shades and a matching palette.`,
+    desc: `${H} is ${article(desc)}${desc}${tw ? `, and is Tailwind CSS ${tw.join(' and ')}` : ''}. Its RGB is (${rgb.r}, ${rgb.g}, ${rgb.b}). See HSL, CMYK, WCAG contrast, tints and shades.`,
     h1: name ? `${name.charAt(0).toUpperCase() + name.slice(1)} — ${H}` : `${H} color`,
     crumbs: [{ name: 'Colors', path: '/color/' }, { name: H, path: `/color/${hex}/` }],
     jsonld: [FAQ.schema],

@@ -422,6 +422,7 @@ ${allToolsBody}
 <li><a href="/pipe/"><b>Pipe sizes</b><span>NPS, DN and the real outside diameter — a half-inch pipe is 0.84 inches.</span></a></li>
 <li><a href="/screw/"><b>Screw sizes</b><span>Gauge to millimetres, and the two different holes a joint needs.</span></a></li>
 <li><a href="/brick/"><b>Brick sizes</b><span>Format, coursing and bricks per square metre — where "sixty" comes from.</span></a></li>
+<li><a href="/password-length/"><b>Password length</b><span>What each length is worth in bits and in time, and where the useful range ends.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
@@ -448,7 +449,7 @@ write('/about/', page({
 <h2>What is here</h2>
 <ul>
 <li><strong><a href="/tools/">Interactive tools</a></strong> — formatters, encoders, hash and QR generators, image compression, regex and cron builders. Each is one self-contained page.</li>
-<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/lumber/">lumber sizes</a>, <a href="/battery/">battery sizes</a>, <a href="/awg/">wire gauges</a>, <a href="/thread/">metric threads</a>, <a href="/tyre/">tyre sizes</a>, <a href="/ring-size/">ring sizes</a>, <a href="/bakeware/">baking tin sizes</a>, <a href="/paper-weight/">paper weights</a>, <a href="/bedding/">bedding sizes</a>, <a href="/shoe-size/">shoe sizes</a>, <a href="/door-size/">door sizes</a>, <a href="/sandpaper/">sandpaper grits</a>, <a href="/spanner/">spanner sizes</a>, <a href="/pipe/">pipe sizes</a>, <a href="/screw/">screw sizes</a>, <a href="/brick/">brick sizes</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
+<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/oven/">oven temperatures</a>, <a href="/bed-size/">bed sizes</a>, <a href="/lumber/">lumber sizes</a>, <a href="/battery/">battery sizes</a>, <a href="/awg/">wire gauges</a>, <a href="/thread/">metric threads</a>, <a href="/tyre/">tyre sizes</a>, <a href="/ring-size/">ring sizes</a>, <a href="/bakeware/">baking tin sizes</a>, <a href="/paper-weight/">paper weights</a>, <a href="/bedding/">bedding sizes</a>, <a href="/shoe-size/">shoe sizes</a>, <a href="/door-size/">door sizes</a>, <a href="/sandpaper/">sandpaper grits</a>, <a href="/spanner/">spanner sizes</a>, <a href="/pipe/">pipe sizes</a>, <a href="/screw/">screw sizes</a>, <a href="/brick/">brick sizes</a>, <a href="/password-length/">password lengths</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
 </ul>
 
 <h2>How correctness is checked</h2>
