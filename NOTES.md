@@ -1,3 +1,39 @@
+## Wire gauge: a section that is one formula, and a constant worth guarding
+
+AWG is not a table. The diameter of gauge n is
+
+    0.005 x 92^((36 - n) / 39)  inches
+
+and the reason the numbers run backwards is that the scale counts drawing
+operations — wire pulled through more dies is thinner and has a higher number.
+The formula reproduces all fifteen published diameters from 4/0 to 40 to better
+than 0.4%, which I checked before building anything on top of it.
+
+Two rules fall out of the exponent and are why electricians can size wire in
+their heads: 92^(6/39) = 2.005, so **six gauges doubles the diameter**, and
+squaring that, **three gauges doubles the cross-sectional area**. Ten gauges is
+10.16x the area, close enough to ten to be the third rule people use.
+
+The resistance figures needed a constant, and this is where the section could
+have gone quietly wrong. Copper's resistivity is 1.68e-8 Ω·m, which is the
+number I would have reached for — and every resistance on the site would then
+have been about 2.5% below every published wire table. The tables use the IACS
+annealed-copper reference of 1.724e-8. With that, the computed values match the
+published ones to **0.02%**.
+
+So the generator checks itself on every build against fifteen diameters and six
+resistances, and I confirmed it fires by planting exactly the mistake the comment
+warns about — swapping 1.724e-8 back to 1.68e-8, which produced three failures
+immediately. **A constant that is nearly right is the hardest kind of error to
+notice**, because every page looks reasonable and none of them is.
+
+One deliberate restraint. Ampacity is a safety number, so the chart carries only
+the NEC 310.16 copper 60 °C values for the building-wire gauges — the ones with a
+single well-known answer that sets the breaker — with the rest left blank and an
+explicit note that insulation rating, ambient temperature, conductor count and
+local code all govern. Publishing a confident number for every gauge would have
+looked more complete and been worse.
+
 ## Battery sizes: the generator checked its own data and found a real error
 
 Twenty-two cells, and the fact worth leading with is that **the code is the
