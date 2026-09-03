@@ -17,6 +17,31 @@ So: the headline number on the default view is not wrong, it is just describing
 a period before the site existed. Until roughly 4 September the 3-month view
 cannot show launch traffic at all.
 
+## The index coverage report is staler than the performance report
+
+On 3 September, 网页索引编制 reported the whole property as **4 URLs — 1 indexed,
+3 not** — with its chart ending 21 August. The one indexed URL was
+`https://www.toolman.top/`, which is a different service on the www subdomain,
+not this site. That is the state of the domain *before this site existed*.
+
+Meanwhile the 24-hour performance view showed 82 impressions across 36 queries
+touching ten different tool families, which is impossible for a property with
+one indexed page. So the index report is not describing anything current and
+cannot be used to judge coverage.
+
+Use instead, in descending order of trust:
+
+1. **URL Inspection** on a specific page — live, and the only authoritative
+   answer for one URL.
+2. **The 24-hour performance view**, read by *query family*. Thirty-six queries
+   spread across colours, temperature, time zones, roman numerals, password
+   length and ports means pages in all six families are indexed and serving.
+3. `site:` — an estimate, and it lags.
+
+The pattern across all three GSC reports is the same and worth stating once:
+**every aggregate view in Search Console lags, and each one lags by a different
+amount.** Only URL Inspection and the 24-hour view describe the present.
+
 ## `site:` counts are approximate and lag
 
 `site:toolman.top` reported 8 results one morning and about 448 that evening.
