@@ -379,9 +379,14 @@ export const TEMP_PAIRS = [['celsius', 'fahrenheit'], ['fahrenheit', 'celsius'],
 // thermometer actually shows, in the two scales people own.
 const band = (lo, hi) => Array.from({ length: Math.round((hi - lo) * 10) + 1 }, (_, i) => +(lo + i / 10).toFixed(1));
 const FEVER = { celsius: band(36, 40), fahrenheit: band(97, 104) };
+// The oven ladder. The /oven/ pages link to the precise conversion for every
+// dial setting, and ten of those Celsius values and eight Fahrenheit ones had
+// no page — seventeen broken links, which is how the audit found them.
+const step = (lo, hi, by) => Array.from({ length: Math.round((hi - lo) / by) + 1 }, (_, i) => lo + i * by);
+const OVEN = { celsius: step(100, 250, 10), fahrenheit: step(225, 500, 25) };
 const tempValues = (aId) => {
   const base = SETS.temp.filter((v) => (aId === 'kelvin' ? v > 0 : true));
-  return [...new Set([...base, ...(FEVER[aId] || [])])].sort((a, b) => a - b);
+  return [...new Set([...base, ...(FEVER[aId] || []), ...(OVEN[aId] || [])])].sort((a, b) => a - b);
 };
 export const tempIndex = new Map();
 for (const [aId, bId] of TEMP_PAIRS) {

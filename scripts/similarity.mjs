@@ -85,10 +85,23 @@ if (big.length) {
 // the site's thinnest section when it is in fact the least repetitive one on the
 // site, while paper at 75% was the second worst and read as second best.
 console.log('\nvocabulary shared with sibling pages (lower is better)');
+// Group by section, and split one where a single prefix holds structurally
+// different page types. /convert/ contains "N-unit-to-unit" value pages and
+// "zone-to-zone" timezone pages, which share nothing; averaging them together
+// hid a 91% timezone pair behind a 41% section average.
+const family = (url) => {
+  const parts = url.split('/').filter(Boolean);
+  const section = parts[0];
+  if (section !== 'convert' || parts.length < 2) return section;
+  const slug = parts[1];
+  if (/^[0-9]/.test(slug)) return 'convert:values';
+  if (/^[a-z]{2,5}-to-[a-z]{2,5}$/.test(slug)) return 'convert:zones';
+  return 'convert:pairs';
+};
 const bySection = {};
 for (const f of walk(dist)) {
   const url = '/' + path.relative(dist, f).replace(/\\/g, '/').replace(/index\.html$/, '');
-  const section = url === '/' ? '(home)' : url.split('/').filter(Boolean)[0];
+  const section = url === '/' ? '(home)' : family(url);
   (bySection[section] ||= []).push(f);
 }
 // Comparing a single pair per section is not enough: it reported /cron/ at 79%,
@@ -105,10 +118,16 @@ for (const [section, files] of Object.entries(bySection).sort((a, b) => b[1].len
   if (files.length < 2) continue;
   // Neighbours are the likeliest duplicates, so walk consecutive pairs, and add
   // spread-out pairs so a section ordered by something unrelated is still seen.
+  // Eighty pairs out of 4,589 pages is 1.7% coverage, and the stride was
+  // files.length/40 — so which pairs got sampled depended on the page count.
+  // Adding oven pages elsewhere moved this section's reported worst pair from
+  // 79% to 91% with no content change at all. The cap is now fixed and large,
+  // so the number describes the pages rather than how many there happen to be.
   const pairs = [];
-  const step = Math.max(1, Math.floor(files.length / 40));
-  for (let i = 0; i + step < files.length && pairs.length < 60; i += step) pairs.push([files[i], files[i + step]]);
-  for (let i = 0; i + 1 < files.length && pairs.length < 80; i += Math.max(1, Math.floor(files.length / 20))) pairs.push([files[i], files[i + 1]]);
+  const CAP = 600;
+  const stride = Math.max(1, Math.floor(files.length / CAP));
+  for (let i = 0; i + stride < files.length && pairs.length < CAP; i += stride) pairs.push([files[i], files[i + stride]]);
+  for (let i = 0; i + 1 < files.length && pairs.length < CAP * 2; i += stride) pairs.push([files[i], files[i + 1]]);
 
   let worst = 0, worstPair = null, sum = 0;
   const cache = new Map();

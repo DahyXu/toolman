@@ -1,5 +1,7 @@
 import { esc, faq } from '../layout.mjs';
 
+import TZD from '../data/timezone-detail.mjs';
+
 // Fixed-offset zone abbreviations. Each abbreviation denotes one specific
 // offset, so these conversions are exact — no daylight-saving ambiguity.
 const Z = [
@@ -156,8 +158,10 @@ function pairPage(a, b, all) {
 
 <h2>About ${a.ab}</h2>
 <p><strong>${a.name}</strong> (${a.ab}) is ${offStr(a.off)}. It is used in ${a.where}.</p>
+${TZD[a.ab] ? `<p>${TZD[a.ab]}</p>` : ''}
 <h2>About ${b.ab}</h2>
 <p><strong>${b.name}</strong> (${b.ab}) is ${offStr(b.off)}. It is used in ${b.where}.</p>
+${TZD[b.ab] ? `<p>${TZD[b.ab]}</p>` : ''}
 
 <h2>Does this gap change with the seasons?</h2>
 ${seasonNote(a, b, d)}

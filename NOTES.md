@@ -1,3 +1,62 @@
+## The similarity report was averaging two unrelated page families together
+
+`/convert/` holds three things that share nothing but a URL prefix: 2,710
+`N-unit-to-unit` value pages, 946 unit-pair landing pages, and **932
+zone-to-zone timezone pages**. Reported as one section it read 41% average, 79%
+worst — comfortably the healthiest large section on the site.
+
+Split apart:
+
+| family | pages | avg | worst |
+|---|---|---|---|
+| convert:values | 2,710 | 50% | 88% |
+| convert:pairs | 946 | 52% | 75% |
+| **convert:zones** | **932** | **74%** | **94%** |
+
+The timezone pages were the largest duplicate-content risk on the site and had
+been invisible for the whole project, hidden behind the average of a section
+four times their size. `gmt-to-jst` and `gmt-to-kst` were 94% identical because
+Japan and Korea are both UTC+9 with no daylight saving, so every computed thing
+— offset, conversion table, meeting overlap — came out the same and only a
+country name differed.
+
+I had actually read one of these pages earlier today, decided the section was
+fine, and moved on. It was fine; it just was not *distinct*, and reading one
+page cannot tell you that.
+
+Two problems with the tool, both found by the number moving when the content had
+not:
+
+**The sample depended on the page count.** The stride was `files.length / 40`
+capped at 80 pairs — 1.7% coverage of a 4,589-page section — so adding 28 oven
+pages elsewhere changed which pairs were compared and moved the reported worst
+from 79% to 91%. A fixed cap of 600 makes the number describe the pages instead.
+
+**Averaging hid the family that needed the work.** Splitting `/convert/` by slug
+shape took ten lines and exposed a 94% pair immediately.
+
+The fix to the pages themselves is the one that has now worked three times —
+ports, paper, and here: a real paragraph per item in a data file. Thirty zone
+paragraphs, each carrying what no formula produces: that CST means US Central,
+China Standard and Cuba Standard time fourteen hours apart; that IST is UTC+5:30
+and also stands for Irish and Israel Standard Time; that Arizona is on MST all
+year while Denver moves; that Queensland stays on AEST while Sydney does not;
+that Brazil abolished daylight saving in 2019 and Russia in 2014. Zones went
+94% → 83% worst, 74% → 66% average, and no section on the site is now over the
+duplicate threshold.
+
+**Two process notes.** I built 40 oven pages and cut them to 28 after the metric
+said the 12 Fahrenheit ones were restating the Celsius ones — the right response
+to a section that will not differentiate is fewer pages, not more padding. And
+those 12 had already been deployed and submitted to IndexNow before I measured,
+so they are now 404s I told a search engine about. Settle the shape of a section
+before announcing it.
+
+Also: `npm run build` cleans `dist` first and `node build.mjs` does not. I had
+been running the second all session, so removed pages stayed in the directory
+and shipped. Only those 12 were affected, because nothing had been removed
+before today, but the deploy should go through `npm run deploy` every time.
+
 ## The developer sections are not the ones earning
 
 Grouping the 64 live queries by what they are about, rather than by URL prefix,
