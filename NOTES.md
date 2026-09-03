@@ -1,3 +1,55 @@
+## Paper pages earn 68× more per page than convert pages
+
+The 64 queries in the 24-hour view, grouped by section, gave a ratio I had not
+thought to compute:
+
+| section | pages | queries | queries per page |
+|---|---|---|---|
+| paper | 38 | 13 | 0.34 |
+| roman | 328 | 6 | 0.018 |
+| convert | 4,562 | ~25 | 0.005 |
+
+Paper is a **small, finite, high-demand reference namespace**: there are only so
+many paper sizes, people look them up constantly, and nothing about the answer
+is contested. Convert values are an infinite space where every page competes
+with a calculator widget Google renders itself. Building more of the second kind
+is not the same work as building more of the first, and I had been treating them
+as interchangeable.
+
+Twenty sizes the section was missing, all genuinely distinct rather than aliases:
+the six ARCH architectural sheets, B9/B10, C3/C7, the US No. 10 and A7
+envelopes, four photo print sizes, two book trim sizes, the 3 × 5 index card
+and Super A3.
+
+Two things this surfaced.
+
+**The fallback I built to be visible was still silent.** `DETAIL[id] || note`
+means a size with no paragraph quietly renders the one-line note instead, and
+all twenty new sizes did exactly that until I wrote them. So there is now a
+`paper-consistency` check in the suite: every size must have a paragraph, every
+paragraph must match a size, and every dimension written in prose must
+correspond to a real sheet.
+
+Its first version was wrong in an instructive way. It compared the first
+dimension pair in each paragraph against *that* sheet, and flagged four
+paragraphs — every one of them correct, because a good paragraph explains a
+sheet by comparing it to another one (A3 against Tabloid, the US A7 envelope
+against ISO A7, the 3 × 5 card against A6). The check encoded an assumption
+about how the prose should read rather than about what would be wrong with it.
+Rewritten to ask whether every dimension in the prose matches *some* real sheet,
+it flags only JIS B0 and a poker card, both cited deliberately, both now named
+in an allowlist with the reason. Then I planted `297 × 999 mm` on the A4 page
+and confirmed it fires, because a check that has never failed is not yet a check.
+
+**Adding a shared paragraph would have made the duplicate problem worse.** My
+first instinct for the ARCH pages coming in at 91% — shorter than the others
+because the A and US series each have a bespoke block and ARCH had none — was to
+write an ARCH series block. That is exactly backwards for a Jaccard overlap:
+identical text added to two pages grows the intersection and the union together
+and the ratio rises. Only text that differs per page moves it down. Six longer,
+genuinely size-specific paragraphs took paper to 85% and left no section over
+the threshold.
+
 ## The audit suite was reporting, not gating — and I was quoting its exit code
 
 `scripts/audit.mjs` ended with an unconditional `process.exit(0)`. It computed

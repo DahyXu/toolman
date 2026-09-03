@@ -41,6 +41,26 @@ const SIZES = [
   ['Photo 4×6', 'photo-4x6', 101.6, 152.4, 'Photo', 'The standard photo print, matching the 2:3 aspect ratio most DSLR and mirrorless sensors produce.'],
   ['Photo 5×7', 'photo-5x7', 127, 177.8, 'Photo', 'A common frame size. Note it is 5:7, not 2:3, so a full-frame photo needs cropping.'],
   ['Photo 8×10', 'photo-8x10', 203.2, 254, 'Photo', 'A portrait and framing standard at 4:5. Cropping is always required from a 2:3 original.'],
+  ['ARCH A', 'arch-a', 228.6, 304.8, 'ARCH', 'The smallest architectural sheet at 9 × 12 inches.'],
+  ['ARCH B', 'arch-b', 304.8, 457.2, 'ARCH', '12 × 18 inches, two ARCH A sheets.'],
+  ['ARCH C', 'arch-c', 457.2, 609.6, 'ARCH', '18 × 24 inches, the common size for a single-sheet plan.'],
+  ['ARCH D', 'arch-d', 609.6, 914.4, 'ARCH', '24 × 36 inches, the standard architectural drawing sheet.'],
+  ['ARCH E', 'arch-e', 914.4, 1219.2, 'ARCH', '36 × 48 inches, the largest of the series.'],
+  ['ARCH E1', 'arch-e1', 762, 1066.8, 'ARCH', '30 × 42 inches, a narrower E that fits more plan rooms.'],
+  ['B9', 'b9', 44, 62, 'B', 'Half of B8, used for very small labels and tickets.'],
+  ['B10', 'b10', 31, 44, 'B', 'The smallest standard B size.'],
+  ['C3', 'c3', 324, 458, 'C', 'Takes an unfolded A3 sheet, or a C4 envelope inside it.'],
+  ['C7', 'c7', 81, 114, 'C', 'Takes an A7 sheet unfolded — the size of a small card envelope.'],
+  ['Envelope No. 10', 'envelope-10', 104.775, 241.3, 'C', '4.125 × 9.5 inches, the standard US business envelope.'],
+  ['A7 Envelope (US)', 'envelope-a7-us', 133.35, 184.15, 'C', '5.25 × 7.25 inches, the US invitation envelope. Unrelated to ISO A7.'],
+  ['Photo 6×8', 'photo-6x8', 152.4, 203.2, 'Photo', '6 × 8 inches, a 3:4 print size.'],
+  ['Photo 8×12', 'photo-8x12', 203.2, 304.8, 'Photo', '8 × 12 inches — the 2:3 enlargement that needs no cropping.'],
+  ['Photo 11×14', 'photo-11x14', 279.4, 355.6, 'Photo', '11 × 14 inches, a common gallery frame size.'],
+  ['Photo 16×20', 'photo-16x20', 406.4, 508, 'Photo', '16 × 20 inches, a 4:5 wall print.'],
+  ['US Trade 6×9', 'us-trade-6x9', 152.4, 228.6, 'Book', '6 × 9 inches, the default trim for a US trade paperback.'],
+  ['Mass Market', 'mass-market', 107.95, 174.5, 'Book', 'The rack-sized paperback, 4.25 × 6.87 inches.'],
+  ['Index Card 3×5', 'index-card-3x5', 76.2, 127, 'Card', '3 × 5 inches, the standard US index card.'],
+  ['Super A3', 'super-a3', 329, 483, 'A', '329 × 483 mm, the oversized A3 that desktop inkjets use for bleed.'],
 ];
 
 const IN = (mm) => mm / 25.4;
@@ -54,6 +74,8 @@ const SERIES = {
   US: ['North American', 'Letter, Legal and the ANSI drawing sizes. Defined in inches and not related to the ISO system, which is why A4 documents print badly on Letter and vice versa.'],
   Card: ['Cards', 'Business card standards, which differ between North America and Europe.'],
   Photo: ['Photo prints', 'Common print and frame sizes, defined in inches.'],
+  ARCH: ['Architectural', 'The US architectural series, defined in inches and built on a 4:3 or 3:2 ratio rather than the ANSI doubling. Drawing offices use ARCH where engineering offices use ANSI.'],
+  Book: ['Book trim sizes', 'The finished page sizes commercial printers and print-on-demand services offer by name.'],
 };
 
 
