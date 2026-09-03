@@ -1,3 +1,30 @@
+## Tyre sizes, and the number that explains why one car takes three of them
+
+A tyre marking is three measurements that people read as a part number.
+205/55R16 is 205 mm of tread, a sidewall **55% of that width** — 112.8 mm, top
+and bottom — on a 16-inch rim, so the overall diameter is
+16 × 25.4 + 2 × 112.8 = 631.9 mm. Every figure in the section comes out of that
+line, and I recomputed three of them independently before shipping.
+
+The aspect ratio being a percentage rather than a height is the thing worth a
+page for, because it means two markings that look unrelated can be the same
+tyre. 205/55R16, 225/45R17 and 195/65R15 measure 631.9, 634.3 and 634.5 mm — a
+spread of **0.41%** — which is exactly why a manufacturer lists all three
+against one model. The wheel grows an inch, the sidewall loses ten points of
+aspect, the width gains ten millimetres, and the rolling diameter stays where
+the speedometer and the gearing expect it.
+
+That gives the section its own useful output rather than a restated table: a
+speedometer counts revolutions, so **a tyre 1% larger makes it read 1% low**.
+Each page lists the alternatives within 3% and what each does to an indicated
+100 km/h. 54 pages, ✓ at 67% average sibling overlap and 79% worst.
+
+The two safety-adjacent notes are deliberate and match the restraint used on the
+wire gauge ampacity column: diameter is not the whole decision — rim width, load
+rating and speed rating matter too — and the placard in the door frame is the
+authority for a particular car. Publishing "these sizes are interchangeable"
+without that would be tidier and worse.
+
 ## Metric threads, and a number that is arithmetic rather than a chart
 
 "What drill for M6" is a question people look up every time, and the answer is a
