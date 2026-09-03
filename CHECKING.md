@@ -121,6 +121,37 @@ The per-item paragraph in a data file has now worked five times — ports, paper
 time zones, lumber, and the resolution notes. It is the only technique here that
 has never made things worse.
 
+## Crawl stats: what Google is actually doing
+
+Settings → 抓取统计信息 gives the numbers no other report does. On 3 September,
+with the site three days old:
+
+| | |
+|---|---|
+| Crawl requests, 90 days | 3,510 |
+| Average response time | **194 ms** |
+| Success (200) | 98% |
+| robots.txt unavailable | 2% |
+| Purpose | 54% discovery, 46% refresh |
+| File type | 97% HTML |
+
+Two things to read carefully here.
+
+**The window is 90 days and the site is three days old.** So "3,510 requests" is
+not three days of crawling — most of that window predates the site. Do not read
+the total as a rate.
+
+**"robots.txt 不可用 2%" and a host marked 过去有问题 look alarming and are
+historical.** Googlebot stops crawling a site entirely when it cannot fetch
+robots.txt, so this is worth checking rather than assuming — twenty consecutive
+requests all returned 200, served from the Cloudflare edge with a cache hit. The
+failures date from before the domain served this site, like the sitemap 404s.
+
+194 ms and 98% success is a healthy profile. **Crawl rate here is not being
+throttled by anything on the server side**, which closes the third
+infrastructure hypothesis after click depth and page weight. What is left is
+time and external signal.
+
 ## A check that has never failed is not a check
 
 Every consistency check in this repo was written after a real error got through,
