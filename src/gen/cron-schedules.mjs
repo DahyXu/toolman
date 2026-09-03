@@ -6,6 +6,24 @@ const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Au
 const h12 = (h) => `${h % 12 === 0 ? 12 : h % 12}:00 ${h < 12 ? 'AM' : 'PM'}`;
 const hh = (h) => String(h).padStart(2, '0') + ':00';
 
+// Every */n schedule fires on minute 0, and the ones that divide the quarter
+// hours land on :15, :30 and :45 as well — the same minutes chosen by almost
+// every other crontab on the machine, by the distro's own maintenance jobs and
+// by most monitoring agents. The cadence is not the problem; the alignment is,
+// and cron can express the same cadence starting anywhere. The offsets below
+// are primes that do not divide 60, so the run minutes miss every round number.
+const OFFSET = { 5: 3, 6: 5, 10: 7, 12: 11, 15: 13, 20: 19, 30: 23 };
+function herdNote(n) {
+  const off = OFFSET[n];
+  if (!off) return '';
+  const mins = [];
+  for (let m = 0; m < 60; m += n) mins.push(m);
+  const shared = mins.filter((m) => m % 15 === 0);
+  const shifted = [];
+  for (let m = off; m < 60; m += n) shifted.push(m);
+  return ` <br><br>Worth noting where in the hour it lands. This fires at ${mins.map((m) => ':' + String(m).padStart(2, '0')).join(', ')}, ${shared.length === mins.length ? 'every one of them a quarter-hour mark' : shared.length > 1 ? `${shared.length} of them quarter-hour marks` : 'including the top of the hour'} — the busiest minutes on any machine, because that is where everything else is scheduled too. If the job competes for a database or an API quota, the contention is easier to remove than to tune around: <code>${off}-59/${n} * * * *</code> runs on exactly the same ${n}-minute cadence, at ${shifted.map((m) => ':' + String(m).padStart(2, '0')).join(', ')}, and shares those minutes with almost nothing.`;
+}
+
 // { slug, expr, title, desc, notes }
 function build() {
   const out = [];
@@ -18,9 +36,10 @@ function build() {
   for (const n of [2, 3, 4, 5, 6, 10, 12, 15, 20, 30]) {
     add(`every-${n}-minutes`, `*/${n} * * * *`, `every ${n} minutes`,
       `Runs ${Math.floor(60 / n)} times an hour, at minute ${Array.from({ length: Math.min(6, Math.floor(60 / n)) }, (_, i) => i * n).join(', ')}${60 / n > 6 ? ' and so on' : ''} past every hour.`,
-      60 % n === 0
+      (60 % n === 0
         ? `Because ${n} divides evenly into 60, the schedule is regular across every hour boundary.`
-        : `Note that ${n} does not divide evenly into 60, so the gap across the hour boundary is shorter than ${n} minutes — the step restarts at minute 0 of each hour. If you need a strictly even interval, use a job queue with a delay instead of cron.`);
+        : `Note that ${n} does not divide evenly into 60, so the gap across the hour boundary is shorter than ${n} minutes — the step restarts at minute 0 of each hour. If you need a strictly even interval, use a job queue with a delay instead of cron.`)
+      + herdNote(n));
   }
 
   add('every-hour', '0 * * * *', 'every hour',

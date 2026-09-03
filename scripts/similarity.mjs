@@ -78,9 +78,13 @@ if (big.length) {
   }
 }
 
-// The number that actually matters: how much of a typical page is data rather
-// than boilerplate. Sample one page per section and diff it against a sibling.
-console.log('\nunique text per page, by section');
+// How much vocabulary a page shares with its siblings, as a Jaccard overlap.
+// LOWER IS BETTER — 100% would mean two pages made of exactly the same words.
+// This heading used to read "unique text per page", the opposite of what the
+// number is, and I read it that way: convert at 38% was reported to the user as
+// the site's thinnest section when it is in fact the least repetitive one on the
+// site, while paper at 75% was the second worst and read as second best.
+console.log('\nvocabulary shared with sibling pages (lower is better)');
 const bySection = {};
 for (const f of walk(dist)) {
   const url = '/' + path.relative(dist, f).replace(/\\/g, '/').replace(/index\.html$/, '');

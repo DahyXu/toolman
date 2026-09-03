@@ -1,3 +1,45 @@
+## I read my own similarity report backwards and told the user so
+
+The report's heading said **"unique text per page, by section"**. The number
+under it is a Jaccard overlap — the vocabulary a page *shares* with its
+siblings, where lower is better and 100% would mean two pages built from
+identical words. The heading names the opposite of the quantity.
+
+So when it printed `convert 4200 pages avg 38%`, I read "only 38% of a convert
+page is its own words", concluded that the site's largest section was also its
+thinnest, and said so to the user in those words. The truth is the reverse:
+38% is the **lowest** overlap on the site, and convert siblings are the most
+distinct pages here. `paper` at avg 75% was second worst and I read it as second
+best.
+
+What caught it was not re-reading the code. I added a substantial new paragraph
+to every one of the 38 paper pages, re-ran the report expecting the number to
+climb, and it fell to 66%. A change whose direction I was sure of came out
+backwards, which is the only reason I went and read what `j` actually holds.
+
+The heading now says what the number is. The work I picked was still the right
+work — `cron` at 91% and `paper` at 94% were the two sections over the duplicate
+threshold, and the threshold reads `worst`, which I had right — but the reason I
+gave for picking it was wrong, and it was wrong in a direction that would have
+sent me to rewrite 4,200 healthy pages next.
+
+The fixes themselves:
+
+**cron 91% → 84%.** Sibling pages differed only in numbers: "Because 15 divides
+evenly into 60…", "Because 12 divides evenly into 60…". The genuinely
+per-schedule fact they were missing is where in the hour the job lands. Every
+`*/n` fires on minute 0, and `*/15` and `*/30` hit only quarter-hour marks —
+the minutes every other crontab, the distro's maintenance jobs and most
+monitoring agents also pick. Each page now names its own run minutes, says how
+many collide, and gives the offset expression with the identical cadence:
+`13-59/15 * * * *` runs at :13, :28, :43, :58. Different text and different
+advice on every page, because it is computed from the interval.
+
+**paper 94% → 84%.** The same fix that took `port` from 91% to 75%: a real
+paragraph per item in a data file, wired in so a missing key is visible rather
+than silently falling back to the one-line note. All 38 have one — checked by
+diffing the key set against the size list, not by looking at a page and assuming.
+
 ## Zero URLs had ever reached Google through a sitemap
 
 Asked again why the child sitemaps still showed 无法抓取, I went and read the

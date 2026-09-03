@@ -1,4 +1,5 @@
 import { esc, faq } from '../layout.mjs';
+import DETAIL from '../data/paper-detail.mjs';
 
 // name, id, width mm, height mm, series, note
 const SIZES = [
@@ -124,6 +125,9 @@ export default async function () {
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${w} × ${h} mm</strong></p>
 <p class="muted">${r2(IN(w))} × ${r2(IN(h))} inches · ${r2(w / 10)} × ${r2(h / 10)} cm · aspect ratio 1:${ratio}</p>
+
+<h2>What ${name} is for</h2>
+<p>${DETAIL[id] || note}</p>
 
 <h2>${name} in every unit</h2>
 <table><thead><tr><th>Unit</th><th>Width</th><th>Height</th></tr></thead><tbody>
