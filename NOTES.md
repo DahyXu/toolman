@@ -1,3 +1,40 @@
+## Screen resolutions, built on the rule the paper section taught
+
+Applying the finite-namespace finding: 36 display resolutions from VGA to 8K,
+each with aspect ratio, pixel count, megapixels, density at five diagonals, and
+how it compares with 1080p and 4K. Everything except one paragraph per entry is
+computed from the width and height, which is why the section came out at **54%
+average sibling overlap, 69% worst** — the least repetitive generated section on
+the site by a wide margin, without any effort spent on making it so.
+
+Three real bugs, all caught by checking rather than by reading:
+
+**Portrait ratios were nonsense.** `ratio()` divided width by height and matched
+against a list of landscape shapes, so a 1080×2400 phone panel compared its 0.45
+against 16:9's 1.78 and picked whatever was least wrong. Phone resolutions are
+quoted portrait and their ratios are named the same way — 20:9, not 9:20 — so
+reducing the long side against the short one fixes every case at once, and
+1080×2400 now reads 20:9 exactly.
+
+**3440×1440 was labelled approximate when it is exact.** The cutoff for "this
+reduction is too ugly to print" was a numerator over 40, and 43:18 is a real,
+exact, meaningful reduction. Raised to 100, which still sends 683:384 to the
+nearest standard shape and keeps 43:18 as itself.
+
+**Two arithmetic claims I wrote by hand were simply false**: 1600×900 described
+as three quarters of 1920×1080 when it is 83% linear and 69% by area, and 720p
+called a quarter of 4K when it is a ninth. Both are the sort of sentence that
+reads perfectly and is wrong, which is the category nothing on this site catches
+by accident.
+
+So `resolution-consistency` joins the suite: every resolution named in prose must
+exist in the table, and every "twice A×B", "N extra columns", "N columns wider
+than UHD", "two 1080p displays", "a ninth of the pixels of 4K", "N% of a 1080p
+frame" and "sixteen 1080p frames" claim is checked against the numbers. I
+planted the two errors I had actually made plus a typo'd resolution and a wrong
+doubling; it caught all four. **The clean run came first and meant nothing until
+the planted run failed.**
+
 ## Paper pages earn 68× more per page than convert pages
 
 The 64 queries in the 24-hour view, grouped by section, gave a ratio I had not
