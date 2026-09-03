@@ -97,7 +97,11 @@ for (const f of walk(dist)) {
 const vocab = (f) => new Set(text(fs.readFileSync(f, 'utf8')).toLowerCase().split(' '));
 const overlap = (a, b) => [...a].filter((w) => b.has(w)).length / new Set([...a, ...b]).size;
 
-for (const [section, files] of Object.entries(bySection).sort((a, b) => b[1].length - a[1].length).slice(0, 12)) {
+// Every section, not the twelve largest. The cutoff was silently dropping the
+// newest sections off the bottom as the site grew — and a small, heavily
+// templated section is exactly where the duplicate risk lives, so reporting by
+// size was filtering out the pages most likely to be in trouble.
+for (const [section, files] of Object.entries(bySection).sort((a, b) => b[1].length - a[1].length)) {
   if (files.length < 2) continue;
   // Neighbours are the likeliest duplicates, so walk consecutive pairs, and add
   // spread-out pairs so a section ordered by something unrelated is still seen.

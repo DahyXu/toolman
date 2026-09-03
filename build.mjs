@@ -162,6 +162,7 @@ const CATEGORY_BODY = {
 <li><strong><a href="/color/">Colors</a></strong> — HEX, RGB, HSL and CMYK with WCAG contrast ratios.</li>
 <li><strong><a href="/paper/">Paper sizes</a></strong> — A4, Letter and the rest in millimetres, inches and pixels at any DPI.</li>
 <li><strong><a href="/resolution/">Screen resolutions</a></strong> — 1080p to 8K with aspect ratios, megapixels and pixel density at any screen size.</li>
+<li><strong><a href="/screen-size/">Screen sizes</a></strong> — how wide a 55-inch television actually is, in inches and centimetres, at every aspect ratio.</li>
 </ul>
 
 <h2>Where conversions get subtle</h2>
@@ -402,6 +403,7 @@ ${allToolsBody}
 <li><a href="/roman/"><b>Roman numerals</b><span>Every number broken down symbol by symbol, plus the rules that govern them.</span></a></li>
 <li><a href="/paper/"><b>Paper sizes</b><span>A4, Letter, Legal and the rest — in mm, inches and pixels at any DPI.</span></a></li>
 <li><a href="/resolution/"><b>Screen resolutions</b><span>1080p, 1440p, 4K and the rest — aspect ratio, megapixels and PPI.</span></a></li>
+<li><a href="/screen-size/"><b>Screen sizes</b><span>TV and monitor dimensions in inches and cm, and what a step up really adds.</span></a></li>
 </ul>
 
 <h2>Why ${SITE.name}?</h2>
@@ -428,7 +430,7 @@ write('/about/', page({
 <h2>What is here</h2>
 <ul>
 <li><strong><a href="/tools/">Interactive tools</a></strong> — formatters, encoders, hash and QR generators, image compression, regex and cron builders. Each is one self-contained page.</li>
-<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/paper/">paper sizes</a> and <a href="/resolution/">screen resolutions</a>.</li>
+<li><strong>Reference material</strong> — the things worth looking up rather than computing: <a href="/convert/">unit conversions</a>, <a href="/color/">colour values with contrast ratios</a>, <a href="/http/">HTTP status codes</a>, <a href="/port/">port numbers</a>, <a href="/chmod/">file permissions</a>, <a href="/cidr/">CIDR prefixes</a>, <a href="/cooking/">cooking measures</a>, <a href="/paper/">paper sizes</a> <a href="/resolution/">screen resolutions</a> and <a href="/screen-size/">screen sizes</a>.</li>
 </ul>
 
 <h2>How correctness is checked</h2>

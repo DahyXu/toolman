@@ -1,3 +1,50 @@
+## The developer sections are not the ones earning
+
+Grouping the 64 live queries by what they are about, rather than by URL prefix,
+gave a result I would not have guessed for a site whose front page leads with
+developer tools:
+
+| kind | sections | queries |
+|---|---|---|
+| everyday reference | paper, temperature, roman, colour, cooking | ~40 |
+| developer reference | http, port, cidr, chmod, ascii, file — 285 pages between them | 1 |
+
+One query. `ms sql ports`, which is also the only click the site has ever had.
+
+The reason is not that the developer pages are worse — `port` and `http` are two
+of the four sections already under the duplicate threshold, and the port pages
+got a real paragraph each earlier in the project. It is that a developer looking
+up a status code or a port number lands on MDN, the RFC, or a ten-year-old Stack
+Overflow answer with four hundred votes, and there is no long tail underneath
+those. "A4 paper size in mm" has no such incumbent.
+
+So the next namespaces should be everyday ones, and the two I built are:
+
+**Screen resolutions** (36 pages) and **screen sizes** (29). They are the two
+halves of one question — how many pixels, and how big is the box — and both are
+almost entirely computed, which is why they came out at 54% and 71% sibling
+overlap with no work spent on differentiating them. The screen size pages exist
+because a diagonal does not tell you a width: a 55-inch 16:9 screen is 47.9
+inches across, a 55-inch 4:3 one is 44, and the number people are given is the
+one that answers neither question they have.
+
+I checked the geometry against the generator rather than trusting it: at 55
+inches and 16:9 the derived width and height give a diagonal of exactly 55.0000
+and a ratio of exactly 1.7778.
+
+**One more silent filter found.** The similarity report ended with
+`.slice(0, 12)` — only the twelve largest sections. `chmod` had already dropped
+off the bottom as the site grew, and `screen-size` never appeared at all, so a
+new section could sit at 95% and never be printed. Reporting by size is exactly
+backwards here: a small, heavily templated section is where duplicate risk
+lives. It now reports every section.
+
+That is the third tool this session whose output was quietly wrong or
+incomplete — the similarity heading, the grep that missed two exit-code
+handlers, and now this cutoff. All three were mine, and all three would have
+been caught by asking "what would this look like if it were not working" before
+reading the number off it.
+
 ## Screen resolutions, built on the rule the paper section taught
 
 Applying the finite-namespace finding: 36 display resolutions from VGA to 8K,
