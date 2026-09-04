@@ -1,3 +1,46 @@
+## The biggest page's queries are about a subtopic that has its own page
+
+Breaking the 756 impressions down by page rather than by query changes the
+picture again:
+
+    /paper/a4/                  0 clicks   51 impressions   position 80.2
+    /paper/a2/                  0          50
+    /password-generator/        0          40
+    /paper/a5/                  0          33
+    /port/                      1           4              position 1.0
+
+183 pages are receiving impressions, so the indexed surface is real and much
+wider than the hub layer I was describing this morning. Paper item pages are the
+site's largest source of impressions — a4, a2 and a5 alone are 134, more than
+three times the password family.
+
+Then the query list for `/paper/a4/` on its own:
+
+    a4 dimensions                    3
+    a4 pixel size                    2
+    a4 paper dimensions in pixels    2
+    a4 dimensions pixels             2
+    a4 size in pixels                2
+    a4 size paper dimensions         2
+    a4 paper ratio                   2
+    a4 sheet in pixels               1
+    a4 size in px                    1
+    size of an a4 paper in pixels    1
+
+**Seven of the top ten are about pixels**, and there is a page for exactly that
+question — `/paper/a4/pixels/` — which the impressions are not reaching. Its
+title was "A4 in Pixels — 2480 × 3508 at 300 DPI | Toolman": no "size", which
+four of those seven queries contain, and ten characters spent on the brand.
+
+Now "A4 Size in Pixels — 2480 × 3508 at 300 DPI, 595 × 842 at 72". Two
+resolutions rather than one, because the page's whole value is that there is no
+single answer — which is also why Google has no widget for the question.
+
+The general lesson is about the report rather than about paper: the query list
+and the page list say different things, and the intersection says something
+neither does alone. A page averaging position 80 across 43 queries is not one
+problem, it is a page competing for a question its neighbour answers better.
+
 ## The first click, and what it proves
 
 Search Console, updated four and a half hours ago:

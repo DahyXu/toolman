@@ -245,7 +245,15 @@ ${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</
 
     pages.push({
       path: `/paper/${id}/pixels/`,
-      title: `${name} in Pixels — ${p300.w} × ${p300.h} at 300 DPI | Toolman`,
+      title: (() => {
+        // Seven of the ten queries reaching /paper/a4/ are about pixels, and
+        // four of those say "size" - "a4 pixel size", "a4 size in pixels",
+        // "a4 size in px", "size of an a4 paper in pixels". The old title said
+        // "A4 in Pixels" and spent ten characters on the brand instead.
+        const base = `${name} Size in Pixels — ${p300.w} × ${p300.h} at 300 DPI`;
+        const both = `${base}, ${px(w, 72)} × ${px(h, 72)} at 72`;
+        return both.length <= 65 ? both : base.length <= 65 ? base : `${name} Size in Pixels`;
+      })(),
       desc: `${name} is ${p300.w} × ${p300.h} pixels at 300 DPI, ${at(150).w} × ${at(150).h} at 150 and ${p72.w} × ${p72.h} at 72. Pixel dimensions at every common resolution, with file sizes.`,
       h1: `${name} in pixels`,
       crumbs: [{ name: 'Paper sizes', path: '/paper/' }, { name, path: `/paper/${id}/` }, { name: 'In pixels', path: `/paper/${id}/pixels/` }],
