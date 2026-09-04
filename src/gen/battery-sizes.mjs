@@ -212,6 +212,18 @@ ${list.map((r) => `<tr><td><a href="/battery/${r.code.toLowerCase()}/">${r.code}
 <h2>Why the same battery has five names</h2>
 <p>An LR44 is also an AG13, an A76, a 1166A and an L1154, and the silver-oxide version of the same cell is an SR44 or a 357. The IEC code (LR44) describes chemistry and size; the AG number is a retail shorthand; the three-digit numbers come from watch-battery cross-reference tables. None of them is wrong and none of them is universal, which is why a cell is often easier to identify by measuring it than by reading the packet.</p>
 
+<h2>Size tells you it fits. Voltage tells you it works.</h2>
+<p>Two cells of identical dimensions can be wired for different voltages, and the compartment will close on either. A CR2032 is 3 volts of lithium; the same 20 × 3.2 mm envelope in alkaline would be 1.5, and devices designed for one do not run on the other. The letter before the number is the chemistry and it is the part that matters — L for alkaline, C for lithium, S for silver oxide, H for nickel-metal hydride.</p>
+<p>Within a chemistry, size is capacity and nothing else. An AA and a D are both 1.5 volts; the D simply lasts several times longer, which is why a device will run on either with an adapter and only the runtime changes.</p>
+
+<h2>Why 1.2-volt rechargeables work in 1.5-volt devices</h2>
+<p>An alkaline AA is 1.5 volts new and spends most of its life somewhere below that, ending around 1.0. A NiMH rechargeable is 1.2 volts nominal and holds close to it until it is nearly empty. Averaged over a discharge the two are similar, which is why most things designed for alkaline run fine on NiMH.</p>
+<p>What does not work is anything that reads the voltage to estimate charge — a device expecting to see 1.5 falling to 1.1 will call a fully charged NiMH nearly flat, and some smoke alarms and cameras refuse them for exactly that reason.</p>
+
+<h2>What mAh does and does not tell you</h2>
+<p>Milliamp-hours measure charge, not energy, so they are only comparable between cells of the same voltage. A 3000 mAh NiMH AA at 1.2 volts stores 3.6 watt-hours; a 2700 mAh alkaline at 1.5 stores 4.05, more energy from the smaller-looking number.</p>
+<p>Alkaline capacity also depends heavily on how fast you draw it — the figures printed on packets are measured at low current, and the same cell in a high-drain device delivers a fraction of them. That gap is the reason rechargeables win in cameras and lose in wall clocks.</p>
+
 <p><a href="/convert/">Unit converters</a> · <a href="/lumber/">Lumber sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
   });
 

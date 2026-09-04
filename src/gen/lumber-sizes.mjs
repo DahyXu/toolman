@@ -56,6 +56,18 @@ const BOARDS = [
 const LENGTHS = [6, 8, 10, 12, 14, 16, 20];
 
 export default async function () {
+  // The hub describes the step in the surfacing rule and a stiffness loss. Both
+  // are read off actual() rather than typed, and both are checked, because a
+  // page whose only job is the right measurement cannot be approximately right.
+  if (actual(6) !== 5.5 || actual(8) !== 7.25 || actual(1) !== 0.75) {
+    console.error(`\n\u2717 lumber hub: the surfacing rule gives ${actual(1)}, ${actual(6)}, ${actual(8)} where the standard says 0.75, 5.5, 7.25`);
+    process.exitCode = 1;
+  }
+  if (!(actual(8) - actual(6) > 1 && actual(8) - actual(6) < 2)) {
+    console.error(`\n\u2717 lumber hub: says the 6-to-8 step is less than the 2 inches the names suggest, and it computes ${actual(8) - actual(6)}`);
+    process.exitCode = 1;
+  }
+
   const pages = [];
   const rows = BOARDS.map(([t, w, use]) => ({
     t, w, use, id: `${t}x${w}`,
@@ -145,6 +157,17 @@ ${rows.map((r) => {
 
 <h2>Why it is worth checking before you cut</h2>
 <p>The error compounds where boards sit side by side. Three 2x6s are 16½ inches across, not 18 — an inch and a half short over three boards, and six inches short over a dozen. This is why framing is dimensioned centre to centre rather than edge to edge: 16 inches on centre stays 16 inches whatever the boards actually measure.</p>
+
+<h2>Where the missing half inch went</h2>
+<p>A 2x4 really was two inches by four, at the sawmill, while it was still green. It is then dried, which shrinks it, and planed smooth on all four faces, which takes more off. What comes out is what the American Softwood Lumber Standard fixes as the finished size, and the name it is sold under is the size it started at.</p>
+<p>The rule has a step in it. Up to 6 inches nominal a board loses half an inch; from 8 inches up it loses three quarters. A 2x6 is ${frac(actual(6))} inches wide and a 2x8 is ${frac(actual(8))}, so the jump from 6 to 8 in the name is a jump of ${frac(actual(8) - actual(6))} inches in the wood — not the 2 inches the numbers suggest. Nominal 1-inch stock is the other exception, finishing at ${frac(actual(1))}.</p>
+
+<h2>Length is not shortened, only the cross-section</h2>
+<p>An 8-foot 2x4 is 96 inches long. The shrinkage applies to thickness and width and not to length, which is why you can buy studs cut to 92⅝ inches for a standard wall and get exactly that. It also means the only surprises are in the two dimensions you were not thinking about while measuring the run.</p>
+
+<h2>Span tables never use the nominal name</h2>
+<p>A joist's strength goes with the cube of its depth, so the difference between a nominal 10 and its actual ${frac(actual(10))} inches is not cosmetic — it is about ${Math.round((1 - Math.pow(actual(10) / 10, 3)) * 100)}% of the bending stiffness. Published span tables are written in actual dimensions for that reason, and a calculation done with the number on the label overstates what the timber will carry.</p>
+<p>Plywood and sheet goods follow a different convention again: a sheet sold as ¾ inch is commonly 23/32, and one sold as ½ inch is 15/32. The shortfall is small and it is not covered by the rule above, so a ¾ sheet in a ¾ dado is a loose fit rather than a tight one.</p>
 
 <p><a href="/convert/">Unit converters</a> · <a href="/paper/">Paper sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
   });
