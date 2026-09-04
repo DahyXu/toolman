@@ -1,67 +1,9 @@
 import { esc, faq } from '../layout.mjs';
 import DETAIL from '../data/paper-detail.mjs';
+import DATA from '../data/paper-sizes-data.mjs';
 
-// name, id, width mm, height mm, series, note
-const SIZES = [
-  ['A0', 'a0', 841, 1189, 'A', 'The base of the A series, defined as one square metre of area with sides in a 1:√2 ratio. Every smaller A size is this one halved repeatedly.'],
-  ['A1', 'a1', 594, 841, 'A', 'Half of A0. Common for posters, technical drawings and exhibition boards.'],
-  ['A2', 'a2', 420, 594, 'A', 'Half of A1. Used for medium posters, art prints and larger calendars.'],
-  ['A3', 'a3', 297, 420, 'A', 'Exactly two A4 sheets side by side. The largest size most office printers handle, and the standard for spreadsheets, drawings and small posters.'],
-  ['A4', 'a4', 210, 297, 'A', 'The default sheet of paper almost everywhere except North America. If you have ever printed anything outside the US or Canada, it was almost certainly A4.'],
-  ['A5', 'a5', 148, 210, 'A', 'Half of A4 — the size of a typical notebook, flyer or small booklet page.'],
-  ['A6', 'a6', 105, 148, 'A', 'Postcard size. Also the standard for small flyers and index cards outside North America.'],
-  ['A7', 'a7', 74, 105, 'A', 'Pocket size, used for small notepads and tickets.'],
-  ['A8', 'a8', 52, 74, 'A', 'About the size of a playing card. Used for labels and small tickets.'],
-  ['A9', 'a9', 37, 52, 'A', 'Rarely used outside of very small labels.'],
-  ['A10', 'a10', 26, 37, 'A', 'The smallest standard A size — roughly a postage stamp.'],
-  ['B0', 'b0', 1000, 1414, 'B', 'The B series sits geometrically between consecutive A sizes, giving a size range for posters and books where A is too coarse.'],
-  ['B1', 'b1', 707, 1000, 'B', 'Common for large advertising posters in Europe.'],
-  ['B2', 'b2', 500, 707, 'B', 'Used for posters and point-of-sale displays.'],
-  ['B3', 'b3', 353, 500, 'B', 'Between A3 and A2 — used for posters and larger brochures.'],
-  ['B4', 'b4', 250, 353, 'B', 'Slightly larger than A4. Common for books and magazines in Japan.'],
-  ['B5', 'b5', 176, 250, 'B', 'A very common book and academic journal size, and standard for notebooks in Japan and China.'],
-  ['B6', 'b6', 125, 176, 'B', 'Used for paperback books and small notebooks.'],
-  ['B7', 'b7', 88, 125, 'B', 'Passport-sized. Actual passports are close to this.'],
-  ['B8', 'b8', 62, 88, 'B', 'About the size of a playing card or a bank card sleeve.'],
-  ['C4', 'c4', 229, 324, 'C', 'The envelope that takes an unfolded A4 sheet. The C series exists precisely so that C(n) holds A(n).'],
-  ['C5', 'c5', 162, 229, 'C', 'Takes an A4 sheet folded once, or an unfolded A5.'],
-  ['C6', 'c6', 114, 162, 'C', 'Takes an A4 sheet folded twice, or an unfolded A6 postcard.'],
-  ['DL', 'dl', 110, 220, 'C', 'The standard business envelope in Europe — takes an A4 sheet folded into thirds. Technically not part of the C series but used alongside it.'],
-  ['Letter', 'letter', 215.9, 279.4, 'US', 'The North American default: 8.5 × 11 inches. Slightly wider and shorter than A4, which is why documents laid out for one never quite fit the other.'],
-  ['Legal', 'legal', 215.9, 355.6, 'US', 'Letter width, three inches taller: 8.5 × 14 inches. Used for contracts and legal filings in the US and Canada.'],
-  ['Tabloid', 'tabloid', 279.4, 431.8, 'US', '11 × 17 inches — two Letter sheets side by side. Called Ledger when oriented landscape.'],
-  ['Executive', 'executive', 184.15, 266.7, 'US', '7.25 × 10.5 inches. A slightly smaller, more formal sheet once common for letterheads.'],
-  ['Half Letter', 'half-letter', 139.7, 215.9, 'US', '5.5 × 8.5 inches — Letter folded once. Used for booklets, planners and small notepads.'],
-  ['Junior Legal', 'junior-legal', 127, 203.2, 'US', '5 × 8 inches, the size of a standard US legal notepad.'],
-  ['ANSI C', 'ansi-c', 431.8, 558.8, 'US', '17 × 22 inches — four Letter sheets. Used for engineering drawings.'],
-  ['ANSI D', 'ansi-d', 558.8, 863.6, 'US', '22 × 34 inches, for larger technical drawings.'],
-  ['ANSI E', 'ansi-e', 863.6, 1117.6, 'US', '34 × 44 inches — the largest standard ANSI drawing sheet.'],
-  ['Business Card (US)', 'business-card-us', 88.9, 50.8, 'Card', '3.5 × 2 inches, the North American standard. Fits a wallet card slot.'],
-  ['Business Card (EU)', 'business-card-eu', 85, 55, 'Card', 'The European standard, and the same footprint as a credit card — which is why it fits every wallet.'],
-  ['Photo 4×6', 'photo-4x6', 101.6, 152.4, 'Photo', 'The standard photo print, matching the 2:3 aspect ratio most DSLR and mirrorless sensors produce.'],
-  ['Photo 5×7', 'photo-5x7', 127, 177.8, 'Photo', 'A common frame size. Note it is 5:7, not 2:3, so a full-frame photo needs cropping.'],
-  ['Photo 8×10', 'photo-8x10', 203.2, 254, 'Photo', 'A portrait and framing standard at 4:5. Cropping is always required from a 2:3 original.'],
-  ['ARCH A', 'arch-a', 228.6, 304.8, 'ARCH', 'The smallest architectural sheet at 9 × 12 inches.'],
-  ['ARCH B', 'arch-b', 304.8, 457.2, 'ARCH', '12 × 18 inches, two ARCH A sheets.'],
-  ['ARCH C', 'arch-c', 457.2, 609.6, 'ARCH', '18 × 24 inches, the common size for a single-sheet plan.'],
-  ['ARCH D', 'arch-d', 609.6, 914.4, 'ARCH', '24 × 36 inches, the standard architectural drawing sheet.'],
-  ['ARCH E', 'arch-e', 914.4, 1219.2, 'ARCH', '36 × 48 inches, the largest of the series.'],
-  ['ARCH E1', 'arch-e1', 762, 1066.8, 'ARCH', '30 × 42 inches, a narrower E that fits more plan rooms.'],
-  ['B9', 'b9', 44, 62, 'B', 'Half of B8, used for very small labels and tickets.'],
-  ['B10', 'b10', 31, 44, 'B', 'The smallest standard B size.'],
-  ['C3', 'c3', 324, 458, 'C', 'Takes an unfolded A3 sheet, or a C4 envelope inside it.'],
-  ['C7', 'c7', 81, 114, 'C', 'Takes an A7 sheet unfolded — the size of a small card envelope.'],
-  ['Envelope No. 10', 'envelope-10', 104.775, 241.3, 'C', '4.125 × 9.5 inches, the standard US business envelope.'],
-  ['A7 Envelope (US)', 'envelope-a7-us', 133.35, 184.15, 'C', '5.25 × 7.25 inches, the US invitation envelope. Unrelated to ISO A7.'],
-  ['Photo 6×8', 'photo-6x8', 152.4, 203.2, 'Photo', '6 × 8 inches, a 3:4 print size.'],
-  ['Photo 8×12', 'photo-8x12', 203.2, 304.8, 'Photo', '8 × 12 inches — the 2:3 enlargement that needs no cropping.'],
-  ['Photo 11×14', 'photo-11x14', 279.4, 355.6, 'Photo', '11 × 14 inches, a common gallery frame size.'],
-  ['Photo 16×20', 'photo-16x20', 406.4, 508, 'Photo', '16 × 20 inches, a 4:5 wall print.'],
-  ['US Trade 6×9', 'us-trade-6x9', 152.4, 228.6, 'Book', '6 × 9 inches, the default trim for a US trade paperback.'],
-  ['Mass Market', 'mass-market', 107.95, 174.5, 'Book', 'The rack-sized paperback, 4.25 × 6.87 inches.'],
-  ['Index Card 3×5', 'index-card-3x5', 76.2, 127, 'Card', '3 × 5 inches, the standard US index card.'],
-  ['Super A3', 'super-a3', 329, 483, 'A', '329 × 483 mm, the oversized A3 that desktop inkjets use for bleed.'],
-];
+// Tuple form of the shared list, so the rest of this file reads as it always has.
+const SIZES = DATA.map((d) => [d.name, d.id, d.w, d.h, d.series, d.note]);
 
 const IN = (mm) => mm / 25.4;
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -201,6 +143,7 @@ ${FAQ.html}
     h1: 'Paper sizes',
     crumbs: [{ name: 'Paper sizes', path: '/paper/' }],
     body: `<p class="muted">Dimensions in millimetres, inches and pixels for every standard format, plus what each one is actually used for.</p>
+<p><a href="/paper/compare/">Comparing two sizes?</a> Every pair close enough to be a real alternative, with the print scale that puts one on the other.</p>
 ${Object.entries(SERIES).map(([key, [label, desc]]) => {
       const list = SIZES.filter((s) => s[4] === key);
       if (!list.length) return '';

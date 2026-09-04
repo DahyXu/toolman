@@ -9,14 +9,10 @@
  * that every size has a detail paragraph rather than falling back to the short
  * note, which is silent when it happens.
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import DETAIL from '../src/data/paper-detail.mjs';
+import SIZES from '../src/data/paper-sizes-data.mjs';
 
-const root = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..');
-const src = fs.readFileSync(path.join(root, 'src/gen/paper-sizes.mjs'), 'utf8');
-const rows = [...src.matchAll(/^ {2}\['([^']*)', '([^']+)', ([\d.]+), ([\d.]+),/gm)]
-  .map(([, name, id, w, h]) => ({ name, id, w: +w, h: +h }));
+const rows = SIZES.map((d) => ({ name: d.name, id: d.id, w: d.w, h: d.h }));
 
 const missing = rows.filter((r) => !DETAIL[r.id]).map((r) => r.id);
 const extra = Object.keys(DETAIL).filter((k) => !rows.some((r) => r.id === k));
