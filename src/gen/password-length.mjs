@@ -80,6 +80,24 @@ function crackTime(bits, rate) {
 const f1 = (v) => v.toFixed(1);
 
 export default async function () {
+  // The hub claims one extra character beats adding symbols to all twelve
+  // positions. That is a claim about this charset, so it is computed from it
+  // and checked rather than asserted from memory.
+  {
+    const alnumBits = Math.log2(62);
+    const symbolGain = 12 * (Math.log2(CHARSET.length) - alnumBits);
+    // The heading's claim is the one-character one. Checking the two-character
+    // version instead would pass by a margin wide enough to prove nothing.
+    if (!(alnumBits > symbolGain)) {
+      console.error(`\n\u2717 password hub: says one more character beats adding symbols, and the sums are ${alnumBits.toFixed(2)} against ${symbolGain.toFixed(2)} bits`);
+      process.exitCode = 1;
+    }
+    if (CHARSET.length <= 62) {
+      console.error(`\n\u2717 password hub: compares a ${CHARSET.length}-character set against the 62 of letters and digits, which is not larger`);
+      process.exitCode = 1;
+    }
+  }
+
   const pages = [];
 
   const rows = LENGTHS.map((len) => ({
@@ -201,6 +219,21 @@ ${rows.map((r) => `<tr><td><a href="/password-length/${r.len}/">${r.len}</a></td
 <h2>The number that is not on this page</h2>
 <p>Every figure here assumes <strong>every character was chosen at random</strong>. A password a person invented carries a small fraction of the entropy its length implies, because people substitute predictably — a 3 for an E, an exclamation mark at the end, a year that is either this one or a birthday. Attackers model that, and the models are good.</p>
 <p>Which makes the practical advice short: let a generator choose, and let a manager remember. The length only means what this page says it means if you did not pick the characters yourself.</p>
+
+<h2>One more character beats adding symbols</h2>
+<p>The perennial argument has an arithmetic answer. A 12-character password drawn from letters and digits alone — 62 possibilities per position — carries ${f1(12 * Math.log2(62))} bits. Adding the full symbol set here takes each position from 62 to ${CHARSET.length} choices, which buys <strong>${f1(12 * (Math.log2(CHARSET.length) - Math.log2(62)))} bits</strong> across the whole password.</p>
+<p>Making it thirteen characters instead, and keeping it letters and digits, buys <strong>${f1(Math.log2(62))} bits</strong> — more, from one keystroke rather than twelve harder-to-type ones. It is close — ${f1(Math.log2(62))} against ${f1(12 * (Math.log2(CHARSET.length) - Math.log2(62)))} — and a second extra character puts it beyond argument.</p>
+<p>Symbols are not useless; they are simply the smaller lever, and they cost the most where passwords are typed on a phone or read aloud. If a policy forces them, add them. If it does not, add length.</p>
+
+<h2>"Cracked in" depends entirely on how it is stored</h2>
+<p>A crack time is a guess rate multiplied by a search space, and the guess rate is not a property of the password. The same ${LENGTHS.includes(12) ? 12 : LENGTHS[0]}-character password faces three completely different numbers:</p>
+<table><thead><tr><th>Attack</th><th>Guesses per second</th><th>${LENGTHS.includes(12) ? 12 : LENGTHS[0]} characters lasts</th></tr></thead><tbody>
+<tr><td>Fast unsalted hash on GPUs — MD5, SHA-1, unsalted SHA-256</td><td>10¹²</td><td>${crackTime(12 * BITS_PER_CHAR, 1e12)}</td></tr>
+<tr><td>bcrypt or Argon2, correctly configured</td><td>10⁴</td><td>${crackTime(12 * BITS_PER_CHAR, 1e4)}</td></tr>
+<tr><td>A rate-limited login form</td><td>100</td><td>${crackTime(12 * BITS_PER_CHAR, 100)}</td></tr>
+</tbody></table>
+<p>The gap between the first and second rows is eight orders of magnitude, and it is entirely the service's choice rather than yours. Which is the uncomfortable part: the length you pick matters most precisely when the site storing it has done the wrong thing, and you have no way to find out which sites those are.</p>
+<p>It also means "how long should my password be" has no single answer, and any page giving one — including the numbers above — is quietly assuming the worst case. That is the right assumption to make, and it is worth knowing it is being made.</p>
 
 <p><a href="/password-generator/">Password generator</a> · <a href="/hash-generator/">Hash generator</a></p>`,
   });
