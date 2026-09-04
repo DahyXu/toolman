@@ -147,6 +147,32 @@ ${FAQ.html}
   const ukKing = rows.find((r) => r.id === 'king-uk');
   const ukSuper = rows.find((r) => r.id === 'super-king-uk');
 
+    // The hub compares widths per sleeper against a single bed, so the sizes it
+  // names are looked up rather than typed, and the comparison it draws is
+  // checked. A reference page that gets its own table wrong is worse than one
+  // that says less.
+  const byId = (id) => {
+    const r = rows.find((x) => x.id === id);
+    if (!r) {
+      console.error(`\n\u2717 bed hub: names ${id} in the prose and the table has no such size`);
+      process.exitCode = 1;
+    }
+    return r || { wmm: 0, hmm: 0 };
+  };
+  const queen = byId('queen');
+  const full = byId('full');
+  const ukDouble = byId('double-uk');
+  const ukSingle = byId('single-uk');
+  // ukSuper is already in scope above; reuse it rather than shadowing.
+  if (!(full.wmm < ukSingle.wmm * 2 && ukDouble.wmm < ukSingle.wmm * 2)) {
+    console.error(`\n\u2717 bed hub: says a Full and a UK Double give two adults less each than a single bed, and the widths are ${full.wmm}, ${ukDouble.wmm} against two singles at ${ukSingle.wmm * 2} mm`);
+    process.exitCode = 1;
+  }
+  if (!(queen.wmm > ukDouble.wmm)) {
+    console.error(`\n\u2717 bed hub: orders Queen above UK Double and the widths say otherwise`);
+    process.exitCode = 1;
+  }
+
   pages.push({
     path: '/bed-size/',
     title: 'Bed Size Chart — US, UK and European Mattress Dimensions | Toolman',
@@ -172,6 +198,16 @@ ${[...rows].sort((a, b) => a.wmm - b.wmm).map((r) => `<tr><td><a href="/bed-size
 
 <h2>How much room a bed actually needs</h2>
 <p>The figures above allow 60 cm of clear floor on each side and at the foot, which is roughly the width of a person walking sideways past a bed frame. Less than that and the bed fits the room on paper while making it unusable in practice — the usual symptom is a wardrobe door that will not open, since a hinged door needs its own depth of clearance again.</p>
+
+<h2>Width per sleeper is the number nobody prints</h2>
+<p>A two-person bed is sold by its total width, which tells you nothing directly useful. Halve it and the picture changes: a US Queen gives each person ${Math.round(queen.wmm / 20)} cm, a US Full gives ${Math.round(full.wmm / 20)}, and a UK Double gives ${Math.round(ukDouble.wmm / 20)}.</p>
+<p>The reference point that makes those numbers mean something is a single bed. A UK Single is ${Math.round(ukSingle.wmm / 10)} cm wide for one person, so <strong>anything under ${Math.round(ukSingle.wmm / 5)} cm of total width gives two adults less room each than a child gets in a single bed.</strong> A Full and a UK Double are both below that line, which is why they are routinely described as two-person beds and routinely slept in by one.</p>
+<p>Length is the other half and it is simpler: North American sizes are 190 or 203 cm, UK sizes 190, continental 200. Anyone over about 185 cm tall wants the 200 or 203, and no width compensates for a bed that is short.</p>
+
+<h2>Buying a mattress in another country</h2>
+<p>The mattress is the easy part. What does not travel is everything sized to it — fitted sheets, mattress protectors, duvets, and the bed frame itself, all of which are made to national standards that do not line up. A US King mattress shipped to Britain fits no British bedding sold in any shop, and a UK King bought in Europe is 150 cm where the continental sizes go 140, 160, 180.</p>
+<p>The pairs that genuinely interchange are few. A UK Super King and an EU King are both ${Math.round(ukSuper.wmm / 10)} × ${Math.round(ukSuper.hmm / 10)} cm and their bedding is the same. A US Full and a UK Double are ${Math.abs(Math.round((full.wmm - ukDouble.wmm) / 10))} cm apart in width, close enough that sheets usually work. Everything else needs the centimetres checked rather than the name.</p>
+<p>The costly direction is buying the bed abroad and the bedding at home, because the bed arrives first and the mismatch only appears when the sheets do.</p>
 
 <p><a href="/convert/">Unit converters</a> · <a href="/paper/">Paper sizes</a> · <a href="/screen-size/">Screen sizes</a></p>`,
   });
