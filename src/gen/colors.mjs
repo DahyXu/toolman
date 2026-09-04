@@ -238,6 +238,13 @@ ${FAQ.html}
 }
 
 export default async function () {
+  // The ceiling is a defined property of the formula, not a number to type.
+  const maxContrast = Math.round(contrast({ r: 255, g: 255, b: 255 }, { r: 0, g: 0, b: 0 }));
+  if (maxContrast !== 21) {
+    console.error(`\n\u2717 color hub: white on black computes as ${maxContrast}:1, not the defined 21:1`);
+    process.exitCode = 1;
+  }
+
   const pages = [];
   const done = new Set();
 
@@ -308,6 +315,24 @@ export default async function () {
     crumbs: [{ name: 'Colors', path: '/color/' }],
     body: `<p class="muted">${all.length} color reference pages. Each one lists HEX, RGB, HSL and CMYK values, contrast ratios against black and white, a lightness scale and a set of harmonies. Need a specific color? Use the <a href="/color-converter/">color converter</a>.</p>
 <p><a href="/color/tailwind/">Working in Tailwind CSS?</a> Every hue as a scale of eleven shades, with the contrast figure that decides which of them can carry text.</p>
+<h2>What a contrast ratio is, and the four numbers worth knowing</h2>
+<p>Contrast is the ratio between the light two colours reflect, and it runs from 1:1 for two identical colours to <strong>${maxContrast}:1</strong> for black on white — that is the ceiling, and nothing beats it. Four points on that scale carry rules:</p>
+<table><thead><tr><th>Ratio</th><th>Passes</th><th>For</th></tr></thead><tbody>
+<tr><td>3:1</td><td>WCAG AA</td><td>Large text — 18.5px bold or 24px regular and up — and the edges of buttons and inputs</td></tr>
+<tr><td>4.5:1</td><td>WCAG AA</td><td>Body text, which is the threshold most designs are judged against</td></tr>
+<tr><td>7:1</td><td>WCAG AAA</td><td>Body text where the standard is stricter, such as public-sector sites in some jurisdictions</td></tr>
+<tr><td>${maxContrast}:1</td><td>—</td><td>Black on white. There is nothing higher.</td></tr>
+</tbody></table>
+<p>The ratio is symmetrical: a colour's contrast against white does not depend on which of them is the text. What changes is legibility, and that is why a colour can pass at 4.5:1 as ink on a white page and still be a poor background for white text — the ratio is fine, and the eye is not.</p>
+
+<h2>Reading a hex code</h2>
+<p>A hex colour is three bytes written in base 16: <code>#RRGGBB</code>, each pair from <code>00</code> to <code>FF</code>, which is 0 to 255. <code>#FF0000</code> is red at full strength with no green and no blue. The three-digit form <code>#F00</code> is the same colour — each digit is doubled, so <code>#ABC</code> means <code>#AABBCC</code> — which is why only colours whose pairs happen to repeat can be written short.</p>
+<p>That also explains a thing people notice and mistrust: there are 16,777,216 hex colours, and the shorthand reaches only 4,096 of them.</p>
+
+<h2>Why the same hex looks different on two screens</h2>
+<p>A hex code is not a colour, it is an instruction to a display, and the display decides what to do with it. The web assumes sRGB unless told otherwise; a wide-gamut monitor showing the same numbers without colour management renders them more saturated, and a phone in a warm night mode shifts them again.</p>
+<p>Nothing on this site can fix that, and it is worth knowing before spending an afternoon matching a screen to a print sample. For print, the CMYK figures here are a conversion and not a proof — the printer's own profile is the only authority on what will come off the press.</p>
+
 <h2>CSS named colors</h2>
 ${swatchRow(namedList.slice(0, 60))}
 <ul class="linklist">${namedList
