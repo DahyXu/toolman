@@ -271,3 +271,26 @@ and they surface as ordinary recollection rather than as something to check.
 The habit that catches it: **before writing a figure into a commit, a note or a
 message, name where it came from.** If the answer is "I remember it", it is a
 recollection and needs the report opened again.
+
+## Test the instrument before trusting what it says about the subject
+
+I wrote up an exact-phrase Google search as a definitive indexing test — "a
+phrase on one page either returns that page or returns nothing" — and used it
+to conclude that `/paper/a2/` was not indexed and that only hub pages were.
+
+Both wrong, for two different reasons:
+
+  - The phrase I searched was from a data field the page does not render. The
+    test was fine; I fed it a sentence that exists nowhere.
+  - A second phrase that *is* on the page also returned nothing, while Search
+    Console's URL Inspection reported the page indexed. So the test has false
+    negatives even when used correctly.
+
+The instrument was never calibrated. A working version would have been checked
+against a page known to be indexed — `/cooking/`, which I already had evidence
+for — before being pointed at an unknown one. That takes one search.
+
+**Before a new measurement is allowed to overturn a belief, run it on a case
+whose answer is already known.** This is the same discipline as planting an
+error to see a check fail, applied to reading rather than to building, and I
+skipped it because the test felt obviously correct.

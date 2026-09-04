@@ -1,3 +1,58 @@
+## What is actually happening, from the one tool that answers it
+
+Search Console's URL Inspection works, and it is the authoritative answer for a
+single URL. Driving it settled three things I had got wrong.
+
+**`/paper/a2/` is indexed.** I had concluded it was not, from an exact-phrase
+search that returned nothing. Two separate faults in that:
+
+  - The first phrase I tested was the `note` field from the size table, and the
+    page renders `DETAIL[id] || note`. Every size has a DETAIL entry — the
+    consistency check enforces it — so the note never appears on any page. I
+    searched for a sentence that does not exist.
+  - The second phrase does appear on the page, and Google still returned
+    nothing for it while URL Inspection reported the page indexed. So the
+    exact-phrase test produces false negatives on indexed pages and is not the
+    reliable instrument I wrote it up as two entries ago.
+
+**The sitemaps are working.** Inspecting `/cooking/1-cups-milk-to-grams/`:
+
+    网页未编入索引: 已发现 - 尚未编入索引
+    站点地图      https://toolman.top/sitemap.xml
+                  https://toolman.top/sitemaps/pages-3.xml
+    上次抓取时间  不适用
+
+Google found that URL through the sitemap and named which one. The "已发现的
+网页: 0" column in the sitemap report, which I read as discovery having
+delivered nothing, does not mean what I took it to mean.
+
+**The status is "Discovered — currently not indexed", not "unknown".** Google
+has the URLs, has queued them, and has not crawled them. That is the ordinary
+state of a new domain with a small crawl budget and 8,800 pages, and it is a
+different problem from the one I have been describing: not "Google cannot find
+the pages" but "Google has not got to them yet".
+
+The newest pages — the comparison hubs published in the last two days — are a
+third case: unknown to Google entirely, because the sitemap Google last fetched
+predates them.
+
+## Requesting indexing works, and it is the only lever
+
+URL Inspection has a Request Indexing button that puts a URL in a priority
+crawl queue. Requested today, in the order they are worth having:
+
+    /paper/compare/       /bakeware/compare/    /bed-size/compare/
+    /awg/compare/         /color/tailwind/
+
+Google limits this to roughly a dozen a day per property, so it is not a way to
+index 8,800 pages. It is a way to get the handful of pages that matter in front
+of the crawler now rather than in some weeks.
+
+Two of my requests were wasted on a URL already submitted, because the success
+toast covers the search box and typing goes nowhere. The sequence that works is
+close the toast, click the box by coordinate, type, Enter, confirm the URL bar
+changed, then click Request.
+
 ## The impressions come from the hubs, and the item pages are not indexed
 
 `/paper/a2/` is not in Google's index. The test that settles it is not a
