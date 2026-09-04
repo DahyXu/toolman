@@ -153,6 +153,17 @@ ${Object.entries(byCat).map(([cat, list]) => {
 ${list.map(([code, name, , when]) => `<tr><td><a href="/http/${code}/"><strong>${code}</strong></a></td><td><a href="/http/${code}/">${esc(name)}</a></td><td>${when.replace(/<[^>]+>/g, '').split('.')[0]}.</td></tr>`).join('')}
 </tbody></table>`;
     }).join('')}
+<h2>The four redirects, and why there are four</h2>
+<p>301 and 302 came first and were specified to preserve the request method. Browsers did not implement them that way: a redirected POST became a GET, the body was dropped, and enough of the web came to depend on that behaviour that the spec could not be enforced retroactively. 307 and 308 exist for exactly that reason — they are the same two meanings with the method preservation actually guaranteed.</p>
+<table><thead><tr><th>Code</th><th>Meaning</th><th>Method after</th><th>Cached by default</th></tr></thead><tbody>
+<tr><td><a href="/http/301/"><code>301</code></a></td><td>Permanent</td><td>POST usually becomes GET</td><td><strong>Yes</strong></td></tr>
+<tr><td><a href="/http/302/"><code>302</code></a></td><td>Temporary</td><td>POST usually becomes GET</td><td>No</td></tr>
+<tr><td><a href="/http/307/"><code>307</code></a></td><td>Temporary</td><td>Preserved</td><td>No</td></tr>
+<tr><td><a href="/http/308/"><code>308</code></a></td><td>Permanent</td><td>Preserved</td><td><strong>Yes</strong></td></tr>
+</tbody></table>
+<p>The cache column is the one that bites. A 301 or 308 is cacheable without any headers saying so, and browsers hold them hard — send one by mistake and visitors who saw it keep being redirected long after the server stopped sending it, with nothing you can do from the server side. During a migration, use 302 or 307 until you are certain, then switch to the permanent form.</p>
+<p>For an API that redirects a POST, 307 or 308 is the only correct choice. Using 301 or 302 will silently turn the request into a GET and drop the body, and the failure shows up as a mysteriously empty request rather than as a redirect problem.</p>
+
 <h2>The three you will actually debug</h2>
 <ul>
 <li><strong>404 vs 410.</strong> 404 means "not here"; 410 means "gone deliberately". Search engines drop 410s from the index much faster.</li>

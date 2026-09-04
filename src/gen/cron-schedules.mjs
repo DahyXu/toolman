@@ -98,9 +98,7 @@ function build() {
   return out;
 }
 
-function nextRuns(expr, n = 5) {
-  const [mi, hr, dom, mon, dow] = expr.split(' ');
-  const parse = (f, lo, hi) => {
+const parseField = (f, lo, hi) => {
     const out = new Set();
     for (let part of f.split(',')) {
       let step = 1;
@@ -116,7 +114,26 @@ function nextRuns(expr, n = 5) {
       for (let v = a; v <= b; v += step) out.add(v);
     }
     return out;
-  };
+};
+
+// The hub prints specific results for the step syntax. They come from the same
+// parser the schedules do, and they are checked, because a reference page that
+// is wrong about its own examples is worse than one that omits them.
+const sameSet = (a, b) => a.size === b.length && b.every((v) => a.has(v));
+for (const [field, lo, hi, expected] of [
+  ['*/5', 0, 59, [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]],
+  ['0-30/10', 0, 59, [0, 10, 20, 30]],
+  ['*/7', 0, 23, [0, 7, 14, 21]],
+]) {
+  if (!sameSet(parseField(field, lo, hi), expected)) {
+    console.error(`\n\u2717 cron hub: says "${field}" gives ${expected.join(', ')}, and the parser disagrees`);
+    process.exitCode = 1;
+  }
+}
+
+function nextRuns(expr, n = 5) {
+  const [mi, hr, dom, mon, dow] = expr.split(' ');
+  const parse = parseField;
   const S = [parse(mi, 0, 59), parse(hr, 0, 23), parse(dom, 1, 31), parse(mon, 1, 12), parse(dow, 0, 6)];
   const domAll = dom === '*', dowAll = dow === '*';
   const out = [];
@@ -351,7 +368,26 @@ ${all.map((s) => `<tr><td><a href="/cron/${s.slug}/">${esc(s.title.charAt(0).toU
 <tr><td><code>@daily</code> / <code>@midnight</code></td><td><code>0 0 * * *</code></td></tr>
 <tr><td><code>@hourly</code></td><td><code>0 * * * *</code></td></tr>
 <tr><td><code>@reboot</code></td><td>once at startup</td></tr>
-</tbody></table>`,
+</tbody></table>
+
+<h2>Day-of-month and day-of-week are OR, not AND</h2>
+<p>This is the one that catches everybody. When <em>both</em> the day-of-month and the day-of-week fields are restricted — neither is <code>*</code> — cron runs the job when <strong>either</strong> matches, not when both do.</p>
+<pre><code>0 0 1 * 1     # not "the 1st, if it is a Monday"
+              # it is "the 1st" OR "every Monday"</code></pre>
+<p>So that expression fires on the first of every month and on all four or five Mondays as well — roughly six times a month rather than the once you were picturing. It is specified behaviour, not a bug: POSIX says so and Vixie cron, the one behind most Linux systems, implements it.</p>
+<p>When only one of the two is restricted the surprise disappears, which is why it stays hidden until the day you need "the first Monday of the month" — an expression standard cron cannot write at all. The usual answer is <code>0 0 1-7 * 1</code>, which fires on every Monday and on the 1st to 7th, and then a guard inside the job checks the date.</p>
+
+<h2>What the step syntax actually counts from</h2>
+<p><code>*/5</code> in the minute field means minutes 0, 5, 10 and so on — it steps through the field's own range, not from whenever the job was installed. A job set to <code>*/5</code> at 09:03 first runs at 09:05, not 09:08.</p>
+<p>Steps also apply to a range: <code>0-30/10</code> is minutes 0, 10, 20 and 30. And a step that does not divide the range evenly simply stops early rather than wrapping — <code>*/7</code> in the hour field gives 0, 7, 14 and 21, then a five-hour gap over midnight.</p>
+
+<h2>Cron has no timezone of its own</h2>
+<p>Jobs run in the system's local time, which means a schedule crossing a daylight-saving boundary either runs twice or not at all. Vixie cron treats jobs in the skipped hour as due immediately when the clock jumps forward, and jobs in the repeated hour as already run; other implementations differ, and container schedulers usually run UTC regardless of the host.</p>
+<p>The reliable fix is to set the timezone explicitly where the scheduler allows it — <code>CRON_TZ=UTC</code> at the top of a crontab, <code>timeZone</code> in a Kubernetes CronJob, or the schedule expression's own timezone field in EventBridge — and to keep anything that must not run twice out of 01:00–03:00 entirely.</p>
+
+<h2>Five fields, unless it is six</h2>
+<p>Standard Unix cron takes five fields, starting at minutes. Quartz and Spring's scheduler take six, starting at <em>seconds</em>, so an expression copied between them is shifted by one place and silently means something else: <code>0 0 12 * * ?</code> in Quartz is noon, and the same string in Unix cron is not valid at all.</p>
+<p>Quartz also adds characters standard cron does not have — <code>L</code> for last, <code>W</code> for nearest weekday, <code>#</code> for "the nth weekday of the month". <code>0 0 12 ? * 2#1</code> is the first Monday of the month, which is the expression standard cron cannot express. If a snippet contains any of those, it is not a Unix crontab line.</p>`,
   });
 
   return pages;
