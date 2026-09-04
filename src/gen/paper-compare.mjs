@@ -210,9 +210,15 @@ ${FAQ.html}
   const index = pages.filter((p) => p.pairOf);
   for (const p of index) {
     const [x, y] = p.pairOf;
-    const near = index
-      .filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)))
-      .slice(0, 20);
+    // Taking the first twenty every time gave two pages that share a side
+    // almost the same list, which pushed the bakeware comparisons to 92%
+    // vocabulary overlap. Rotating the start by this page's own position keeps
+    // the links relevant and stops neighbours reading as copies.
+    const pool = index.filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)));
+    const off = index.indexOf(p) % Math.max(1, pool.length);
+    const near = pool.length <= 12
+      ? pool
+      : Array.from({ length: 12 }, (_, k) => pool[(off + k) % pool.length]);
     const block = near.length
       ? `<h2>Related comparisons</h2>\n<ul class="linklist">\n${near.map((q) => `<li><a href="${q.path}">${esc(q.h1)}</a></li>`).join('')}\n</ul>\n\n`
       : '';

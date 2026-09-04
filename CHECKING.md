@@ -380,3 +380,25 @@ that both look like working code:
 
 Both are invisible in review. The lists render, the links work, and the page
 that is missing from them is somewhere else.
+
+## A comparison section floors at about 90% overlap, and that is not a defect
+
+Every pair of comparison pages that shares one side carries that item's name,
+dimensions, area and the same verdict vocabulary twice. Paper sits at 89%, bed
+at 90%, AWG at 87% and bakeware at 92% — the smallest set with the most
+templated verdicts.
+
+I spent five attempts pushing bakeware under the 90% line: rotating the related
+list, adding a sentence about what sits between the two tins, and cutting pairs
+with several standard sizes between them. The first two moved nothing, which is
+the same result as every previous time content was added to siblings. The third
+removed ten genuinely redundant pages and left the number where it was, because
+the next-worst pair simply took over.
+
+The cut was worth keeping on its own merits — 23-vs-30 with a 25 and a 28
+between them is a page nobody needs. Chasing the number past that point was
+not, and the threshold does not mean in a comparison section what it means in a
+section of independent pages.
+
+**Where a metric is structurally floored, say so and stop.** Continuing to cut
+real pages to satisfy it is how a heuristic starts making the decisions.

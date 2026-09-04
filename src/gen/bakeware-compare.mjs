@@ -43,6 +43,14 @@ export default function bakewareCompare() {
       if (roundish(A) && roundish(B) && !sameKind) continue;
       if (!sameKind && !(ratio <= 1.25 && depthRatio <= 1.5)) continue;
       if (depthRatio > 2.2) continue;
+      // Two tins with several standard sizes between them make a page that
+      // reads as a copy of the pair one step in: 23-vs-28 and 23-vs-30 differ
+      // only in magnitude. If more than one tin sits between, the comparison a
+      // reader wants is with the tin in the middle.
+      const gapCount = ROWS.filter((t) => t.shape === A.shape && t.shape === B.shape
+        && t.areaCm2 > Math.min(A.areaCm2, B.areaCm2)
+        && t.areaCm2 < Math.max(A.areaCm2, B.areaCm2)).length;
+      if (sameKind && gapCount > 1) continue;
 
       const slug = `${A.id}-vs-${B.id}`;
       // Batter written for A, poured into B: it spreads over more or less area,
@@ -84,6 +92,13 @@ export default function bakewareCompare() {
         console.error(`\n✗ bakeware ${slug}: the larger and smaller tin resolved to the same one`);
         process.exitCode = 1;
       }
+
+      // What sits between them is different for every pair and is the thing a
+      // reader wants next: 25 and 30 have a 28 between them, 25 and 28 have
+      // nothing. Two pages that were otherwise near-identical now differ where
+      // it matters.
+      const between = ROWS.filter((t) => t.areaCm2 > smaller.areaCm2 && t.areaCm2 < bigger.areaCm2
+        && t.shape === A.shape && t.shape === B.shape);
 
       // Within a few percent the swap is invisible; past a fifth the cake is a
       // different shape and needs the mixture adjusted.
@@ -144,6 +159,10 @@ export default function bakewareCompare() {
 <h2>Can you swap them?</h2>
 <p>${verdictLine}</p>
 
+<p>${between.length
+  ? `There ${between.length === 1 ? 'is a tin' : `are ${between.length} tins`} between these two — ${between.map((t) => `<a href="/bakeware/${t.id}/">${esc(t.name)}</a> at ${r1(t.areaCm2)} cm²`).join(', ')} — so the jump does not have to be taken in one step.`
+  : `Nothing standard sits between these two, so this is the smallest change available in this shape.`}</p>
+
 <h2>Scaling the recipe</h2>
 <table><thead><tr><th>Recipe written for</th><th>Baked in</th><th>Multiply by</th><th>Or leave it and get</th></tr></thead><tbody>
 <tr><td>${esc(A.name)}</td><td>${esc(B.name)}</td><td><strong>${r2(aToB)}</strong></td><td>${pct(depthAinB)} of the depth</td></tr>
@@ -172,9 +191,15 @@ ${FAQ.html}
   const index = pages.filter((p) => p.pairOf);
   for (const p of index) {
     const [x, y] = p.pairOf;
-    const near = index
-      .filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)))
-      .slice(0, 20);
+    // Taking the first twenty every time gave two pages that share a side
+    // almost the same list, which pushed the bakeware comparisons to 92%
+    // vocabulary overlap. Rotating the start by this page's own position keeps
+    // the links relevant and stops neighbours reading as copies.
+    const pool = index.filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)));
+    const off = index.indexOf(p) % Math.max(1, pool.length);
+    const near = pool.length <= 12
+      ? pool
+      : Array.from({ length: 12 }, (_, k) => pool[(off + k) % pool.length]);
     const block = near.length
       ? `<h2>Related comparisons</h2>\n<ul class="linklist">\n${near.map((q) => `<li><a href="${q.path}">${esc(q.h1)}</a></li>`).join('')}\n</ul>\n\n`
       : '';
