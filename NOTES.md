@@ -1,3 +1,25 @@
+## The indexing quota is a rolling window, not a daily allowance
+
+I assumed it reset at midnight and planned a list of eight URLs for today. Two
+went through — `/paper/a4/pixels/` and `/paper/a2/pixels/` — and the third
+returned 超出了配额.
+
+So the limit releases gradually as yesterday's requests age past twenty-four
+hours, rather than refilling at once. Planning a batch is the wrong shape;
+the right one is to keep a short ordered list and spend whatever is available,
+highest value first.
+
+Both of today's confirmed the diagnosis from the page-level analysis:
+
+    /paper/a4/pixels/
+    网页未编入索引：已发现 - 尚未编入索引
+    站点地图      sitemaps/pages-4.xml
+    上次抓取时间  不适用
+
+Found through the sitemap, queued, never fetched — while `/paper/a4/` stands in
+for it on seven of its top ten queries. Same for the butter amount page, which
+is next in the queue when the window opens.
+
 ## The biggest page's queries are about a subtopic that has its own page
 
 Breaking the 756 impressions down by page rather than by query changes the
