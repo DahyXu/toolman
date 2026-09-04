@@ -130,6 +130,7 @@ ${FAQ.html}
       h1: `${ing.name.charAt(0).toUpperCase() + ing.name.slice(1)} conversions`,
       crumbs: [{ name: 'Cooking', path: '/cooking/' }, { name: ing.name, path: `/cooking/${ing.id}/` }],
       body: `<p class="muted">One US cup of ${ing.name} weighs approximately <strong>${gPerCup} grams</strong> (${fmt(gPerCup / 28.3495)} oz).${ing.alt ? ` Also known as <strong>${esc(ing.alt)}</strong>.` : ''}</p>
+<p><a href="/cooking/200-grams-${ing.id}-to-cups/">Going the other way?</a> Weights of ${ing.name} converted to cups, with the cups and spoons to measure each one out.</p>
 ${converter(gPerCup, 'cups', 'grams')}
 <h2>Why this varies</h2>
 <p>${ing.note}</p>
