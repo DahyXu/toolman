@@ -70,7 +70,26 @@ export default async function () {
 
       pages.push({
         path: entry.path,
-        title: `${a.label} ${unitWord} of ${ing.name} in grams — ${fmt(grams)} g`,
+        // "1 cup of milk in grams - 240 g" is thirty characters in a result
+        // that shows sixty. The unused half cannot match anything, and the
+        // queries arriving here also ask for ounces and say "cup to gram".
+        title: (() => {
+          const base = `${a.label} ${unitWord} of ${ing.name} in grams — ${fmt(grams)} g`;
+          const withOz = `${base}, ${fmt(oz)} oz`;
+          // The suffix has to name the unit the page is about. Hard-coding
+          // "Cup to Gram" put it on the tablespoon pages too.
+          const measure = /tablespoon/.test(unitWord) ? 'Tbsp'
+            : /teaspoon/.test(unitWord) ? 'Tsp'
+            : /cup/.test(unitWord) ? 'Cup'
+            : null;
+          if (measure && !new RegExp(measure === 'Tbsp' ? 'tablespoon' : measure === 'Tsp' ? 'teaspoon' : 'cup').test(unitWord)) {
+            console.error(`
+✗ cooking ${entry.path}: titled "${measure} to Gram" for a page measured in ${unitWord}`);
+            process.exitCode = 1;
+          }
+          const full = measure ? `${withOz} | ${measure} to Gram` : withOz;
+          return full.length <= 65 ? full : withOz.length <= 65 ? withOz : base;
+        })(),
         desc: `${label} weighs about ${fmt(grams)} grams (${fmt(oz)} oz). Conversion table, why the number varies, and a calculator for any amount.`,
         h1: `${label} in grams`,
         crumbs: [

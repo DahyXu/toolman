@@ -137,7 +137,15 @@ export default async function () {
 
     pages.push({
       path: `/battery/${r.code.toLowerCase()}/`,
-      title: `${r.code} Battery — ${one(r.d)} × ${one(r.h)} mm, ${r.volts}V | Toolman`,
+      title: (() => {
+        const base = `${r.code} Battery — ${one(r.d)} × ${one(r.h)} mm, ${r.volts}V`;
+        // People search the IEC code as often as the common name: LR14, not C.
+        const alias = (r.aliases || [])[0];
+        const two = (r.aliases || []).slice(0, 2).join(', ');
+        const full = two ? `${base}, ${two}` : base;
+        const one_ = alias ? `${base}, ${alias}` : base;
+        return full.length <= 65 ? full : one_.length <= 65 ? one_ : base;
+      })(),
       desc: `A ${r.code} battery is ${one(r.d)} mm ${r.kind === 'coin' ? 'across and ' + one(r.h) + ' mm thick' : 'by ' + one(r.h) + ' mm'}, ${r.volts} V ${r.chem}. Equivalents, what fits instead, and what the code actually means.`,
       h1: `${r.code} battery size`,
       crumbs: [{ name: 'Battery sizes', path: '/battery/' }, { name: r.code, path: `/battery/${r.code.toLowerCase()}/` }],

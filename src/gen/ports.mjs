@@ -77,7 +77,11 @@ export default async function () {
     ]);
     pages.push({
       path: `/port/${port}/`,
-      title: `Port ${port} — ${service} (${proto})`,
+      title: (() => {
+        const base = `Port ${port} — ${service} (${proto})`;
+        const full = `${base} | What Uses It`;
+        return full.length <= 65 ? full : base;
+      })(),
       desc: `Port ${port} is used by ${service} over ${proto}. What runs on it, what it is for, the security considerations, and how to check whether something is listening.`,
       h1: `Port ${port} — ${service}`,
       crumbs: [

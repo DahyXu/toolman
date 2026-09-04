@@ -136,7 +136,14 @@ export default async function () {
 
     pages.push({
       path: `/awg/${r.slug}/`,
-      title: `${r.label} AWG Wire — ${f(r.dmm, 3)} mm, ${f(r.areaMm2, 2)} mm² | Toolman`,
+      title: (() => {
+        // "14 awg amps" is as common a query as "14 awg diameter", and the
+        // ampacity was nowhere in the title.
+        const base = `${r.label} AWG Wire — ${f(r.dmm, 3)} mm, ${f(r.din, 4)} in`;
+        const withArea = `${base}, ${f(r.areaMm2, 2)} mm²`;
+        const full = r.amps ? `${withArea}, ${r.amps}A` : withArea;
+        return full.length <= 65 ? full : withArea.length <= 65 ? withArea : base;
+      })(),
       desc: `${r.label} AWG is ${f(r.dmm, 3)} mm in diameter (${f(r.din, 4)} in) with an area of ${f(r.areaMm2, 3)} mm² and ${f(r.ohmKmCu, 2)} Ω/km in copper.${r.amps ? ` Rated ${r.amps} A under the NEC 60 °C copper column.` : ''}`,
       h1: `${r.label} AWG wire size`,
       crumbs: [{ name: 'Wire gauge', path: '/awg/' }, { name: `${r.label} AWG`, path: `/awg/${r.slug}/` }],

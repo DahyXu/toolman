@@ -74,7 +74,9 @@ export default async function () {
   const rows = PIPES.map(([label, id, od, dn, wall, use]) => ({
     label, id, od, dn, wall, use,
     nps: npsNumber(label),
-    idmm: od - 2 * wall,
+    // Rounded here rather than at each use: every other reader of this puts
+    // it through f1(), and the one that did not printed 9.219999999999999.
+    idmm: Math.round((od - 2 * wall) * 100) / 100,
     isMeasurement: npsNumber(label) >= 14,
   }));
 
@@ -97,7 +99,13 @@ export default async function () {
 
     pages.push({
       path: `/pipe/${r.id}/`,
-      title: `${r.label}″ Pipe — ${r.od} mm OD, DN${r.dn} | Toolman`,
+      title: (() => {
+        const base = `${r.label}″ Pipe Size — ${r.od} mm OD, ${Math.round((r.od / 25.4) * 100) / 100}″, DN${r.dn}`;
+        // The inside diameter is the number people are usually after, and it
+        // is the one the nominal size does not give them.
+        const full = r.idmm ? `${base}, ${r.idmm} mm ID` : base;
+        return full.length <= 65 ? full : base;
+      })(),
       desc: `NPS ${r.label} pipe has an outside diameter of ${r.od} mm (${f3(r.od / IN)} in) and is DN${r.dn}. Schedule 40 bore is ${f1(r.idmm)} mm. Why the name is not the size.`,
       h1: `${r.label} inch pipe size`,
       crumbs: [{ name: 'Pipe sizes', path: '/pipe/' }, { name: `NPS ${r.label}`, path: `/pipe/${r.id}/` }],
