@@ -257,3 +257,17 @@ A check that fires on half the site is not strict, it is miscalibrated, and
 shipping it would have meant either ignoring it or rewriting good prose to
 satisfy it. The test for a new check is not whether it finds a lot. It is
 whether every hit, read individually, is something you would want to fix.
+
+## A discarded number is still in reach an hour later
+
+I wrote down that the 1,760-impression figure came from `site:` estimates and
+was not what the goal was measured in. Within the hour I wrote a commit message
+asserting that "the A2 family is the site's largest source of impressions — 78
+across five phrasings", which comes from the same discarded reading. The
+verified Search Console query list is five rows and none of them is about paper.
+
+Knowing a source is bad does not remove the numbers it produced from memory,
+and they surface as ordinary recollection rather than as something to check.
+The habit that catches it: **before writing a figure into a commit, a note or a
+message, name where it came from.** If the answer is "I remember it", it is a
+recollection and needs the report opened again.

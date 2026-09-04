@@ -10,12 +10,24 @@ trust once:
 That sentence exists on exactly one page on the internet. If Google had the
 page, the phrase would return it. It returns nothing.
 
-Meanwhile the A2 family is the site's largest source of impressions — "a2 size"
-21, "a2 paper size" 19, "a2 dimensions" 16, "a2 in inches" 11, "a2 size in cm"
-11. Those impressions cannot be coming from the page about A2, because Google
-does not have it. **They are coming from `/paper/`, the hub, which lists A2 in
-a table.** The same test on the cooking hub returns the hub, and on the paper
-hub returns the paper hub.
+The claim I first wrote here was that this explains where the A2 impressions
+come from. It does not, because there are no A2 impressions. The verified
+Search Console query list is five rows and none of them is about paper:
+
+    14b8a6                          1
+    #2563eb                         1
+    #f43f5e                         1
+    #4da6ff                         1
+    8 character password generator  1
+
+The A2 figures I reached for — 21, 19, 16, 11, 11 — are from the same discarded
+reading as the 1,760 impressions, and I used them again within an hour of
+writing down that they were wrong. The correction is cheap; reaching for a
+number because it is familiar is the part to watch.
+
+What the phrase test does establish, on its own, is that the page about A2 is
+not in the index, and the same test returns the paper hub and the cooking hub
+when run against sentences from them.
 
 So the shape of what is indexed is: the top of the hierarchy and almost nothing
 below it. That is normal for a domain a few weeks old — Google works down from
@@ -28,9 +40,12 @@ against a future in which Google has indexed them. Nothing on an unindexed page
 can rank, and no amount of it adds up to a click.
 
 What follows from that, and is worth doing now: the hub pages are the only ones
-Google can currently show, so they should answer the queries arriving at them.
-"a2 size in cm" was reaching a hub table that gave millimetres, inches and
-pixels and no centimetres. It gives centimetres now.
+Google can currently show, so they should answer the queries that could arrive
+at them. The paper hub's table gave millimetres, inches and pixels and no
+centimetres; it gives centimetres now. That is a reasonable thing to do for a
+paper-size table on its own merits, and it is not evidence-backed the way the
+title work was, because there is no paper query in the verified data to back
+it.
 
 What does not follow: building more item pages faster. That is not the
 constraint.
