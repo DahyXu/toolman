@@ -221,3 +221,39 @@ The sitemap report showed 6,884 URLs submitted, every child map "success", and
 "discovered: 0" on every row — Google had read the maps and crawled nothing from
 them. Work on titles, prose and duplicate scores is invisible until that column
 moves. Check crawl state before spending a session on on-page work.
+
+## A backslash written in a Python string is not a backslash in the file
+
+Third occurrence this project, and the rule against it was already written
+above. `"\b"` in a Python string is a backspace byte, not the two characters a
+JavaScript regex needs. The pattern reached the file as
+
+    /^(That|This|These|Those|It|They|Them)<0x08>/
+
+which requires a control character after "Them" and therefore matches nothing,
+ever. The check reported a clean site across 30,439 answers.
+
+It was caught only by planting an error the check should have found and
+watching it not fire — the same discipline that caught the bakeware version.
+`cat -A` names the byte once you suspect it.
+
+The rule, restated because writing it once has not been enough: **anything
+containing a backslash goes through the Edit tool or a Python raw string, never
+a heredoc and never an ordinary Python string.** The heredoc eats `\/` and `\s`
+in JavaScript the same way; that cost two more rounds in the same session.
+
+## Measure the defect, not something adjacent to it
+
+Two versions of the standalone-answer check measured the wrong thing before the
+third measured the right one:
+
+  1. "answer shares no significant word with its question" — flagged 7,291,
+     mostly complete answers that simply did not repeat the question's nouns.
+  2. "first sentence shares no word" — flagged 14,179, worse, because a direct
+     opening is *good* FAQ writing. "Yes." and "About 240 g." both fail it.
+  3. "opens with a bare pronoun" — flagged 1,195, every one a real defect.
+
+A check that fires on half the site is not strict, it is miscalibrated, and
+shipping it would have meant either ignoring it or rewriting good prose to
+satisfy it. The test for a new check is not whether it finds a lot. It is
+whether every hit, read individually, is something you would want to fix.
