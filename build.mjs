@@ -640,16 +640,37 @@ for (const u of new Set(written)) {
   if (written.some((v) => v !== u && v.startsWith(u))) HUBS.add(u);
 }
 
+// Not every leaf page has the same prospects, and until now they all sorted
+// together at the bottom. Checking the live SERP for the queries this site
+// actually receives separates them:
+//
+//   "450k to c"      Google prints its own converter above every web result
+//   "#14b8a6"        Google prints its own colour picker
+//   "a4 vs letter"   no widget; the answer needs two dimensions and a scale
+//   "twin bed size"  no widget, and no reference site among the competitors
+//
+// A page whose question Google answers in the results itself can rank first and
+// earn nothing. Ordering by that is the point: sitemap priority is a hint
+// Google says it largely disregards, but the sort decides which URLs land in
+// pages-1.xml, and that is the chunk it reads first.
+const WIDGET_ANSWERED = (u) => /^\/convert\/(\d|[a-z]{2,5}-to-[a-z]{2,5}\/$)/.test(u);
+const CLICK_WINNABLE = (u) => /\/compare\/./.test(u) || u.startsWith('/color/tailwind/');
+
 function rank(u) {
   if (u === '/') return 0;                     // home
   if (toolSlugs.has(u)) return 1;              // interactive tools — the real product
   if (HUBS.has(u)) return 2;                   // section hubs
   const depth = u.split('/').filter(Boolean).length;
-  if (depth === 2 && !/\d/.test(u)) return 3;  // category hubs like /convert/length/
-  if (depth === 1) return 4;                   // top-level generated pages
-  return 5;                                    // long-tail leaf pages
+  // Ahead of the depth rules, because depth was giving /convert/aedt-to-aest/
+  // the 0.7 of a category hub - it is two segments deep - while a comparison
+  // page three deep sat at 0.5. Depth describes the URL, not the prospects.
+  if (CLICK_WINNABLE(u)) return 3;             // leaves whose SERP has no answer widget
+  if (WIDGET_ANSWERED(u)) return 7;            // leaves Google answers above the results
+  if (depth === 2) return 4;                   // category hubs like /convert/length/
+  if (depth === 1) return 5;                   // top-level generated pages
+  return 6;                                    // everything else
 }
-const PRIORITY = ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5'];
+const PRIORITY = ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5', '0.4', '0.3'];
 
 urls.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 
