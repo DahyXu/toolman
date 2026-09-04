@@ -186,6 +186,18 @@ ${rows.map((r) => `<tr><td><a href="/screw/${r.id}/">#${r.g}</a></td><td>${f1(r.
 <p>Softwood fibres compress around a screw, so a pilot hole at two thirds of the shank leaves enough material for the thread to bite while letting the wood give. Hardwood does not give — it splits. So the pilot goes up to about three quarters of the shank, which sounds like it should weaken the joint and does not: the thread is still cutting into solid material, and a split board holds nothing at all.</p>
 <p>Near an end or an edge, go a size larger again. That is where splitting starts, and where a pilot hole matters most.</p>
 
+<h2>How long the screw should be</h2>
+<p>The rule that survives contact with real work: <strong>two thirds of the screw's length in the second piece</strong>. Fixing a 19 mm board to a joist wants roughly a 50 mm screw — 19 through the board and about 31 biting into the joist — and going longer buys nothing once the thread is fully engaged.</p>
+<p>Where it goes wrong is the shorter direction. A screw that ends a few millimetres into the second piece is holding on the weakest part of its own thread, and it will pull out under a load the same screw would have carried easily at full depth. If in doubt, longer is the safe error, right up until the point comes out the other side.</p>
+
+<h2>The head decides more than the gauge does</h2>
+<p>Countersunk heads pull themselves flush and generate serious clamping force as they do — which is what you want in a joint and exactly what splits a thin board near its edge. Pan and round heads sit on the surface and clamp gently; they are the answer for sheet metal, hardware and anything you may want to take apart.</p>
+<p>The drive matters for a different reason. Slotted drivers cam out by design and are effectively obsolete for anything structural. Phillips cams out under torque, which was a deliberate 1930s feature to protect assembly-line screws and is now just a stripped head. Pozidriv looks like Phillips, is not, and using a Phillips bit in one rounds it out — the extra small lines between the arms are the tell. Torx and square drives do not cam out at all, which is why every decking and structural screw sold now uses one of them.</p>
+
+<h2>When to skip the pilot hole</h2>
+<p>Modern self-drilling and self-tapping screws have a cutting point that clears its own hole, and in softwood, plasterboard or sheet metal they genuinely do not need drilling first. In hardwood, near an end grain, or through anything already finished, they split it the same as any other screw.</p>
+<p>The clue is the tip. A blunt or gimlet point displaces wood; a fluted or auger point removes it. Only the second sort earns skipping the pilot, and neither of them earns it in oak.</p>
+
 <p><a href="/thread/">Metric threads</a> — the machine-screw equivalent, with tapping drills. <a href="/lumber/">Lumber sizes</a> · <a href="/spanner/">Spanner sizes</a></p>`,
   });
 

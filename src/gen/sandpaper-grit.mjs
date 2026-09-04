@@ -126,6 +126,22 @@ ${rows.map((r) => {
 <p>Each grit exists to remove the scratches left by the one before it. Jump from 80 straight to 220 and the finer paper polishes the coarse scratches rather than removing them — the surface feels smooth, looks acceptable dry, and shows every mark once finish goes on and the grain darkens. The usual sequence doubles roughly each time: 80, 120, 180, 220, and stop unless the finish needs more.</p>
 <p>Going too fine has its own failure. Above about P220 on softwood the grain closes and stain stops penetrating evenly, which produces a blotchy result that no amount of further sanding fixes.</p>
 
+<h2>What each range is actually for</h2>
+<p>The numbers only mean something against a job. Coarse papers remove material and leave scratches that the next grade has to remove; fine papers remove almost nothing and exist to erase the grade before them.</p>
+<table><thead><tr><th>Range</th><th>What it does</th><th>When</th></tr></thead><tbody>
+<tr><td>40–60</td><td>Removes material fast, and leaves gouges</td><td>Stripping paint, levelling a badly uneven surface, shaping</td></tr>
+<tr><td>80–120</td><td>Takes out the coarse scratches</td><td>The first grade on most bare timber, and where sanding usually starts</td></tr>
+<tr><td>150–180</td><td>Prepares for a finish</td><td>The last grade before stain or paint on most work</td></tr>
+<tr><td>220–320</td><td>Smooths without cutting</td><td>Between coats of finish, and the point past which bare wood stops absorbing stain evenly</td></tr>
+<tr><td>400 and up</td><td>Polishes what is already flat</td><td>Wet sanding a finish, metal, plastic — not bare timber</td></tr>
+</tbody></table>
+<p>Sanding bare wood past about 220 is usually a mistake rather than an improvement. Burnishing the fibres closes the surface, and a closed surface takes stain patchily — the parts that took most polish take least colour.</p>
+
+<h2>Wet or dry, and why the backing matters</h2>
+<p>Grit is only half the specification. The other half is what carries it: paper backings tear under water, cloth backings survive it, and film backings stay flat enough for finishing work where paper would telegraph its own texture.</p>
+<p>"Wet and dry" paper is silicon carbide on a waterproof backing, and the water is not a convenience — it floats away the swarf that would otherwise clog the abrasive and turn the sheet into a burnisher. The same grade used dry loads up in seconds on a finish and lasts a long time wet.</p>
+<p>Aluminium oxide is the general-purpose grain for wood and it fractures as it wears, exposing fresh edges. Silicon carbide is harder and sharper and it does not, which is why it starts faster and finishes sooner. Neither is better; they wear differently.</p>
+
 <p><a href="/lumber/">Lumber sizes</a> · <a href="/convert/">Unit converters</a></p>`,
   });
 
