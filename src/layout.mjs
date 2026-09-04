@@ -111,8 +111,19 @@ function fitDesc(d) {
   // sentence ended at 102, so cutting there threw away a third of the space
   // Google will actually show and lost the sentence naming what the page covers.
   // Below 130, trim at a word boundary instead and keep the extra 30 characters.
-  if (stop > 90) return cut.slice(0, stop + 1);
-  return cut.replace(/\s+\S*$/, '') + '…';
+  // 130, not 90, which is what the paragraph above already said it should be.
+  // At 90 a sentence ending at 102 was accepted and threw away 56 of the 158
+  // characters Google shows - the A6 paper page described itself in 100.
+  const out = stop > 130 ? cut.slice(0, stop + 1) : cut.replace(/\s+\S*$/, '') + '…';
+  // A trimmed description should still fill the space a result gives it.
+  // Returning far less than that is what the threshold above got wrong once,
+  // and it is invisible in the output: a short description looks deliberate.
+  if (out.length < 130) {
+    console.error(`
+✗ fitDesc cut a ${d.length}-character description down to ${out.length}: ${out}`);
+    process.exitCode = 1;
+  }
+  return out;
 }
 
 export function page(o) {
