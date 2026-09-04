@@ -90,25 +90,27 @@ const CHECK_OHM_KM_CU = { 6: 1.296, 10: 3.277, 12: 5.211, 14: 8.286, 18: 20.95, 
 
 const f = (v, d = 3) => v.toFixed(d).replace(/\.?0+$/, '');
 
+// awg-compare.mjs pairs these up. One computation of diameter, area and
+// resistance, so the two files cannot disagree about a wire.
+export const AWG_ROWS = GAUGES.map((n) => {
+  const din = dIn(n);
+  const dmm = din * 25.4;
+  const areaMm2 = Math.PI * Math.pow(dmm / 2, 2);
+  const areaM2 = areaMm2 / 1e6;
+  return {
+    n, label: label(n), slug: slug(n),
+    din, dmm, areaMm2,
+    ohmKmCu: RHO_CU / areaM2 * 1000,
+    ohmKftCu: (RHO_CU / areaM2 * 1000) * 0.3048,
+    ohmKmAl: RHO_AL / areaM2 * 1000,
+    amps: NEC60[String(n)] || null,
+    use: USES[String(n)] || '',
+  };
+});
+
 export default async function () {
   const pages = [];
-
-  const rows = GAUGES.map((n) => {
-    const din = dIn(n);
-    const dmm = din * 25.4;
-    const areaMm2 = Math.PI * Math.pow(dmm / 2, 2);
-    const areaM2 = areaMm2 / 1e6;
-    return {
-      n, label: label(n), slug: slug(n),
-      din, dmm, areaMm2,
-      ohmKmCu: RHO_CU / areaM2 * 1000,
-      ohmKftCu: (RHO_CU / areaM2 * 1000) * 0.3048,
-      ohmKmAl: RHO_AL / areaM2 * 1000,
-      amps: NEC60[String(n)] || null,
-      use: USES[String(n)] || '',
-    };
-  });
-
+  const rows = AWG_ROWS;
   const byN = new Map(rows.map((r) => [r.n, r]));
 
   for (const r of rows) {
@@ -183,6 +185,7 @@ ${FAQ.html}
     h1: 'AWG wire gauge',
     crumbs: [{ name: 'Wire gauge', path: '/awg/' }],
     body: `<p class="muted">${rows.length} wire gauges from 4/0 to 40, in millimetres and inches, with area, resistance and — where there is a single well-known answer — ampacity.</p>
+<p><a href="/awg/compare/">Choosing between two gauges?</a> The voltage each loses over a run, and how far it reaches before the drop passes 3%.</p>
 
 <h2>AWG is a formula, not a table</h2>
 <p>Every number on this page comes from one line:</p>
