@@ -176,7 +176,21 @@ ${ALL.map((p) => {
 <tr><td>4</td><td><code>240</code></td><td></td><td></td></tr>
 </tbody>
 </table>
-<p>Divide the prefix by 8 to get the number of complete 255 octets, and the remainder picks the next octet from this table. A /26 is three complete octets and a remainder of 2, giving <code>255.255.255.192</code>. If a mask contains any other number, it is wrong.</p>`,
+<p>Divide the prefix by 8 to get the number of complete 255 octets, and the remainder picks the next octet from this table. A /26 is three complete octets and a remainder of 2, giving <code>255.255.255.192</code>. If a mask contains any other number, it is wrong.</p>
+
+<h2>Where a subnet is allowed to start</h2>
+<p>A prefix does not just set a size, it sets the boundaries. A /26 is 64 addresses, and the only valid /26 networks inside a /24 begin at .0, .64, .128 and .192 — a subnet must start on a multiple of its own size. <code>192.168.1.100/26</code> is not a network; it is a host inside the network that starts at .64.</p>
+<p>That is the whole reason "the address is not on a network boundary" errors happen, and the check is arithmetic: divide the last octet by the block size and the remainder must be zero. It is also why the block size, rather than the prefix, is the number worth thinking in — /26 tells you little, 64 tells you where the edges are.</p>
+
+<h2>The private ranges, and why there are three</h2>
+<p>RFC 1918 reserves three blocks that no router on the public internet will forward:</p>
+<table><thead><tr><th>Range</th><th>Prefix</th><th>Addresses</th><th>Where you meet it</th></tr></thead><tbody>
+<tr><td><code>10.0.0.0</code> – <code>10.255.255.255</code></td><td>/8</td><td>16.7 million</td><td>Corporate networks and anything that expects to grow</td></tr>
+<tr><td><code>172.16.0.0</code> – <code>172.31.255.255</code></td><td>/12</td><td>1.05 million</td><td>Docker's default bridge, and the one people misremember as /16</td></tr>
+<tr><td><code>192.168.0.0</code> – <code>192.168.255.255</code></td><td>/16</td><td>65,536</td><td>Home routers, almost universally</td></tr>
+</tbody></table>
+<p>The middle one is the trap. <code>172.16.0.0/12</code> covers 172.16 through 172.31, not 172.16 through 172.16 — so 172.20.x.x is private and 172.32.x.x is not, and a firewall rule written for /16 leaves fifteen sixteenths of the range treated as public.</p>
+<p><code>169.254.0.0/16</code> is a fourth block worth recognising even though it is not RFC 1918: an address in it means DHCP failed and the machine assigned itself one. It never indicates a working network.</p>`,
   });
 
   return pages;
