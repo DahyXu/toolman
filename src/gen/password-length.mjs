@@ -19,7 +19,21 @@ const CHARSETS = [
   ['letters and digits', 62],
   ['full keyboard', 87],
 ];
-const BITS_PER_CHAR = Math.log2(87);
+// The generator's alphabet and the entropy arithmetic have to be the same set.
+// The first version of the generator carried 89 characters while every figure
+// on the page was computed from 87 — a discrepancy nothing would have surfaced,
+// because both numbers look right on their own.
+const CHARSET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{};:,.?/~';
+if (CHARSET.length !== 87) {
+  console.error(`
+✗ password charset is ${CHARSET.length} characters but the entropy figures assume 87`);
+  process.exitCode = 1;
+}
+if (new Set(CHARSET).size !== CHARSET.length) {
+  console.error('\n✗ password charset contains a duplicate character, which lowers the real entropy');
+  process.exitCode = 1;
+}
+const BITS_PER_CHAR = Math.log2(CHARSET.length);
 const BITS_PER_WORD = Math.log2(7776);
 
 // Attack rates worth distinguishing. The spread between them is the reason a
@@ -92,13 +106,37 @@ export default async function () {
 
     pages.push({
       path: `/password-length/${r.len}/`,
-      title: `${r.len} Character Password — ${f1(r.bits)} Bits of Entropy | Toolman`,
-      desc: `A random ${r.len} character password carries ${f1(r.bits)} bits of entropy and survives a fast offline attack for ${crackTime(r.bits, 1e12)}. ${r.verdict[0]}`,
+      title: `${r.len} Character Password Generator — ${f1(r.bits)} Bits | Toolman`,
+      desc: `Generate a random ${r.len} character password in your browser. It carries ${f1(r.bits)} bits of entropy and survives a fast offline attack for ${crackTime(r.bits, 1e12)}. ${r.verdict[0]}`,
       h1: `${r.len} character password`,
       crumbs: [{ name: 'Password length', path: '/password-length/' }, { name: `${r.len} characters`, path: `/password-length/${r.len}/` }],
       jsonld: [FAQ.schema],
+      script: `
+(function(){
+ var SET=${JSON.stringify(CHARSET)};
+ var out=document.getElementById('pw'), btn=document.getElementById('gen'), cp=document.getElementById('cp');
+ if(!out) return;
+ function pick(n){var a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n,x;
+   do{crypto.getRandomValues(a);x=a[0]}while(x>=lim);return x%n}
+ function make(){var s='';for(var i=0;i<${r.len};i++)s+=SET.charAt(pick(SET.length));out.value=s}
+ btn.addEventListener('click',make);
+ cp.addEventListener('click',function(){out.select();
+   navigator.clipboard.writeText(out.value).then(function(){cp.textContent='Copied';
+     setTimeout(function(){cp.textContent='Copy'},1200)})});
+ make();
+})();`,
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${f1(r.bits)} bits</strong></p>
 <p class="muted">${r.len} characters from the full keyboard · about ${Math.round(r.words)} diceware words · ${r.verdict[0]}</p>
+
+<div class="tool">
+  <label for="pw">A random ${r.len}-character password</label>
+  <input type="text" id="pw" class="out" readonly value="generating…">
+  <div class="row">
+    <button id="gen" class="primary" type="button">Generate another</button>
+    <button id="cp" type="button">Copy</button>
+    <span class="muted">${f1(r.bits)} bits · generated in your browser with <code>crypto.getRandomValues()</code>, never sent anywhere</span>
+  </div>
+</div>
 
 <h2>${r.verdict[0]}</h2>
 <p>${r.verdict[1]}</p>
