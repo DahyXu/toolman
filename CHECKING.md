@@ -294,3 +294,22 @@ for — before being pointed at an unknown one. That takes one search.
 whose answer is already known.** This is the same discipline as planting an
 error to see a check fail, applied to reading rather than to building, and I
 skipped it because the test felt obviously correct.
+
+## Planting test content in dist tells Google the page changed
+
+To verify a check fires, I write the error into a built page and re-run the
+check. That works, and it has a side effect I did not think about: `lastmod` in
+the sitemap is a hash of each page's body, so a build that runs while the
+planted text is present stamps that page as modified — and the build that
+restores it stamps it modified again.
+
+`/about/` now carries a lastmod of today with content identical to yesterday's.
+One page out of 8,803 is noise, but `lastmod` is the signal Google uses to
+decide what is worth recrawling, and a habit that corrupts it would spend the
+site's crawl budget on pages that did not change.
+
+**Plant the error in the generator and rebuild, or plant it in a copy outside
+`dist/`.** Both prove the same thing without writing a false timestamp into the
+sitemap. Where planting into `dist/` is genuinely easier — checking a check that
+reads built HTML — rebuild afterwards and accept that one stamp is wrong, rather
+than doing it to a page that matters.
