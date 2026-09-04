@@ -178,6 +178,22 @@ ${FAQ.html}
 
   const g12 = byN.get(12), g6 = byN.get(6), g9 = rows.find((x) => x.n === 10);
 
+    // The hub states the two facts it says are the only ones worth memorising.
+  // Both come out of the AWG exponent, so both are computed and checked rather
+  // than quoted from the comment at the top of this file.
+  {
+    const sixGauges = Math.pow(92, 6 / 39);
+    const threeGaugesArea = Math.pow(Math.pow(92, 3 / 39), 2);
+    if (Math.abs(sixGauges - 2) > 0.01) {
+      console.error(`\n\u2717 awg hub: says six gauges doubles the diameter and the exponent gives ${sixGauges.toFixed(4)}`);
+      process.exitCode = 1;
+    }
+    if (Math.abs(threeGaugesArea - 2) > 0.01) {
+      console.error(`\n\u2717 awg hub: says three gauges doubles the area and the exponent gives ${threeGaugesArea.toFixed(4)}`);
+      process.exitCode = 1;
+    }
+  }
+
   pages.push({
     path: '/awg/',
     title: 'AWG Wire Gauge Chart — Diameter, Area, Resistance and Ampacity | Toolman',
@@ -208,6 +224,16 @@ ${rows.map((r) => `<tr><td><a href="/awg/${r.slug}/">${r.label}</a></td><td>${f(
 
 <h2>Copper against aluminium</h2>
 <p>Aluminium conductors appear in service entrances and feeders because they are cheaper and lighter, and the trade is resistance: ${f(RHO_AL / RHO_CU, 2)}× that of copper for the same cross-section. In practice that means going roughly two gauges larger in aluminium to match a copper conductor — which is exactly the "three gauges doubles the area" rule applied to a factor of ${f(RHO_AL / RHO_CU, 2)}.</p>
+
+<h2>Stranded wire is not the gauge it says</h2>
+<p>A gauge names a cross-sectional area of conductor, and stranded wire reaches that area as many small circles rather than one large one. Circles do not tile, so the bundle is wider than a solid conductor of the same gauge — typically ${f(1.13, 2)} to ${f(1.25, 2)} times the diameter depending on how many strands and how tightly they are laid.</p>
+<p>That matters in three places and nowhere else: it fills a conduit faster than the solid-wire tables suggest, it needs a larger crimp or terminal than the number implies, and it will not seat in a screw terminal sized for solid wire without a ferrule. The electrical properties are the ones in the chart above — same area, same resistance, same ampacity.</p>
+<p>What stranded buys is flexibility and fatigue life. Solid wire work-hardens and eventually snaps where it is repeatedly bent, which is why fixed building wiring is solid and anything that moves — appliance cords, automotive, robotics — is stranded.</p>
+
+<h2>Why the gauge numbers run backwards</h2>
+<p>The scale counts manufacturing steps rather than measuring the wire. Wire is drawn by pulling it through a die, then a smaller die, and so on; the gauge number is how many dies it passed through. More passes means thinner wire and a bigger number, which is the whole explanation for a system that otherwise looks perverse.</p>
+<p>It also explains the sizes below 1. A wire that needed no reduction is 0, one thicker still is 00, then 000 and 0000 — written 1/0 through 4/0 and pronounced "one aught" to "four aught". There is no negative gauge because there was no way to count backwards through dies that were never used.</p>
+<p>The exponent falls out of the same process: ${f(Math.pow(92, 6 / 39), 3)} is 92<sup>6/39</sup>, which is why six gauges doubles the diameter, and squaring it is why three gauges doubles the area. Those two facts are the only ones worth memorising, because everything else in the chart can be reconstructed from them.</p>
 
 <p><a href="/convert/">Unit converters</a> · <a href="/battery/">Battery sizes</a> · <a href="/lumber/">Lumber sizes</a></p>`,
   });
