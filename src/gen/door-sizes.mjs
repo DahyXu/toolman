@@ -160,6 +160,15 @@ ${us.map((r) => `<tr><td><a href="/door-size/${r.id}/">${esc(r.name)}</a></td><t
 <p>American guidance asks for <strong>32 inches of clear opening</strong>, and a 32-inch door does not give it — about 45 mm goes to the leaf and stop, leaving roughly ${inch(rows.find((r) => r.id === 'us-32x80').clear)} inches. A 36-inch door is what actually delivers 32 inches of clear width, which is why accessible design specifies it. British guidance asks for 750 mm clear, which a ${f0(uk762.w)} mm leaf also fails to provide — the 838 mm door is the one that does.</p>
 <p>This is the practical reason the rule is worth knowing: the number in the regulation and the number on the door are measuring different things.</p>
 
+<h2>Which way the door swings, and why it is named twice</h2>
+<p>Handing is described from the side the door opens <em>towards</em> you, which is the convention almost everyone gets backwards on the first try. Stand where the door swings to meet you: hinges on the left is a left-hand door, hinges on the right is a right-hand door.</p>
+<p>The complication is that American and British suppliers describe the same door differently — a British "left-hand" is frequently an American "right-hand", because the two traditions disagree about which side you stand on. Ordering across the two markets, give the hinge side and the direction of swing in words rather than trusting the label: "hinges on the left, opens away from the hallway" cannot be misread.</p>
+<p>Getting it wrong is not fatal for an internal door — most leaves are reversible and the frame is not — but a fire door with intumescent strips, a rebated pair, or anything with a lock morticed to one side is handed for good and cannot be turned round.</p>
+
+<h2>Height is standardised harder than width</h2>
+<p>Door widths vary by room and by country; heights barely move. Britain settled on 1981 mm — 6 feet 6 inches — for internal doors and holds it across nearly every width, and North America uses 80 inches, 2032 mm, just as consistently. A door that is not one of those two heights is either a made-to-order piece or from before the standard.</p>
+<p>That consistency is what makes the rough opening arithmetic simple: add the frame and the clearance to a known height rather than measuring it. It is also why a door bought in the wrong country fits the width of an opening and misses the height by 51 mm, which is exactly the two inches between the two standards and far too much to trim off a hollow-core leaf.</p>
+
 <p><a href="/convert/">Unit converters</a> · <a href="/lumber/">Lumber sizes</a> · <a href="/thread/">Metric threads</a></p>`,
   });
 

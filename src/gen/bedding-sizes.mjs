@@ -119,6 +119,29 @@ ${FAQ.html}
   const byRegion = {};
   for (const r of rows) (byRegion[r.region] ||= []).push(r);
 
+    const duvet = (id) => {
+    const r = rows.find((x) => x.id === id);
+    if (!r) {
+      console.error(`
+✗ bedding hub: names ${id} and the table has no such duvet`);
+      process.exitCode = 1;
+    }
+    return r || { w: 0, bedW: 1 };
+  };
+  const dbl = duvet('double-uk');
+  const kingD = duvet('king-uk');
+  const dblBed = dbl.bedW;
+  const dblDuvet = dbl.w;
+  const kingDuvet = kingD.w;
+  const dropDouble = Math.round(((dblDuvet - dblBed) / 2) * 10) / 10;
+  const dropKingOnDouble = Math.round(((kingDuvet - dblBed) / 2) * 10) / 10;
+  const dropDoubleOnKing = Math.round(((dblDuvet - kingD.bedW) / 2) * 10) / 10;
+  if (!(dropKingOnDouble > dropDouble && dropDouble > dropDoubleOnKing)) {
+    console.error(`
+✗ bedding hub: says a King duvet drapes further on a Double than a Double does, and further than a Double on a King, and the drops are ${dropKingOnDouble}, ${dropDouble}, ${dropDoubleOnKing}`);
+    process.exitCode = 1;
+  }
+
   pages.push({
     path: '/bedding/',
     title: 'Duvet and Comforter Sizes — UK and US Bedding Dimensions | Toolman',
@@ -141,6 +164,21 @@ ${list.map((r) => `<tr><td><a href="/bedding/${r.id}/">${esc(r.name)}</a></td><t
 
 <h2>Duvet, cover, comforter</h2>
 <p>The words describe different objects. A <strong>duvet</strong> is the insert — the filled quilt — and goes inside a <strong>duvet cover</strong>, which is washed separately; this is the British and continental arrangement. A <strong>comforter</strong> is the American equivalent sold as one finished quilted piece, usually used with a flat sheet underneath rather than a cover over it. A cover is bought to match the duvet it goes on, never the bed, which is the other common sizing mistake.</p>
+
+<h2>Tog is warmth, not thickness</h2>
+<p>A tog rating measures thermal resistance and nothing else. A 13.5 tog down duvet is thinner and lighter than a 13.5 tog synthetic one, and they keep you equally warm — the filling decides the bulk, the tog decides the warmth.</p>
+<table><thead><tr><th>Tog</th><th>For</th></tr></thead><tbody>
+<tr><td>4.5 and under</td><td>Summer, and rooms that stay above about 20 °C</td></tr>
+<tr><td>7–10.5</td><td>Spring and autumn, or a warm bedroom year round</td></tr>
+<tr><td>12–13.5</td><td>Winter in an unheated or lightly heated room — the usual single-duvet choice in Britain</td></tr>
+<tr><td>15 and over</td><td>Genuinely cold rooms, and rarely necessary in a modern insulated house</td></tr>
+</tbody></table>
+<p>An all-seasons duvet is two duvets — commonly 4.5 and 9 tog — with poppers to join them. Together they are 13.5, which is the arithmetic working exactly as it looks: tog values of stacked layers add.</p>
+<p>The scale is not used in North America, where duvets and comforters are sold by season name or fill power. <strong>Fill power measures loft rather than warmth</strong>, so it is not convertible to tog: a high fill power tells you the down is good quality and springs back well, not how warm the finished duvet is.</p>
+
+<h2>Why the duvet is bigger than the bed, and by how much</h2>
+<p>A duvet has to drape, and the drop on each side is the whole reason the sizes do not match the mattress. A UK Double mattress is ${dblBed} cm wide and a Double duvet is ${dblDuvet} — <strong>${dropDouble} cm of overhang on each side</strong> once the bed is made. That is deliberate, and it is roughly the minimum that stops one sleeper stripping the other.</p>
+<p>Which is why the standard advice for two people in a Double is to buy a King duvet on a Double bed. A King duvet is ${kingDuvet} cm, so on the same ${dblBed} cm mattress the drop goes to <strong>${dropKingOnDouble} cm a side</strong> — the extra width goes entirely into drape, the bed still looks made, and the nightly negotiation stops. Going the other way, a Double duvet on a King bed leaves ${dropDoubleOnKing} cm a side, which is not enough to stay put.</p>
 
 <p><a href="/bed-size/">Bed and mattress sizes</a> · <a href="/convert/">Unit converters</a></p>`,
   });
