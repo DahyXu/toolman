@@ -136,6 +136,39 @@ ${FAQ.html}
     });
   }
 
+    // The hub explains the series from its definition rather than from the table,
+  // so the figures it quotes are derived and checked against the table. A page
+  // that teaches the rule has to agree with its own data.
+  const bySize = (id) => SIZES.find((x) => x[1] === id);
+  const a0 = bySize('a0');
+  const a4 = bySize('a4');
+  const c4 = bySize('c4');
+  const aDemo = 5;
+  const aDemoArea = `1/${Math.pow(2, aDemo)} m\u00b2`;
+  const scaleUp = Math.round(Math.SQRT2 * 100);
+  const scaleDown = Math.round((1 / Math.SQRT2) * 100);
+  const a4w = a4 ? a4[2] : 0;
+  const a4h = a4 ? a4[3] : 0;
+  {
+    // A0 is one square metre by definition; the table has to reproduce it.
+    const a0m2 = a0 ? (a0[2] * a0[3]) / 1e6 : 0;
+    if (Math.abs(a0m2 - 1) > 0.01) {
+      console.error(`\n\u2717 paper hub: says A0 is one square metre and the table gives ${a0m2.toFixed(4)}`);
+      process.exitCode = 1;
+    }
+    // A4 sixteen times over is A0, because four halvings.
+    const a4m2 = (a4w * a4h * 16) / 1e6;
+    if (Math.abs(a4m2 - 1) > 0.02) {
+      console.error(`\n\u2717 paper hub: says sixteen A4 sheets make a square metre and they make ${a4m2.toFixed(4)}`);
+      process.exitCode = 1;
+    }
+    // C4 has to be larger than A4 or the envelope claim is wrong.
+    if (!c4 || !(c4[2] > a4w && c4[3] > a4h)) {
+      console.error(`\n\u2717 paper hub: says a C4 envelope takes an unfolded A4 and C4 is not larger on both edges`);
+      process.exitCode = 1;
+    }
+  }
+
   pages.push({
     path: '/paper/',
     title: 'Paper Sizes — A4, Letter, Legal and Every Standard Format',
@@ -155,6 +188,16 @@ ${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</
 
 <h2>The two systems, and why they do not mix</h2>
 <p>Most of the world uses ISO 216 — the A, B and C series — which is built on a 1:√2 ratio so that halving a sheet preserves its proportions. North America uses Letter and Legal, defined in inches with no such property. A4 is 210 × 297&nbsp;mm; Letter is 216 × 279&nbsp;mm. Neither scaling nor rotating turns one into the other, which is why cross-Atlantic PDFs so often print with clipped edges.</p>
+
+<h2>Working out any A size without a table</h2>
+<p>The whole series comes from one definition: <strong>A0 is one square metre</strong>, in the 1:√2 proportion, and every size after it is the one before cut in half. So A${aDemo} has an area of 1/2<sup>${aDemo}</sup> of a square metre, which is ${aDemoArea} — and knowing that, the dimensions follow without looking anything up.</p>
+<p>Two consequences are worth carrying around. The first is that <strong>A(n) is exactly half of A(n−1)</strong>, so an A5 is half an A4 and a quarter of an A3, and an A${aDemo} is 1/${Math.pow(2, aDemo)} of an A0 — which is how you get to A9 or A10 in your head from a number you already know. The second is the scaling factor: because the proportions never change, enlarging one step is always ×√2 and reducing one step is always ÷√2. Those are the <strong>${scaleUp}%</strong> and <strong>${scaleDown}%</strong> buttons on every photocopier ever made, and they are not approximations rounded for convenience — they are the ratio itself.</p>
+<p>A quick check on any of it: an A4 sheet is ${a4w} × ${a4h} mm, and ${a4w} × ${a4h} × 16 is within a whisker of one square metre, because A4 is A0 halved four times.</p>
+
+<h2>What the B and C series are for</h2>
+<p>The A series jumps by a factor of two in area, which is a large step when a poster needs to be "a bit bigger than A2". B fills those gaps: each B size is the geometric mean of the A size with the same number and the one above it, so B4 sits between A4 and A3 rather than being a size of its own invention.</p>
+<p>C is the envelope series, and it is built the same way one level in: <strong>C(n) is the geometric mean of A(n) and B(n)</strong>, which makes it just larger than A(n). That is the entire point — a C4 envelope takes an unfolded A4 sheet, a C5 takes an A4 folded once, a C6 takes it folded twice. The relationship is why the numbers match rather than being a coincidence worth memorising.</p>
+<p>DL, the long business envelope, is the exception: it is not part of the C series at all, and it exists because an A4 sheet folded in three is a shape the geometric series does not produce.</p>
 
 <h2>Choosing a resolution</h2>
 <table><thead><tr><th>DPI</th><th>When</th></tr></thead><tbody>
