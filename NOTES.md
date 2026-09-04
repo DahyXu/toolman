@@ -1,3 +1,36 @@
+## Reddit removed the post before anyone saw it
+
+Posted to r/SideProject, which explicitly invites project links and specifies
+the format. The post went live, showed on the subreddit front page, and one
+minute later:
+
+    removed_by_category: "reddit"
+
+Not the moderators — Reddit's own site-wide spam filter. Nobody but the author
+can see it. The account is the reason:
+
+    u/DahyCC   created 2026-09-02 (2 days old)
+    link karma     1
+    comment karma  0
+
+Two days old, no comment history, first post carries an external link. That is
+the exact shape the filter exists to catch, and no amount of care in the writing
+changes it.
+
+Also worth recording: old.reddit's submit form put a reCAPTCHA in front of this
+account. New Reddit's submit flow did not, which is how the post went up at all.
+
+What this rules out: promotion cannot start with a link. Comment karma has to
+come first, and it has to come from comments worth having. The subreddits where
+this site's content is actually relevant do not cooperate with that either —
+r/tailwindcss is almost entirely self-promotion with no questions to answer, and
+the live question in r/AskElectricians was about water-damaged wiring, which
+needs a licensed electrician and has nothing to do with a reference table.
+
+So Reddit is a slow lane measured in days of genuine participation, not a lever
+that can be pulled this week. The crawl-to-index pipeline is still the thing
+that decides whether any of the 8,323 pages get seen.
+
 ## The impression numbers I had been reporting were not GSC's numbers
 
 I told the user we had reached 1,760 impressions, 875 queries and ~1,090 indexed
