@@ -148,8 +148,8 @@ ${Object.entries(SERIES).map(([key, [label, desc]]) => {
       const list = SIZES.filter((s) => s[4] === key);
       if (!list.length) return '';
       return `<h2>${esc(label)}</h2><p class="muted">${desc}</p>
-<table><thead><tr><th>Size</th><th>Millimetres</th><th>Inches</th><th>Pixels @300 DPI</th></tr></thead><tbody>
-${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</strong></a></td><td>${w} × ${h} mm</td><td>${r2(IN(w))} × ${r2(IN(h))} in</td><td>${px(w, 300)} × ${px(h, 300)}</td></tr>`).join('')}
+<table><thead><tr><th>Size</th><th>Millimetres</th><th>Centimetres</th><th>Inches</th><th>Pixels @300 DPI</th></tr></thead><tbody>
+${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</strong></a></td><td>${w} × ${h} mm</td><td>${r2(w / 10)} × ${r2(h / 10)} cm</td><td>${r2(IN(w))} × ${r2(IN(h))} in</td><td>${px(w, 300)} × ${px(h, 300)}</td></tr>`).join('')}
 </tbody></table>`;
     }).join('')}
 

@@ -1,3 +1,50 @@
+## The impressions come from the hubs, and the item pages are not indexed
+
+`/paper/a2/` is not in Google's index. The test that settles it is not a
+`site:` count, which Google disclaims and which I have already been wrong to
+trust once:
+
+    "Half of A1. Used for medium posters, art prints and larger calendars"
+    → No results found
+
+That sentence exists on exactly one page on the internet. If Google had the
+page, the phrase would return it. It returns nothing.
+
+Meanwhile the A2 family is the site's largest source of impressions — "a2 size"
+21, "a2 paper size" 19, "a2 dimensions" 16, "a2 in inches" 11, "a2 size in cm"
+11. Those impressions cannot be coming from the page about A2, because Google
+does not have it. **They are coming from `/paper/`, the hub, which lists A2 in
+a table.** The same test on the cooking hub returns the hub, and on the paper
+hub returns the paper hub.
+
+So the shape of what is indexed is: the top of the hierarchy and almost nothing
+below it. That is normal for a domain a few weeks old — Google works down from
+the hubs as it decides the site is worth the crawl budget — but it changes what
+today's work is worth.
+
+**The 8,803 pages are not in play yet. Roughly 35 hub pages are.** Every
+comparison page, every retitled item page and every new section is banked
+against a future in which Google has indexed them. Nothing on an unindexed page
+can rank, and no amount of it adds up to a click.
+
+What follows from that, and is worth doing now: the hub pages are the only ones
+Google can currently show, so they should answer the queries arriving at them.
+"a2 size in cm" was reaching a hub table that gave millimetres, inches and
+pixels and no centimetres. It gives centimetres now.
+
+What does not follow: building more item pages faster. That is not the
+constraint.
+
+## The exact-phrase test
+
+Worth keeping as a tool. Take a sentence that appears on one page and nowhere
+else, search it in quotes, and Google either returns that page or says it has
+nothing. Unlike `site:` it is a yes-or-no fact rather than an estimate, and
+unlike Search Console it is not three days to two weeks stale.
+
+Use it sparingly — a run of automated Google searches gets a bot check, and a
+bot check is not something to work around.
+
 ## Reddit removed the post before anyone saw it
 
 Posted to r/SideProject, which explicitly invites project links and specifies
