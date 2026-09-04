@@ -83,10 +83,13 @@ export default async function () {
     pages.push({
       path: `/paper/${id}/`,
       title: (() => {
+        // papersizes.io outranks us with "A8 Size in Inches, mm, cm", and the
+        // queries arriving include "a5 size in cm". Three units cost fewer
+        // characters than the brand suffix they replace.
         const mm = `${name} Size — ${w} × ${h} mm`;
-        const both = `${mm}, ${r2(IN(w))} × ${r2(IN(h))} in`;
-        const full = `${both} | Paper Dimensions`;
-        return full.length <= 65 ? full : both.length <= 65 ? both : mm;
+        const withCm = `${mm}, ${r2(w / 10)} × ${r2(h / 10)} cm`;
+        const all = `${withCm}, ${r2(IN(w))} × ${r2(IN(h))} in`;
+        return all.length <= 65 ? all : withCm.length <= 65 ? withCm : mm;
       })(),
       desc: `${name} paper is ${w} × ${h} mm, ${r2(w / 10)} × ${r2(h / 10)} cm, or ${r2(IN(w))} × ${r2(IN(h))} inches — and ${px(w, 300)} × ${px(h, 300)} pixels at 300 DPI. What it is used for, and how it relates to every other size.`,
       h1: `${name} paper size`,

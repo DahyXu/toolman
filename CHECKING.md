@@ -313,3 +313,20 @@ site's crawl budget on pages that did not change.
 sitemap. Where planting into `dist/` is genuinely easier — checking a check that
 reads built HTML — rebuild afterwards and accept that one stamp is wrong, rather
 than doing it to a page that matters.
+
+## `${#var}` in bash counts bytes, not characters
+
+Checking the new paper titles, `${#t}` reported Letter at 66 characters — over
+the 65 the length guard enforces — and I was one step from investigating a guard
+that was working correctly. The title is 61 characters. It contains three `×`
+and one `—`, which are two and three bytes in UTF-8, and bash was counting
+those.
+
+Any title on this site carrying `×`, `—`, `²` or a fraction glyph measures
+several bytes longer than it is. `node -e` and `scripts/title-audit.mjs` both
+use JavaScript's `.length`, which counts characters, and they were right the
+whole time.
+
+The rule: **measure text length with the same runtime that enforces the limit.**
+A second opinion from a different tool is only useful when both tools are
+counting the same thing.
