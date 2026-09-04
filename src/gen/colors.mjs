@@ -73,11 +73,12 @@ function rgb2cmyk(r, g, b) {
     y: Math.round(((1 - b - k) / (1 - k)) * 100), k: Math.round(k * 100),
   };
 }
-function lum({ r, g, b }) {
+// tailwind-palette.mjs needs the same WCAG maths; one implementation only.
+export function lum({ r, g, b }) {
   const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
   return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
 }
-const contrast = (a, b) => {
+export const contrast = (a, b) => {
   const l1 = lum(a), l2 = lum(b);
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
@@ -306,6 +307,7 @@ export default async function () {
     h1: 'Color codes',
     crumbs: [{ name: 'Colors', path: '/color/' }],
     body: `<p class="muted">${all.length} color reference pages. Each one lists HEX, RGB, HSL and CMYK values, contrast ratios against black and white, a lightness scale and a set of harmonies. Need a specific color? Use the <a href="/color-converter/">color converter</a>.</p>
+<p><a href="/color/tailwind/">Working in Tailwind CSS?</a> Every hue as a scale of eleven shades, with the contrast figure that decides which of them can carry text.</p>
 <h2>CSS named colors</h2>
 ${swatchRow(namedList.slice(0, 60))}
 <ul class="linklist">${namedList
