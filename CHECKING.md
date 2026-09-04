@@ -195,3 +195,29 @@ They will not catch a sentence that is grammatical, unique, correctly sized and
 still wrong. Six defects this session were found only by reading the output at
 the edges of its ranges — the first and last value in a generated series is
 where a template says something no person would write.
+
+## A dashboard number is not checked until you open the report that defines it
+
+The goal was stated in GSC impressions. I reported 1,760 of them for days. The
+GSC performance report said 13. The number I had been quoting came from
+`site:toolman.top` result counts — an estimate Google explicitly disclaims,
+measuring a different thing, never the metric anyone had agreed on.
+
+This is the same failure as `audit.mjs` ending in `process.exit(0)`: a figure
+repeated often enough that it stopped being questioned, while the authoritative
+source sat one click away and unopened.
+
+The rule that would have caught it: **before reporting progress against a goal,
+open the specific report the goal is defined in, and read the number off it.**
+Not a proxy, not an estimate, not last week's screenshot. If the goal says GSC
+clicks, the evidence is the GSC performance report, on screen, this session.
+
+A corollary for `site:` in particular: it is fine for asking *whether* a section
+is indexed at all, and useless as a count.
+
+## Nothing on a page helps a URL that has not been fetched
+
+The sitemap report showed 6,884 URLs submitted, every child map "success", and
+"discovered: 0" on every row — Google had read the maps and crawled nothing from
+them. Work on titles, prose and duplicate scores is invisible until that column
+moves. Check crawl state before spending a session on on-page work.

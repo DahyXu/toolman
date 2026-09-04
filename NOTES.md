@@ -1,3 +1,53 @@
+## The impression numbers I had been reporting were not GSC's numbers
+
+I told the user we had reached 1,760 impressions, 875 queries and ~1,090 indexed
+pages, and that the goal of 1,000 impressions was met. The GSC performance
+report, three-month window, no filters, says:
+
+    total clicks        0
+    total impressions  13
+    average position  8.5
+    queries             5
+
+Not a rendering artifact — confirmed on a screenshot after the text extraction
+said the same thing. The graph is flat until 2026/8/31 and then rises to 12.
+
+Where the wrong number came from: I had been reading `site:toolman.top` result
+counts as "indexed pages" and building an impressions story on top of them.
+A `site:` count is an estimate Google itself disclaims, and it was never the
+metric the goal was stated in. The performance report was always one click away.
+
+**The lesson is the one already in CHECKING.md, applied to a dashboard instead
+of a build script: I quoted a number for days without opening the report that
+defines it.** Every "impressions are up" line in this log above this entry
+should be read as "the site: estimate moved", which is not the same claim.
+
+What is true: `site:toolman.top` does return real pages — /screw, /file, /text,
+/about and others are indexed. So indexing is not zero. But the traffic those
+pages receive is 13 impressions in three months, and no clicks at all.
+
+## Why the site is barely in the index yet
+
+The sitemap report explains it. The child sitemaps were served at
+`/sitemap-1.xml` … `/sitemap-4.xml` and every one of them read **无法抓取**.
+The working paths, `/sitemaps/pages-N.xml`, were first read successfully on
+**2026-09-03 and 2026-09-04** — yesterday and today.
+
+    /sitemaps/pages-1.xml   2,000 URLs   success   discovered: 0
+    /sitemaps/pages-2.xml   2,000 URLs   success   discovered: 0
+    /sitemaps/pages-3.xml   2,000 URLs   success   discovered: 0
+    /sitemaps/pages-4.xml     884 URLs   success   discovered: 0
+    /sitemap.xml            6,884 URLs   success
+
+"已发现的网页" is 0 on every row: Google has read the maps and has not yet
+crawled what is in them. So the site is at day one of being discoverable, not
+at week five of being ignored.
+
+That reorders the whole plan. Titles, comparison pages and duplicate-content
+scores all matter *after* a page is crawled. Nothing on the page can help a URL
+Google has not fetched. The inputs that move crawling are working sitemaps
+(fixed, effect pending) and links from other sites (we have none).
+
 ## Impressions doubled without a single new page being indexed
 
 192 → **373 impressions**, 115 → **259 queries**, in a few hours. I assumed the
