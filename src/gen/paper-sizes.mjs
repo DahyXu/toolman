@@ -140,8 +140,13 @@ export default async function () {
 
     pages.push({
       path: `/paper/${id}/`,
-      title: `${name} Paper Size — ${w} × ${h} mm`,
-      desc: `${name} measures ${w} × ${h} mm (${r2(IN(w))} × ${r2(IN(h))} in). Dimensions in millimetres, centimetres, inches and pixels at 72, 150 and 300 DPI, plus what it is used for.`,
+      title: (() => {
+        const mm = `${name} Size — ${w} × ${h} mm`;
+        const both = `${mm}, ${r2(IN(w))} × ${r2(IN(h))} in`;
+        const full = `${both} | Paper Dimensions`;
+        return full.length <= 65 ? full : both.length <= 65 ? both : mm;
+      })(),
+      desc: `${name} paper is ${w} × ${h} mm, ${r2(w / 10)} × ${r2(h / 10)} cm, or ${r2(IN(w))} × ${r2(IN(h))} inches — and ${px(w, 300)} × ${px(h, 300)} pixels at 300 DPI. What it is used for, and how it relates to every other size.`,
       h1: `${name} paper size`,
       crumbs: [{ name: 'Paper sizes', path: '/paper/' }, { name, path: `/paper/${id}/` }],
       jsonld: [FAQ.schema],
