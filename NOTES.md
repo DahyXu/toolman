@@ -1,3 +1,32 @@
+## The crawl burst is over, and it fetched about a third of the site
+
+Crawl stats to 2026-09-03:
+
+    total crawl requests   4,110   (3,800 on 09-02)
+    downloaded             25.7 MB
+    average response       193 ms
+    toolman.top            3,945 requests, no problems found
+    www.toolman.top          165 requests, no problems found
+
+The graph matters more than the total. A tall spike around 29 August to 1
+September, then back to near zero. So Googlebot came once, fetched perhaps a
+third of 8,803 pages counting sitemaps and robots.txt, and stopped.
+
+That reconciles the two statuses seen in URL Inspection. The hubs say "已抓取 -
+尚未编入索引" because the burst reached them and Google declined; everything
+deeper says "已发现 - 尚未编入索引" with no crawl time at all, because the burst
+ended before it got there.
+
+Which means the two problems are sequenced rather than parallel. Deepening the
+hubs addresses the pages Google has already judged. The inbound-link work
+addresses the pages it has not reached — a page linked from one place is last
+in a queue that is currently not moving.
+
+Neither makes Googlebot come back. What does is the site being worth returning
+to, measured over weeks, and links from elsewhere, which the site has none of.
+The honest position is that the on-site work is done and the timescale is not
+mine to set.
+
 ## The indexing quota is a rolling window, not a daily allowance
 
 I assumed it reset at midnight and planned a list of eight URLs for today. Two
