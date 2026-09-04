@@ -72,19 +72,22 @@ const f0 = (v) => Math.round(v).toLocaleString('en-US');
 const f1 = (v) => v.toFixed(1);
 const f2 = (v) => v.toFixed(2);
 
+// bakeware-compare.mjs pairs these up. One computation of area and volume,
+// so the two files cannot disagree about how big a tin is.
+export const TIN_ROWS = TINS.map(([name, id, shape, dims, depth, note]) => {
+  const areaMm2 = shape === 'round' ? areaRound(dims[0]) : areaRect(dims[0], dims[1]);
+  return {
+    name, id, shape, dims, depth, note,
+    areaCm2: areaMm2 / 100,
+    areaIn2: areaMm2 / (IN * IN),
+    volL: (areaMm2 * depth) / 1e6,
+    label: shape === 'round' ? `${f0(dims[0] / 10)} cm across` : `${f0(dims[0] / 10)} × ${f0(dims[1] / 10)} cm`,
+  };
+});
+
 export default async function () {
   const pages = [];
-
-  const rows = TINS.map(([name, id, shape, dims, depth, note]) => {
-    const areaMm2 = shape === 'round' ? areaRound(dims[0]) : areaRect(dims[0], dims[1]);
-    return {
-      name, id, shape, dims, depth, note,
-      areaCm2: areaMm2 / 100,
-      areaIn2: areaMm2 / (IN * IN),
-      volL: (areaMm2 * depth) / 1e6,
-      label: shape === 'round' ? `${f0(dims[0] / 10)} cm across` : `${f0(dims[0] / 10)} × ${f0(dims[1] / 10)} cm`,
-    };
-  });
+  const rows = TIN_ROWS;
 
   for (const r of rows) {
     const others = rows.filter((x) => x.id !== r.id);
@@ -164,6 +167,7 @@ ${FAQ.html}
     h1: 'Baking tin sizes',
     crumbs: [{ name: 'Baking tin sizes', path: '/bakeware/' }],
     body: `<p class="muted">${rows.length} common tins with their real area and volume, and the substitution each one allows.</p>
+<p><a href="/bakeware/compare/">Comparing two tins?</a> Every pair close enough to substitute, with the number to multiply the recipe by and how deep the batter ends up.</p>
 
 <h2>A recipe is written for an area, not a name</h2>
 <p>This is the whole thing. Batter poured into a wider tin is shallower; a shallower cake cooks through sooner and browns more at the edges. So the question is never "is my tin close enough in inches" but <strong>"how much does the area change"</strong>.</p>
