@@ -161,6 +161,18 @@ ${imperial.map((i) => {
     }).join('')}
 </tbody></table>
 
+<h2>Six points grip the flats. Twelve points sit on the corners.</h2>
+<p>The same nominal size behaves differently depending on the tool. A six-point socket contacts the six flat faces of the head; a twelve-point contacts near the corners, which is where a hex head is weakest. Twelve points exist because they engage at every 30° instead of every 60°, which matters in a tight space and costs grip everywhere else.</p>
+<p>That interacts directly with the gaps in the tables above. A near-miss pairing that a six-point tolerates will round the fastener in a twelve-point, because the small amount of slop lands on the corners rather than being spread across the faces. If a bolt is tight, rusted or has already been rounded once, six points is not a preference.</p>
+
+<h2>Whitworth is not measured the way the others are</h2>
+<p>Metric and AF sizes both name the distance across the flats: a 13 mm spanner fits a head measuring 13 mm across. <strong>Whitworth names the diameter of the bolt's shank instead</strong>, so a "¼ Whitworth" spanner fits a bolt with a quarter-inch shank, and the head it fits is about 0.45 inches across — nearly twice the number on the tool.</p>
+<p>This is why a Whitworth set looks wrong next to an AF one and why a British motorcycle or tractor from before the 1970s defeats a modern socket set. British Standard Fine uses the same across-flats sizes as Whitworth for a given shank but a finer thread, and later Whitworth heads were reduced by one size, so two spanners marked the same fit different bolts depending on when they were made. Measure the head rather than trusting the marking.</p>
+
+<h2>When you only have the wrong system</h2>
+<p>Use the table above and take the pair with the smallest gap, then reach for a six-point ring spanner or socket rather than an open-ended one — an open jaw spreads under load and turns a small gap into a rounded head. Failing that, an adjustable wrench tightened hard onto the flats is safer than a loose socket, which is the opposite of most people's instinct.</p>
+<p>If the fastener matters and the gap is above about a tenth of a millimetre, it is worth stopping. The cost of the right spanner is always less than the cost of extracting a rounded bolt.</p>
+
 <p><a href="/thread/">Metric threads</a> — the tapping drill and clearance hole for the bolts these turn. <a href="/convert/">Unit converters</a></p>`,
   });
 
