@@ -50,6 +50,28 @@ const COMMON_RES = [[1920, 1080, 'Full HD'], [2560, 1440, 'QHD'], [3840, 2160, '
 const ppi = (w, h, diag) => Math.round(Math.sqrt(w * w + h * h) / diag);
 
 export default async function () {
+  // The hub compares areas at a fixed diagonal, which is the counterintuitive
+  // part, so the figures come from dims() rather than from arithmetic done once
+  // in my head and typed.
+  const a43 = dims(32, 4 / 3).area;
+  const a169 = dims(32, 16 / 9).area;
+  const a219 = dims(32, 21 / 9).area;
+  const sq43 = Math.round(a43);
+  const sq169 = Math.round(a169);
+  const sq219 = Math.round(a219);
+  const pct43 = Math.round((1 - a169 / a43) * 100);
+  const tv55 = dims(55, 16 / 9);
+  const w55 = n1(tv55.w);
+  const h55 = n1(tv55.h);
+  if (!(a43 > a169 && a169 > a219)) {
+    console.error(`\n\u2717 screen-size hub: says area falls as the shape widens, and at 32 inches it computes ${sq43}, ${sq169}, ${sq219}`);
+    process.exitCode = 1;
+  }
+  if (!(pct43 > 0 && pct43 < 50)) {
+    console.error(`\n\u2717 screen-size hub: a ${pct43}% area difference between two 32-inch screens is not a possible one`);
+    process.exitCode = 1;
+  }
+
   const pages = [];
   const main = RATIOS[0];
 
@@ -156,6 +178,14 @@ ${list.map((s) => {
 <pre><code>width  = d × r / √(r² + 1)
 height = width / r</code></pre>
 <p>For 16:9 that simplifies to width ≈ 0.8716 × d and height ≈ 0.4903 × d, which is worth remembering: <strong>a 16:9 screen is about seven eighths of its diagonal wide and about half of it tall.</strong></p>
+
+<h2>The diagonal hides how much screen you get</h2>
+<p>Two screens of the same diagonal in different shapes are not the same size. A 32-inch 4:3 monitor has <strong>${sq43} square inches</strong> of picture; a 32-inch 16:9 has <strong>${sq169}</strong>, which is ${pct43}% less. A 32-inch 21:9 ultrawide has ${sq219}, less again.</p>
+<p>The reason is geometric: for a fixed diagonal, area is largest when the shape is closest to square, and every step towards widescreen trades area away. This is why a 24-inch monitor replacing an old 19-inch 4:3 feels like less of an upgrade than the numbers promise, and why the switch to 16:9 was a saving for manufacturers before it was a feature for anyone.</p>
+
+<h2>What the inches are measured across</h2>
+<p>The number is the diagonal of the <em>panel</em>, corner to corner, and it does not include the bezel or the frame. A 55-inch television is ${w55} inches wide as a picture and typically an inch or two wider as an object, which matters for a recess or a cabinet and not for anything else.</p>
+<p>Mounting needs more than the width. Allow for the bracket's depth, for cables leaving the back, and for the screen being roughly ${h55} inches tall before any stand. Manufacturers publish the "with stand" and "without stand" dimensions separately because the two differ by more than people expect.</p>
 
 <p><a href="/resolution/">Screen resolutions</a> — the pixel side of the same question. <a href="/paper/">Paper sizes</a> — the same reference for print.</p>`,
   });

@@ -61,6 +61,22 @@ const INTRO = `<h2>The three scales, and why they disagree</h2>
 <p>The fourth number is the fan. <strong>A fan or convection oven cooks as though it were about 20°C hotter</strong>, because moving air carries heat to the food faster than still air does. A recipe written for a conventional oven at 180°C means 160°C in a fan oven — and a recipe that gives only one number, without saying which, is the single most common reason a cake comes out overdone.</p>`;
 
 export default async function () {
+  // The hub says every gas mark is 25 degrees Fahrenheit above the one below,
+  // fractions included, and that the fractions are names rather than
+  // multipliers. That is a claim about this table, so check this table.
+  for (let i = 1; i < GAS.length; i++) {
+    if (GAS[i].f - GAS[i - 1].f !== 25) {
+      console.error(`
+✗ oven hub: gas mark ${GAS[i - 1].mark} to ${GAS[i].mark} is ${GAS[i].f - GAS[i - 1].f} °F, and the page says every step is 25`);
+      process.exitCode = 1;
+    }
+  }
+  if (GAS[0].c !== 110) {
+    console.error(`
+✗ oven hub: says a gas oven bottoms out near 110 °C and the lowest mark is ${GAS[0].c}`);
+    process.exitCode = 1;
+  }
+
   const pages = [];
 
   for (const g of GAS) {
@@ -177,6 +193,19 @@ ${INTRO}
 
 <h2>Gas marks</h2>
 <ul class="linklist">${GAS.map((g) => `<li><a href="/oven/${g.slug}/">Gas mark ${g.mark}</a> — ${g.c}°C, ${g.f}°F</li>`).join('')}</ul>
+
+<h2>Fan ovens: subtract 20 °C, and why</h2>
+<p>A fan moves the hot air instead of waiting for it to circulate, so heat reaches the food faster at the same air temperature. The convention is to set a fan oven <strong>20 °C lower</strong> than a conventional recipe asks — 180 °C conventional becomes 160 °C fan — and to expect it to finish a little sooner even then.</p>
+<p>The adjustment is a rule of thumb rather than a conversion, and it is worth knowing which way it errs. Fan ovens brown more and dry more, because moving air carries moisture away from the surface. For a roast that is the point; for a custard or a delicate cake it is the reason many recipes say to turn the fan off rather than to drop the temperature.</p>
+<p>Gas marks have no fan equivalent — a gas oven with a fan is uncommon outside commercial kitchens — which is why gas conversions in this section are given against conventional electric.</p>
+
+<h2>Gas marks are not evenly spaced at the bottom</h2>
+<p>From gas mark 1 upward each step is 25 °F, a tidy arithmetic ladder. Below 1 the marks go ½ and ¼, and those are not half and a quarter of anything: gas mark ½ is 250 °F and ¼ is 225 °F, so the step from ¼ to ½ to 1 is the same 25 °F as every other step. The fractions are names, not multipliers.</p>
+<p>That matters when a recipe says "the lowest your oven will go". A domestic gas oven bottoms out around gas mark ¼, about 110 °C, which is warmer than the 80–90 °C that slow-drying and low-temperature work often want. An electric oven usually reaches lower.</p>
+
+<h2>The number on the dial is not the temperature inside</h2>
+<p>Domestic ovens are commonly out by 10–15 °C, and being out by 25 is not unusual in an older one. The thermostat also cycles: it heats past the set point, switches off, drifts down, and switches back on, so the air swings either side of the number by several degrees continuously.</p>
+<p>A cheap oven thermometer settles it, and it is the single most useful thing to put in an oven that keeps producing results half a shade off. Once you know your oven runs 15 °C cool, every recipe in the world is corrected by the same 15 °C, and the conversions on these pages become exact rather than approximate.</p>
 
 <p><a href="/cooking/">Cooking measurements</a> · <a href="/convert/">Unit converters</a></p>`,
   });
