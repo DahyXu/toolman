@@ -1,3 +1,44 @@
+## The first click, and what it proves
+
+Search Console, updated four and a half hours ago:
+
+    total clicks        1      (was 0)
+    total impressions 756      (was 13)
+    queries           498      (was 5)
+    average position 49.6      (was 8.5)
+
+The click came from **`ms sql ports`, at position 1.0** — one impression, one
+click, 100% CTR. A developer reference query with no Google answer widget, our
+page ranked first, and the click followed. That is the whole thesis of the last
+two days demonstrated on a sample of one.
+
+The average position falling from 8.5 to 49.6 is not a decline. Five queries at
+position 8 became 498 queries across the whole range; the mean moved because
+the population did.
+
+The rest of the table settles two arguments:
+
+    query                            imp   position   clicks
+    password generator 8 characters   19       68.0        0
+    #14b8a6                           16        9.4        0
+    1440 seconds to minutes           13       10.7        0
+    password generator 15 characters  10       75.9        0
+    #f43f5e                            7        9.6        0
+    a2 size                            5       25.6        0
+    a8 size                            4       10.2        0
+
+**The widget diagnosis is confirmed with direct evidence.** The colour queries
+rank 7.8 to 10.2 — first page — across 33 impressions, and produce nothing.
+Ranking was never the problem there; Google's own colour picker sits above the
+results and answers the question. Same for `1440 seconds to minutes` at 10.7.
+
+**The password queries are a ranking problem, not a widget one.** 68 to 76 is
+page seven. 37 impressions across three phrasings and no clicks, because nobody
+reaches page seven. That is the largest genuinely winnable gap on the site.
+
+`a8 size` at 10.2 and `a2 size` at 25.6 are the paper queries, and 25.6 is up
+from the 35.3 recorded before the titles were rewritten to carry the units.
+
 ## Google crawled the hubs and decided against them
 
 The status on `/cron/` and `/http/` is not the one I expected:
