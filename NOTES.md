@@ -1,3 +1,43 @@
+## Google crawled the hubs and decided against them
+
+The status on `/cron/` and `/http/` is not the one I expected:
+
+    网页未编入索引: 已抓取 - 尚未编入索引
+    上次抓取时间: 2026年9月1日 23:19:20
+    当时所用的用户代理: Googlebot 智能手机版
+
+Both carry the same timestamp to the second, so they were one batch. **Crawled**,
+not merely discovered — Googlebot fetched these pages, read them, and did not
+index them. That is a different failure from the one on the deeper pages, where
+the status is "已发现 - 尚未编入索引" and the last-crawl time is 不适用.
+
+So there are three populations, and they need three different things:
+
+    已抓取 - 尚未编入索引     Google read it and passed. The page is the problem.
+    已发现 - 尚未编入索引     Queued, never fetched. Crawl budget is the problem.
+    网址不明                  Published since the last sitemap fetch.
+
+The hubs are in the first group. On 1 September, when Googlebot read them,
+`/cron/` was 185 words of prose around a table and `/http/` was 215. Those are
+the two thinnest numbers in the measurement I took today, and Google's verdict
+on them arrived before I measured anything.
+
+That is the most useful thing this project has learned about its own traffic.
+It is not "Google has not got to us yet" — for the hub layer it already did, and
+said no. Deepening those pages was the right work for a reason I did not have
+at the time, and re-requesting indexing after deepening is what closes it:
+the page Google rejected is not the page that is there now.
+
+`/cron/` and `/http/` are requested. `/cooking/` and `/paper/a2/` are indexed
+already, which fits — they were among the more substantial hubs to begin with.
+
+## The quota is real and the toast eats it
+
+Roughly a dozen indexing requests a day per property. Several of mine went to
+URLs already submitted, because the success toast covers the search box and the
+typing lands nowhere while it is up. Confirm the URL bar changed before clicking
+Request, every time.
+
 ## What is actually happening, from the one tool that answers it
 
 Search Console's URL Inspection works, and it is the authoritative answer for a
