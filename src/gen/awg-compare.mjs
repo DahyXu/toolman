@@ -144,6 +144,7 @@ export default function awgCompare() {
 
       pages.push({
         path: `/awg/compare/${slug}/`,
+        pairOf: [A.slug, B.slug],
         title,
         desc: `${thick.label} AWG is ${f(thick.dmm, 3)} mm and ${thin.label} AWG is ${f(thin.dmm, 3)} mm — ${f(areaRatio, 2)}× the copper. Resistance, the voltage lost over a run at ${testAmps} A, and how far each reaches inside the 3% limit.`,
         h1: base,
@@ -173,10 +174,28 @@ ${dropRows}
 
 ${FAQ.html}
 
-<p><a href="/awg/${A.slug}/">${esc(A.label)} AWG in full</a> · <a href="/awg/${B.slug}/">${esc(B.label)} AWG in full</a> · <a href="/awg/compare/">All gauge comparisons</a> · <a href="/awg/">Wire gauge chart</a></p>`,
+%RELATED%<p><a href="/awg/${A.slug}/">${esc(A.label)} AWG in full</a> · <a href="/awg/${B.slug}/">${esc(B.label)} AWG in full</a> · <a href="/awg/compare/">All gauge comparisons</a> · <a href="/awg/">Wire gauge chart</a></p>`,
       });
     }
   }
+
+
+  // Each page links the other pairs that share one of its two items. Done here
+  // rather than inside the loop because a page built early cannot know about
+  // pairs the loop has not reached. Without this every comparison had exactly
+  // one inbound link, from its own hub, which puts it last in the crawl queue.
+  const index = pages.filter((p) => p.pairOf);
+  for (const p of index) {
+    const [x, y] = p.pairOf;
+    const near = index
+      .filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)))
+      .slice(0, 20);
+    const block = near.length
+      ? `<h2>Related comparisons</h2>\n<ul class="linklist">\n${near.map((q) => `<li><a href="${q.path}">${esc(q.h1)}</a></li>`).join('')}\n</ul>\n\n`
+      : '';
+    p.body = p.body.replace('%RELATED%', block);
+  }
+  for (const p of pages) p.body = p.body.replace('%RELATED%', '');
 
   const links = pages.map((p) => `<li><a href="${p.path}">${esc(p.h1)}</a></li>`).join('\n');
 

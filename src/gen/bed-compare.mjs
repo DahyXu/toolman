@@ -228,6 +228,7 @@ export default function bedCompare() {
 
       pages.push({
         path: `/bed-size/compare/${slug}/`,
+        pairOf: [A.id, B.id],
         title,
         desc: `${LA} is ${cm1(A.wmm)} × ${cm1(A.hmm)} cm and ${LB} is ${cm1(B.wmm)} × ${cm1(B.hmm)} cm. ${label(bigger)} is ${areaPct}% larger. Whether the same bedding fits both, space per person, and the room each needs.`,
         h1: base,
@@ -259,10 +260,28 @@ ${twoPerson}
 
 ${FAQ.html}
 
-<p><a href="/bed-size/${A.id}/">${esc(LA)} in full</a> · <a href="/bed-size/${B.id}/">${esc(LB)} in full</a> · <a href="/bed-size/compare/">All mattress comparisons</a> · <a href="/bed-size/">All bed sizes</a></p>`,
+%RELATED%<p><a href="/bed-size/${A.id}/">${esc(LA)} in full</a> · <a href="/bed-size/${B.id}/">${esc(LB)} in full</a> · <a href="/bed-size/compare/">All mattress comparisons</a> · <a href="/bed-size/">All bed sizes</a></p>`,
       });
     }
   }
+
+
+  // Each page links the other pairs that share one of its two items. Done here
+  // rather than inside the loop because a page built early cannot know about
+  // pairs the loop has not reached. Without this every comparison had exactly
+  // one inbound link, from its own hub, which puts it last in the crawl queue.
+  const index = pages.filter((p) => p.pairOf);
+  for (const p of index) {
+    const [x, y] = p.pairOf;
+    const near = index
+      .filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)))
+      .slice(0, 20);
+    const block = near.length
+      ? `<h2>Related comparisons</h2>\n<ul class="linklist">\n${near.map((q) => `<li><a href="${q.path}">${esc(q.h1)}</a></li>`).join('')}\n</ul>\n\n`
+      : '';
+    p.body = p.body.replace('%RELATED%', block);
+  }
+  for (const p of pages) p.body = p.body.replace('%RELATED%', '');
 
   const links = pages.map((p) => `<li><a href="${p.path}">${esc(p.h1)}</a></li>`).join('\n');
 

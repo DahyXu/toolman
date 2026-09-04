@@ -164,6 +164,7 @@ export default function paperCompare() {
 
       pages.push({
         path: `/paper/compare/${slug}/`,
+        pairOf: [A.id, B.id],
         title,
         desc: `${A.name} is ${A.w} × ${A.h} mm (${r2(IN(A.w))} × ${r2(IN(A.h))} in) and ${B.name} is ${B.w} × ${B.h} mm (${r2(IN(B.w))} × ${r2(IN(B.h))} in). ${bigger.name} is ${areaPct}% larger by area. Print scale, margins and which fits inside which.`,
         h1: `${A.name} vs ${B.name}`,
@@ -196,10 +197,28 @@ export default function paperCompare() {
 
 ${FAQ.html}
 
-<p><a href="/paper/${A.id}/">${esc(A.name)} in full</a> · <a href="/paper/${B.id}/">${esc(B.name)} in full</a> · <a href="/paper/compare/">All size comparisons</a> · <a href="/paper/">All paper sizes</a></p>`,
+%RELATED%<p><a href="/paper/${A.id}/">${esc(A.name)} in full</a> · <a href="/paper/${B.id}/">${esc(B.name)} in full</a> · <a href="/paper/compare/">All size comparisons</a> · <a href="/paper/">All paper sizes</a></p>`,
       });
     }
   }
+
+
+  // Each page links the other pairs that share one of its two items. Done here
+  // rather than inside the loop because a page built early cannot know about
+  // pairs the loop has not reached. Without this every comparison had exactly
+  // one inbound link, from its own hub, which puts it last in the crawl queue.
+  const index = pages.filter((p) => p.pairOf);
+  for (const p of index) {
+    const [x, y] = p.pairOf;
+    const near = index
+      .filter((q) => q !== p && (q.pairOf.includes(x) || q.pairOf.includes(y)))
+      .slice(0, 20);
+    const block = near.length
+      ? `<h2>Related comparisons</h2>\n<ul class="linklist">\n${near.map((q) => `<li><a href="${q.path}">${esc(q.h1)}</a></li>`).join('')}\n</ul>\n\n`
+      : '';
+    p.body = p.body.replace('%RELATED%', block);
+  }
+  for (const p of pages) p.body = p.body.replace('%RELATED%', '');
 
   const links = pages
     .map((p) => `<li><a href="${p.path}">${esc(p.h1)}</a></li>`)

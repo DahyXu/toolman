@@ -185,7 +185,7 @@ ${Object.entries(SERIES).map(([key, [label, desc]]) => {
       if (!list.length) return '';
       return `<h2>${esc(label)}</h2><p class="muted">${desc}</p>
 <table><thead><tr><th>Size</th><th>Millimetres</th><th>Centimetres</th><th>Inches</th><th>Pixels @300 DPI</th></tr></thead><tbody>
-${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</strong></a></td><td>${w} × ${h} mm</td><td>${r2(w / 10)} × ${r2(h / 10)} cm</td><td>${r2(IN(w))} × ${r2(IN(h))} in</td><td>${px(w, 300)} × ${px(h, 300)}</td></tr>`).join('')}
+${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</strong></a></td><td>${w} × ${h} mm</td><td>${r2(w / 10)} × ${r2(h / 10)} cm</td><td>${r2(IN(w))} × ${r2(IN(h))} in</td><td><a href="/paper/${i}/pixels/">${px(w, 300)} × ${px(h, 300)}</a></td></tr>`).join('')}
 </tbody></table>`;
     }).join('')}
 
@@ -290,6 +290,11 @@ Bleed:      3 mm on every edge → ${px(w + 6, 300)} × ${px(h + 6, 300)} px</co
 <p>The bleed figure is the one people forget: artwork that runs to the edge must extend 3 mm past it on all four sides, so the working canvas is larger than the finished sheet.</p>
 
 ${PXFAQ.html}
+
+<h2>Other sizes in pixels</h2>
+<ul class="linklist">
+${SIZES.filter((x) => x[1] !== id).slice(0, 24).map(([n2, i2, w2, h2]) => `<li><a href="/paper/${i2}/pixels/">${esc(n2)} in pixels</a> — ${px(w2, 300)} × ${px(h2, 300)}</li>`).join('')}
+</ul>
 
 <p><a href="/paper/${id}/">${name} in millimetres, inches and points</a> · <a href="/paper/">All paper sizes</a> · <a href="/resolution/">Screen resolutions</a></p>`,
     });
