@@ -156,7 +156,24 @@ ${RANGES.map(([r, n, d]) => `<tr><td><code>${r}</code></td><td>${n}</td><td>${d}
 <h2>The ports that should never face the internet</h2>
 <p>If a scan finds any of these open on a public address, treat it as an incident rather than a configuration preference: <a href="/port/23/">23 (Telnet)</a>, <a href="/port/445/">445 (SMB)</a>, <a href="/port/2375/">2375 (Docker API)</a>, <a href="/port/3306/">3306 (MySQL)</a>, <a href="/port/3389/">3389 (RDP)</a>, <a href="/port/5432/">5432 (PostgreSQL)</a>, <a href="/port/6379/">6379 (Redis)</a>, <a href="/port/9200/">9200 (Elasticsearch)</a> and <a href="/port/27017/">27017 (MongoDB)</a>. Each of these has been the root cause of large, well-documented breaches.</p>
 <h2>Why development servers use 3000 and 8080</h2>
-<p>On Unix-like systems, binding to a port below 1024 requires root. Rather than run a development server as root, the convention settled on high ports — 3000, 4200, 5173, 8000, 8080 — which any user process can bind. In production a reverse proxy holds 80 and 443 and forwards to the application on its high port.</p>`,
+<p>On Unix-like systems, binding to a port below 1024 requires root. Rather than run a development server as root, the convention settled on high ports — 3000, 4200, 5173, 8000, 8080 — which any user process can bind. In production a reverse proxy holds 80 and 443 and forwards to the application on its high port.</p>
+
+<h2>Binding to a low port without running as root</h2>
+<p>Running the application as root to get port 80 is the option to avoid: it means a remote code execution in your web server is a remote code execution as root. There are three ordinary alternatives, in roughly the order they are worth reaching for.</p>
+<ul>
+<li><strong>A reverse proxy.</strong> nginx, Caddy or a load balancer holds 80 and 443 and forwards to your process on 8080. This is what production almost always does, and it gets you TLS termination and static-file serving as a side effect.</li>
+<li><strong>A capability.</strong> <code>setcap 'cap_net_bind_service=+ep' /path/to/binary</code> lets one specific binary bind low ports without any other root privilege. Note it applies to the binary, so a language runtime given this can bind low ports for every script it runs.</li>
+<li><strong>A redirect in the firewall.</strong> <code>iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080</code> moves the traffic rather than the permission. It survives restarts only if you persist the rule, which is the usual way this one goes wrong.</li>
+</ul>
+<p>macOS has no <code>setcap</code>; use <code>pfctl</code> port forwarding or a proxy. Windows has no privileged range at all — any user can bind port 80 — but it does reserve ranges, and <code>netsh interface ipv4 show excludedportrange protocol=tcp</code> shows which, which is the answer when a port refuses to bind and nothing appears to be using it.</p>
+
+<h2>Why a port stays busy after the process is gone</h2>
+<p>Stop a server and restart it immediately and you can still get "address already in use" with nothing listening. The socket is in <code>TIME_WAIT</code>: TCP holds the pair for twice the maximum segment lifetime — commonly 60 seconds, up to four minutes — so that stray packets from the old connection cannot be delivered to the new one.</p>
+<p>The fix is <code>SO_REUSEADDR</code> on the listening socket, which almost every server framework sets for you and which is why you usually never see this. If you are writing the socket code yourself, set it before <code>bind</code>. Do not reach for <code>SO_REUSEPORT</code> instead: it is a different option that lets several processes share one port for load balancing, and it will silently give you two servers where you expected one.</p>
+
+<h2>The ephemeral range, and running out of it</h2>
+<p>Outgoing connections need a source port too, taken from an ephemeral range — 32768–60999 on Linux by default, which is about 28,000 ports. A machine making many short-lived outbound connections can exhaust it, and the symptom is connection failures under load with no listening service anywhere near its limits.</p>
+<p><code>sysctl net.ipv4.ip_local_port_range</code> shows the range and can widen it, but the real fix is usually connection pooling or keep-alive: reusing one connection removes the port from the equation instead of buying more of them. Note the range overlaps ports in the table above — 32768 upward includes nothing standard, which is why the range starts where it does.</p>`,
   });
 
   return pages;

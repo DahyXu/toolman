@@ -76,6 +76,33 @@ const ppi = (w, h, diag) => Math.round(Math.sqrt(w * w + h * h) / diag);
 const nf = (n) => n.toLocaleString('en-US');
 
 export default async function () {
+  // The visual-acuity arithmetic the hub prints, computed rather than typed.
+  // One arcminute is the standard limit for normal vision; it is the same
+  // calculation behind every "how far should I sit" chart.
+  const ARCMIN_RAD = (1 / 60) * (Math.PI / 180);
+  const tvDiagIn = 55;
+  const tvDistM = 3;
+  // 16:9 diagonal to height: h = diag * 9 / sqrt(16^2 + 9^2)
+  const tvHeightMm = (tvDiagIn * 25.4 * 9) / Math.sqrt(16 * 16 + 9 * 9);
+  const tvHeightCm = Math.round(tvHeightMm / 10);
+  const arcMm = Math.round(tvDistM * 1000 * Math.tan(ARCMIN_RAD) * 1000) / 1000;
+  const resolvable = Math.round(tvHeightMm / (tvDistM * 1000 * Math.tan(ARCMIN_RAD)));
+  // The distance at which 2160 lines are exactly resolvable.
+  const fourKDistM = Math.round((tvHeightMm / 2160 / Math.tan(ARCMIN_RAD)) / 1000 * 10) / 10;
+
+  if (resolvable >= 1080) {
+    console.error(`\n\u2717 resolution hub: says 4K is invisible at ${tvDistM} m but computes ${resolvable} resolvable lines, which is not below 1080`);
+    process.exitCode = 1;
+  }
+  if (!(fourKDistM > 0 && fourKDistM < tvDistM)) {
+    console.error(`\n\u2717 resolution hub: 2160 lines resolve at ${fourKDistM} m, which is not closer than the ${tvDistM} m it is compared with`);
+    process.exitCode = 1;
+  }
+  if (Math.abs(tvHeightMm - 685) > 5) {
+    console.error(`\n\u2717 resolution hub: a 55-inch 16:9 screen computes ${Math.round(tvHeightMm)} mm tall, which is not the published 685`);
+    process.exitCode = 1;
+  }
+
   const pages = [];
   const CATS = {
     tv: 'Broadcast and TV', monitor: 'Desktop monitor', laptop: 'Laptop', ultrawide: 'Ultrawide',
@@ -168,6 +195,20 @@ ${FAQ.html}
     body: `<p class="muted">${R.length} display resolutions, each with its aspect ratio, pixel count and the density it produces on screens from 13 to 32 inches.</p>
 <h2>How to read a resolution</h2>
 <p>A resolution is a pixel count, not a measure of sharpness. <strong>1920×1080 is dense on a 13-inch laptop and coarse on a 32-inch monitor</strong>, because sharpness is pixels per inch and the inches are not in the number. The other thing the number hides is shape: 1366×768 and 1920×1080 are both sold as 16:9 and only one of them is, which is why a full-screen video on the first is very slightly letterboxed.</p>
+<h2>4K is two different numbers, and 2K is worse</h2>
+<p>DCI 4K, the cinema standard, is <strong>4096×2160</strong>. Every television and monitor sold as 4K is <strong>3840×2160</strong> — twice 1920×1080 on each axis — which has its own name, UHD, that almost nobody uses. The two differ by 256 pixels of width, which is why cinema masters get cropped or pillarboxed on the way to a home screen.</p>
+<p>"2K" is used more loosely still. In cinema it means 2048×1080, the half of DCI 4K. In monitor marketing it usually means 2560×1440, which is not half of anything 4K and is properly called QHD or 1440p. If a specification says 2K without a pixel count, it has not told you the resolution.</p>
+<p>The pattern is that the cinema names count horizontal pixels in thousands and the consumer names count vertical lines — 1080p, 1440p, 2160p. Mixing the two conventions in one sentence is where most of the confusion comes from.</p>
+
+<h2>When more pixels stop being visible</h2>
+<p>Sharpness has a ceiling set by the eye rather than the panel. Normal vision resolves about one arcminute, so at a viewing distance <em>d</em> the smallest detail that can be told apart is <em>d</em> × tan(1/60°), and dividing the screen height by that gives the most lines anyone can actually distinguish.</p>
+<p>For a 55-inch 16:9 television, which is ${tvHeightCm} cm tall, at a normal living-room ${tvDistM} m:</p>
+<pre><code>one arcminute at ${tvDistM} m   = ${arcMm} mm
+screen height             = ${Math.round(tvHeightMm)} mm
+resolvable lines          = ${resolvable}</code></pre>
+<p>That is fewer than the 1080 lines of a 1080p picture, and a long way short of 2160. <strong>On a 55-inch screen at ${tvDistM} m, 4K is invisible</strong> — not subtle, not marginal, below the resolution of the eye. It becomes visible by sitting closer or buying a larger screen, and the distance at which 2160 lines start to pay is about ${fourKDistM} m for this size.</p>
+<p>None of which makes 4K panels a waste: they are what is manufactured, they come with better contrast and colour, and a monitor at desk distance is a completely different calculation. But the pixel count is the wrong thing to shop on from a sofa.</p>
+
 ${Object.entries(byCat).map(([cat, rows]) => `<h2>${CATS[cat]}</h2>
 <table><thead><tr><th>Resolution</th><th>Name</th><th>Ratio</th><th>Megapixels</th><th>vs 1080p</th></tr></thead><tbody>
 ${rows.map(([w, h, n]) => `<tr><td><a href="/resolution/${w}x${h}/">${w}×${h}</a></td><td>${esc(n)}</td><td>${ratio(w, h).text}</td><td>${((w * h) / 1e6).toFixed(2)} MP</td><td>${((w * h) / (1920 * 1080)).toFixed(2)}×</td></tr>`).join('')}
