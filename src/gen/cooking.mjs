@@ -143,7 +143,15 @@ ${FAQ.html}
     // ---- ingredient hub ----
     pages.push({
       path: `/cooking/${ing.id}/`,
-      title: `${ing.name.charAt(0).toUpperCase() + ing.name.slice(1)} — Cups to Grams Conversion`,
+      title: (() => {
+        // This is the page Google shows for "1 cup butter in grams", and the
+        // title was "Butter - Cups to Grams Conversion": neither the phrase
+        // people type nor the answer they want, in 33 of 65 characters.
+        const Name = ing.name.charAt(0).toUpperCase() + ing.name.slice(1);
+        const answer = `${Name} in Grams — 1 Cup Is ${gPerCup} g`;
+        const full = `${answer} | Cups to Grams Chart`;
+        return full.length <= 65 ? full : answer.length <= 65 ? answer : `${Name} — Cups to Grams`;
+      })(),
       desc: `One US cup of ${ing.name} weighs about ${gPerCup} grams. Full conversion table for cups, tablespoons, teaspoons, grams and ounces, plus why the figure varies.`,
       h1: `${ing.name.charAt(0).toUpperCase() + ing.name.slice(1)} conversions`,
       crumbs: [{ name: 'Cooking', path: '/cooking/' }, { name: ing.name, path: `/cooking/${ing.id}/` }],

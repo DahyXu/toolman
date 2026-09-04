@@ -330,3 +330,29 @@ whole time.
 The rule: **measure text length with the same runtime that enforces the limit.**
 A second opinion from a different tool is only useful when both tools are
 counting the same thing.
+
+## The query list and the page list say different things
+
+Search Console's two breakdowns answer different questions, and the intersection
+answers a third that neither does alone.
+
+By query, `password generator 8 characters` at position 68 looked like the
+biggest gap. By page, paper item pages turned out to carry three times as many
+impressions. And filtering to one page and reading its own queries showed the
+thing worth acting on: `/paper/a4/` sits at position 80 across 43 queries, and
+**seven of its top ten are about pixels** — a question that has its own page,
+`/paper/a4/pixels/`, which the impressions were not reaching.
+
+The same shape appeared in cooking: `/cooking/butter/` at position 76, catching
+`1 cup butter in grams` and `1 1/4 cups butter in grams`, both of which have
+their own pages.
+
+A mid-level page ranking badly across many queries is not one problem. It is a
+page standing in for children that are not indexed yet — and while it stands in,
+its title should answer what is arriving rather than describe the section.
+"Butter — Cups to Grams Conversion" used 33 of 65 characters and contained
+neither the phrase people type nor the answer they want.
+
+**Read one page's own query list before deciding what is wrong with it.** The
+site-wide query table cannot tell you that a page is answering the wrong
+question, because it does not know which page answered.
