@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -278,7 +278,7 @@ export default async function () {
       { q: 'Why did my cron job not run at all?',
         a: 'The three usual causes: the script is not executable, the command relies on a <code>PATH</code> or environment variable that cron does not set, or output went nowhere because no mail transport is configured. Redirect stdout and stderr to a log file and the reason usually becomes obvious.' },
     ]);
-    const others = all.filter((x) => x.slug !== s.slug).slice(0, 20);
+    const others = ring(all, s, 20);
     pages.push({
       path: `/cron/${s.slug}/`,
       title: `Cron Expression for ${s.title.replace(/^every/, 'Every')} — ${s.expr} | Toolman`,

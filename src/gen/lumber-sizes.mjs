@@ -1,4 +1,4 @@
-import { faq } from '../layout.mjs';
+import { faq, ring } from '../layout.mjs';
 
 // "2x4 actual size" is one of the most-searched dimension questions there is,
 // and the answer is 1½ × 3½ inches — a board named for what it measured before
@@ -78,7 +78,12 @@ export default async function () {
     const id = r.id;
     const areaLoss = (1 - (r.at * r.aw) / (r.t * r.w)) * 100;
     const others = rows.filter((x) => x.id !== id);
-    const sameThickness = others.filter((x) => x.t === r.t);
+    // Scoping a sibling list by an attribute starves the singletons of that
+    // attribute: 6x6 is the only 6-inch nominal board, so it appeared in
+    // nobody's list and was reachable from the hub alone. Same shape as the
+    // 9V cell, which is the only rectangular battery.
+    const byThickness = others.filter((x) => x.t === r.t);
+    const sameThickness = byThickness.length ? byThickness : others.slice(0, 8);
 
     const FAQ = faq([
       { q: `What is the actual size of a ${id}?`,
@@ -121,6 +126,9 @@ ${sameThickness.map((x) => `<tr><td><a href="/lumber/${x.id}/">${x.id}</a></td><
 </tbody></table>` : ''}
 
 ${FAQ.html}
+
+<h2>More lumber sizes</h2>
+<ul class="linklist">${ring(rows, r, 10).map((o) => `<li><a href="/lumber/${o.id}/">${o.id}</a></li>`).join('')}</ul>
 
 <p><a href="/lumber/">The full nominal-to-actual chart</a> · <a href="/convert/">Unit converters</a></p>`,
     });

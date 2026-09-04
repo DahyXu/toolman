@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // The best fact in this whole section is that the number is the size. A CR2032
 // is 20 mm across and 3.2 mm thick; a CR1620 is 16 mm by 2.0; an 18650 is 18 mm
@@ -115,7 +115,10 @@ export default async function () {
 
   for (const r of rows) {
     const sameDia = rows.filter((x) => x.code !== r.code && x.kind === r.kind && Math.abs(x.d - r.d) < 0.5);
-    const sameKind = rows.filter((x) => x.code !== r.code && x.kind === r.kind).slice(0, 10);
+    // A cell alone in its kind - 9V is the only rectangular one - got an empty
+    // list and therefore no inbound links from anywhere but the hub.
+    const kin = rows.filter((x) => x.kind === r.kind);
+    const sameKind = kin.length > 1 ? ring(kin, r, 10) : ring(rows, r, 10);
 
     const FAQ = faq([
       { q: `What size is a ${r.code} battery?`,
@@ -178,6 +181,9 @@ ${sameKind.map((x) => `<tr><td><a href="/battery/${x.code.toLowerCase()}/">${x.c
 </tbody></table>
 
 ${FAQ.html}
+
+<h2>More battery sizes</h2>
+<ul class="linklist">${ring(rows, r, 10).map((o) => `<li><a href="/battery/${o.code.toLowerCase()}/">${esc(o.code)}</a> — ${one(o.d)} × ${one(o.h)} mm</li>`).join('')}</ul>
 
 <p><a href="/battery/">All battery sizes</a> · <a href="/convert/">Unit converters</a></p>`,
     });

@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // Baking tins are the everyday reference with the most useful arithmetic behind
 // it. A recipe is written for a tin *area*, not a tin name: the same batter in a
@@ -151,6 +151,9 @@ ${subs.map((o) => {
 </tbody></table>` : ''}
 
 ${FAQ.html}
+
+<h2>More baking tins</h2>
+<ul class="linklist">${ring(rows, r, 10).map((o) => `<li><a href="/bakeware/${o.id}/">${esc(o.name)}</a></li>`).join('')}</ul>
 
 <p><a href="/bakeware/">All baking tin sizes</a> · <a href="/cooking/">Cooking measurements</a> · <a href="/oven/">Oven temperatures</a></p>`,
     });

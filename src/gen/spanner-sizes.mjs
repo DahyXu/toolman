@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // The useful content here is not the conversion — it is which pairs are close
 // enough to swap and which are close enough to do damage. 3/4 inch is 19.05 mm
@@ -107,6 +107,9 @@ ${[...sameKind, r].sort((a, b) => a.mm - b.mm).map((x) => {
 </tbody></table>` : ''}
 
 ${FAQ.html}
+
+<h2>More spanner sizes</h2>
+<ul class="linklist">${ring(rows, r, 10).map((o) => `<li><a href="/spanner/${o.id}/">${esc(o.label || o.id)}</a></li>`).join('')}</ul>
 
 <p><a href="/spanner/">All spanner sizes</a> · <a href="/thread/">Metric threads</a></p>`,
     });

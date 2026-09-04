@@ -223,3 +223,19 @@ ${o.script ? `<script>${o.script}</script>` : ''}
 </body>
 </html>`;
 }
+
+// `.slice(0, n)` hands every page the same n siblings, so anything past
+// position n in the list is reachable only from the section hub — 1,033 pages
+// were in exactly that state. Taking the n entries *after* this one, wrapping
+// at the end, gives every entry the same number of inbound links.
+export function ring(list, self, n) {
+  const i = list.indexOf(self);
+  const start = i < 0 ? 0 : i + 1;
+  const take = Math.min(n, Math.max(0, list.length - 1));
+  const out = [];
+  for (let k = 0; k < take; k++) {
+    const item = list[(start + k) % list.length];
+    if (item !== self) out.push(item);
+  }
+  return out;
+}

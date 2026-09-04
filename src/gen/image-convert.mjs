@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 const F = {
   png: { name: 'PNG', full: 'Portable Network Graphics', mime: 'image/png', lossy: false, alpha: true,
@@ -118,8 +118,10 @@ function page(fromKey, toKey, all) {
   const losesAlpha = a.alpha && !b.alpha;
   const losesVector = a.vector;
 
-  const siblings = all.filter(([x, y]) => !(x === fromKey && y === toKey))
-    .slice(0, 18)
+  // The same eighteen for every page left the tail of the list reachable only
+  // from the tools index. A window that follows this pair's own position gives
+  // every converter the same number of inbound links.
+  const siblings = ring(all, all.find(([x, y]) => x === fromKey && y === toKey), 18)
     .map(([x, y]) => `<li><a href="/${x}-to-${y}/">${F[x].name} to ${F[y].name}</a></li>`).join('');
 
   const FAQ = faq([

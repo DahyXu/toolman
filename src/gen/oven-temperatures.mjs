@@ -1,4 +1,4 @@
-import { faq } from '../layout.mjs';
+import { faq, ring } from '../layout.mjs';
 
 // Temperature is the highest-earning query family on the site, and this is the
 // finite reference namespace sitting next to it: an oven dial has perhaps twenty
@@ -116,6 +116,9 @@ ${FAQ.html}
 ${conversionTable(g.slug, true)}
 <p><a href="/oven/">The full chart, and why the three scales disagree →</a></p>
 
+<h2>The other gas marks</h2>
+<ul class="linklist">${ring(GAS, g, 8).map((o) => `<li><a href="/oven/${o.slug}/">Gas mark ${o.mark}</a> — ${o.c}°C, ${o.f}°F</li>`).join('')}</ul>
+
 <p><a href="/oven/">All oven temperatures</a> · <a href="/convert/${g.c}-celsius-to-fahrenheit/">${g.c}°C to °F precisely</a> · <a href="/cooking/">Cooking measurements</a></p>`,
     });
   }
@@ -167,6 +170,9 @@ ${FAQ.html}
 <h2>The settings either side</h2>
 ${conversionTable(g.slug, true)}
 <p><a href="/oven/">The full chart, and why the three scales disagree →</a></p>
+
+<h2>Other oven temperatures</h2>
+<ul class="linklist">${ring(C_VALUES, c, 10).map((o) => `<li><a href="/oven/${o}c/">${o}°C</a></li>`).join('')}</ul>
 
 <p><a href="/oven/">All oven temperatures</a> · <a href="/convert/${c}-celsius-to-fahrenheit/">${c}°C to °F precisely</a> · <a href="/cooking/">Cooking measurements</a></p>`,
     });

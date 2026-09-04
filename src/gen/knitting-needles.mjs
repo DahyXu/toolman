@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // The strongest version on this site of a name that means two things: the
 // American and British knitting needle scales **run in opposite directions**.
@@ -115,6 +115,9 @@ ${[...near, r].sort((a, b) => a.mm - b.mm).map((x) => `<tr${x.id === r.id ? ' st
 </tbody></table>
 
 ${FAQ.html}
+
+<h2>More needle sizes</h2>
+<ul class="linklist">${ring(rows, r, 10).map((o) => `<li><a href="/knitting-needle/${o.id}/">${esc(o.name || o.id)}</a></li>`).join('')}</ul>
 
 <p><a href="/knitting-needle/">The full needle chart</a> · <a href="/convert/">Unit converters</a></p>`,
     });

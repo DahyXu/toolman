@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 import { DETAIL } from '../data/port-detail.mjs';
 
 // port, service, protocol, what it is, security note
@@ -63,7 +63,7 @@ export default async function () {
   const pages = [];
 
   for (const [port, service, proto, what, security] of P) {
-    const related = P.filter((x) => x[0] !== port).slice(0, 18);
+    const related = ring(P, P.find((x) => x[0] === port), 18);
 
     const FAQ = faq([
       { q: `What is port ${port} used for?`, a: what },

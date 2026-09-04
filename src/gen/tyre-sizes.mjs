@@ -1,4 +1,4 @@
-import { faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // A tyre marking is three measurements and people read it as a part number.
 // 205/55R16 is 205 mm across the tread, a sidewall 55% of that (112.75 mm), on a
@@ -112,6 +112,9 @@ ${sameRim.map((x) => `<tr><td><a href="/tyre/${x.s.replace('/', '-').toLowerCase
 </tbody></table>` : ''}
 
 ${FAQ.html}
+
+<h2>More tyre sizes</h2>
+<ul class="linklist">${ring(rows, t, 10).map((o) => `<li><a href="/tyre/${o.s.replace('/', '-').toLowerCase()}/">${esc(o.s)}</a></li>`).join('')}</ul>
 
 <p><a href="/tyre/">All tyre sizes</a> · <a href="/convert/">Unit converters</a></p>`,
     });

@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // The best fact in this section is that "80 lb paper" names two papers that
 // differ by 83%. American basis weight is the weight of 500 sheets *at that
@@ -144,6 +144,9 @@ ${[...near, gsm].sort((a, b) => a - b).map((x) => `<tr${x === gsm ? ' style="fon
 
 ${FAQ.html}
 
+<h2>Nearby weights</h2>
+<ul class="linklist">${ring(GSM_VALUES, gsm, 10).map((o) => `<li><a href="/paper-weight/${o}-gsm/">${o} gsm</a></li>`).join('')}</ul>
+
 <p><a href="/paper-weight/">All paper weights, and why lb figures disagree</a> · <a href="/paper/">Paper sizes</a></p>`,
     });
   }
@@ -188,6 +191,9 @@ ${[{ g: grade, gsm }, ...clashes].map((c) => `<tr${c.g.id === grade.id ? ' style
 <p><strong>This is the reason to ask for gsm.</strong> One number, no grade, no ambiguity — ${r0(gsm)} gsm is ${r0(gsm)} gsm whoever is printing it.</p>
 
 ${FAQ.html}
+
+<h2>Nearby weights in ${short}</h2>
+<ul class="linklist">${ring(LB_VALUES[grade.id] || [], lb, 10).map((o) => HAS_PAGE.has(`${o}-${grade.id}`) ? `<li><a href="/paper-weight/${o}-lb-${grade.id}/">${o} lb ${esc(short)}</a></li>` : '').join('')}</ul>
 
 <p><a href="/paper-weight/${nearestGsm(gsm)}-gsm/">${nearestGsm(gsm)} gsm</a> · <a href="/paper-weight/">All paper weights</a> · <a href="/paper/">Paper sizes</a></p>`,
       });

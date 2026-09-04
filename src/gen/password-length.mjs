@@ -108,7 +108,11 @@ export default async function () {
   }));
 
   for (const r of rows) {
-    const near = rows.filter((x) => x.len !== r.len && Math.abs(x.len - r.len) <= 4);
+    // By value, 32's nearest neighbour is 24 - eight away - so the ±4 window
+    // returned nothing and the page was reachable only from the hub. By
+    // position, the ends of the scale get neighbours like everything else.
+    const at = rows.indexOf(r);
+    const near = rows.filter((x, i) => i !== at && Math.abs(i - at) <= 2);
     const plusFour = rows.find((x) => x.len === r.len + 4);
 
     const FAQ = faq([

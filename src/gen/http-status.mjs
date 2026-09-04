@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // code, name, category, when it happens, how to fix / what to do
 const CODES = [
@@ -54,7 +54,8 @@ export default async function () {
   const pages = [];
 
   for (const [code, name, cat, when, fix] of CODES) {
-    const related = CODES.filter((c) => c[2] === cat && c[0] !== code).slice(0, 12);
+    const inCat = CODES.filter((c) => c[2] === cat);
+    const related = ring(inCat, inCat.find((c) => c[0] === code), 12);
 
     const FAQ = faq([
       { q: `What does HTTP ${code} mean?`, a: when },

@@ -1,4 +1,4 @@
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // The permission values people actually search for, plus enough neighbours that
 // the section is a real reference rather than a handful of pages. Every value
@@ -90,7 +90,7 @@ export default async function () {
       { q: `What is ${v} in symbolic notation?`, a: `<code>${sym}</code>. Written as <code>ls -l</code> shows it, with a leading file-type character, an ordinary file would appear as <code>-${sym}</code> and a directory as <code>d${sym}</code>.` },
     ]);
 
-    const related = VALUES.filter((x) => x !== v).slice(0, 14);
+    const related = ring(VALUES, v, 14);
 
     pages.push({
       path: `/chmod/${v}/`,

@@ -356,3 +356,27 @@ neither the phrase people type nor the answer they want.
 **Read one page's own query list before deciding what is wrong with it.** The
 site-wide query table cannot tell you that a page is answering the wrong
 question, because it does not know which page answered.
+
+## One inbound link is not zero, and the orphan check does not care
+
+Search Console said "未检测到引荐来源网页" for /paper/a4/pixels/ and the site
+agreed: exactly one page linked to it. The orphan check in the audit passed the
+whole time, because one is not zero, and the sitemap listed it, and nothing
+looked wrong. Its status was "discovered, never crawled".
+
+Counting inbound internal links found 1,033 pages in that state, and two causes
+that both look like working code:
+
+  **A fixed slice.** `list.filter(...).slice(0, 18)` hands every page the same
+  eighteen siblings, so everything past position eighteen is reachable only from
+  the section hub. `ring()` in layout.mjs takes the n entries *after* this one,
+  wrapping, which gives every entry exactly n inbound links.
+
+  **A list scoped by an attribute.** `others.filter(x => x.t === r.t)` starves
+  the singletons of that attribute: 6x6 is the only 6-inch nominal board and 9V
+  the only rectangular cell, so neither appeared in anybody's list. The fix is a
+  ring over the whole set alongside the scoped one, not a fallback on the
+  singleton's own page — that lets it link out, which was never the problem.
+
+Both are invisible in review. The lists render, the links work, and the page
+that is missing from them is somewhere else.

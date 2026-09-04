@@ -1,5 +1,5 @@
 import { INGREDIENTS, VOL, WT, AMOUNTS } from '../data/ingredients.mjs';
-import { esc, faq } from '../layout.mjs';
+import { esc, faq, ring } from '../layout.mjs';
 
 // A quantity under one takes the singular in English — 1/2 cup, 3/4 cup —
 // exactly as one does. Only amounts above one are plural.
@@ -73,7 +73,7 @@ export default async function () {
       const unitWord = unitFor(a.v, vol);
       const label = `${a.label} ${unitWord} of ${ing.name}`;
 
-      const siblings = amountIndex.filter((x) => x.path !== entry.path).slice(0, 26);
+      const siblings = ring(amountIndex, entry, 26);
 
       const FAQ = faq([
         { q: `How many grams is ${label}?`,
