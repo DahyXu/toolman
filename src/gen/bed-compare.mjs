@@ -132,7 +132,7 @@ export default function bedCompare() {
 
       const beddingLine = {
         same: `<strong>Yes.</strong> The two differ by at most ${r1(Math.max(Math.abs(dw), Math.abs(dh)) / 10)} cm on any edge, which is inside the give of a fitted sheet. Bedding sold for one will sit correctly on the other.`,
-        marginal: `<strong>It will go on, but not well.</strong> The gap is ${r1(Math.abs(dw) / 10)} cm in width and ${r1(Math.abs(dh) / 10)} cm in length. A fitted sheet will strain on ${label(bigger)} and wrinkle on ${label(smaller)}; flat sheets and duvet covers are more forgiving.`,
+        marginal: `<strong>The bedding will go on, but not well.</strong> The gap is ${r1(Math.abs(dw) / 10)} cm in width and ${r1(Math.abs(dh) / 10)} cm in length. A fitted sheet will strain on ${label(bigger)} and wrinkle on ${label(smaller)}; flat sheets and duvet covers are more forgiving.`,
         no: `<strong>No.</strong> ${
           Math.abs(dw) > LOOSE_MM && Math.abs(dh) > LOOSE_MM
             ? `${r1(Math.abs(dw) / 10)} cm of width and ${r1(Math.abs(dh) / 10)} cm of length are`

@@ -65,7 +65,7 @@ function pairPage(a, b, all) {
       : { q: 'Does browser zoom change the result?',
           a: 'No. Both units are absolute in CSS and keep the same ratio at any zoom level, though the rendered size on screen changes.' },
     { q: 'Why does CSS use 96 pixels per inch?',
-      a: "It is a historical convention from early desktop displays that became the fixed CSS reference. It has nothing to do with your monitor's real pixel density — the browser scales CSS pixels to physical ones for you." },
+      a: "The 96 figure is a historical convention from early desktop displays that became the fixed CSS reference. It has nothing to do with your monitor's real pixel density — the browser scales CSS pixels to physical ones for you." },
   ]);
 
   return {

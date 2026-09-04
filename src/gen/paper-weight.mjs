@@ -112,7 +112,7 @@ export default async function () {
 
     const FAQ = faq([
       { q: `What is ${gsm} gsm in lb?`,
-        a: `It depends which grade — that is the whole difficulty. ${equivalents.slice(0, 3).map((e) => `<strong>${r0(e.lb)} lb ${e.g.name.split(' / ')[0].toLowerCase()}</strong>`).join(', ')}. American basis weights are not comparable between grades, so a pound figure means nothing without the grade beside it.` },
+        a: `The gsm equivalent depends which grade — that is the whole difficulty. ${equivalents.slice(0, 3).map((e) => `<strong>${r0(e.lb)} lb ${e.g.name.split(' / ')[0].toLowerCase()}</strong>`).join(', ')}. American basis weights are not comparable between grades, so a pound figure means nothing without the grade beside it.` },
       { q: `How thick is ${gsm} gsm paper?`,
         a: `Roughly <strong>${r0(gsm / 0.8) / 1000} mm</strong> for an uncoated sheet — about ${(gsm / 0.8 / 1000).toFixed(3)} mm — though thickness depends on how the paper was made as much as on its weight. A bulky uncoated stock and a compressed glossy one at the same gsm can differ by half again.` },
       { q: `What is ${gsm} gsm paper used for?`, a: useFor(gsm) },

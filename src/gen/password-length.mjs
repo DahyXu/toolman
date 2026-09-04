@@ -97,7 +97,7 @@ export default async function () {
       { q: `Is a ${r.len} character password strong enough?`,
         a: `<strong>${r.verdict[0]}</strong> ${r.verdict[1]}` },
       { q: `How long does it take to crack a ${r.len} character password?`,
-        a: `It depends entirely on how it is stored. Against a fast unsalted hash on GPUs, <strong>${crackTime(r.bits, 1e12)}</strong>. Against bcrypt, ${crackTime(r.bits, 1e4)}. Against a rate-limited login, ${crackTime(r.bits, 100)}. A single "time to crack" figure without that context is meaningless.` },
+        a: `How long a password survives depends entirely on how it is stored. Against a fast unsalted hash on GPUs, <strong>${crackTime(r.bits, 1e12)}</strong>. Against bcrypt, ${crackTime(r.bits, 1e4)}. Against a rate-limited login, ${crackTime(r.bits, 100)}. A single "time to crack" figure without that context is meaningless.` },
       { q: `How many bits of entropy is a ${r.len} character password?`,
         a: `<strong>${f1(r.bits)} bits</strong> if every character is chosen at random from the full keyboard — 26 lowercase, 26 uppercase, 10 digits and 25 symbols, which is ${BITS_PER_CHAR.toFixed(3)} bits each. A password you invented yourself carries far less, because people do not choose randomly.` },
       { q: `Is a ${r.len} character password the same as a passphrase?`,

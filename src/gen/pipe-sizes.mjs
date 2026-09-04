@@ -93,7 +93,7 @@ export default async function () {
         a: `About <strong>${f1(r.idmm)} mm</strong> (${f3(r.idmm / IN)} in), from an outside diameter of ${r.od} mm and a ${r.wall} mm wall. Inside diameter changes with the schedule; <strong>outside diameter does not</strong>, which is why fittings are sized on it.` },
       { q: `Why is NPS ${r.label} not ${r.nps} inches?`,
         a: r.isMeasurement
-          ? `It is. From NPS 14 upward the number is the outside diameter in inches — the scale becomes a measurement at exactly this point.`
+          ? `The name matches the size from NPS 14 upward the number is the outside diameter in inches — the scale becomes a measurement at exactly this point.`
           : `Because the name is inherited. NPS came from wrought-iron pipe whose much thicker walls gave roughly this bore, and the label was kept when the pipe changed, because the threads and fittings could not change with it. Below NPS 14 the number matches neither the outside nor the inside diameter of modern pipe.` },
     ]);
 

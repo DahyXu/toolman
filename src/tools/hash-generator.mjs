@@ -43,7 +43,7 @@ export default {
   faq: [
     { q: 'Is my file uploaded to compute the hash?', a: 'No. The Web Crypto API hashes the file in your browser. You can disconnect from the network and the tool still works.' },
     { q: 'Can a hash be reversed?', a: 'Not by computation. Short or common inputs can be found by brute force or in a rainbow table, which is why password hashing needs a unique salt and a deliberately slow algorithm.' },
-    { q: 'Why is MD5 still everywhere if it is broken?', a: 'It is fast and short, and for detecting accidental corruption it works fine. The break matters when an attacker can choose the input — then two different files can be crafted with the same MD5.' },
+    { q: 'Why is MD5 still everywhere if it is broken?', a: 'MD5 is fast and short, and for detecting accidental corruption it works fine. The break matters when an attacker can choose the input — then two different files can be crafted with the same MD5.' },
     { q: 'Why does the same file give a different hash on another site?', a: 'Almost always a different algorithm, or a text input with different line endings. A file that ends <code>\\r\\n</code> on Windows hashes differently from the same file with Unix line endings.' },
     { q: 'What is the difference between hex and Base64 output?', a: 'Both encode the same bytes. Hex is twice the digest length and easy to read; Base64 is about a third shorter and is what HTTP headers such as <code>Content-Digest</code> and subresource integrity attributes use.' },
   ],

@@ -93,8 +93,8 @@ export default {
   faq: [
     { q: 'Is it safe to generate a password on a website?', a: 'On this one, yes — the generator runs entirely in your browser using <code>crypto.getRandomValues()</code>, and the page has no backend to send anything to. You can verify by loading the page, disconnecting from the network, and generating passwords offline.' },
     { q: 'How long should a password be?', a: 'Sixteen random characters is a good default for online accounts. Go to 20 or more for password-manager master passwords, encryption keys and anything protecting other credentials.' },
-    { q: 'Should I include symbols?', a: 'They help, but far less than length. A 20-character letters-and-digits password is stronger than a 12-character one with symbols, and it avoids sites that quietly reject certain punctuation.' },
-    { q: 'What does "exclude look-alikes" do?', a: 'It removes characters that are easy to confuse when read aloud or transcribed — <code>0</code>/<code>O</code> and <code>1</code>/<code>l</code>/<code>I</code>. Useful for passwords you will type by hand or dictate; it slightly reduces entropy per character.' },
+    { q: 'Should I include symbols?', a: 'Symbols help, but far less than length. A 20-character letters-and-digits password is stronger than a 12-character one with symbols, and it avoids sites that quietly reject certain punctuation.' },
+    { q: 'What does "exclude look-alikes" do?', a: 'The option removes characters that are easy to confuse when read aloud or transcribed — <code>0</code>/<code>O</code> and <code>1</code>/<code>l</code>/<code>I</code>. Useful for passwords you will type by hand or dictate; it slightly reduces entropy per character.' },
     { q: 'Do I still need to change passwords regularly?', a: 'Only when there is a reason — a breach notification, a shared password, or a suspicion of compromise. Scheduled rotation without cause mostly produces weaker, more predictable passwords.' },
   ],
   related: ['uuid-generator', 'hash-generator', 'base64-encode-decode'],

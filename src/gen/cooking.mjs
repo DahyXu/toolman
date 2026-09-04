@@ -65,7 +65,7 @@ export default async function () {
         { q: 'Is a US cup the same as a metric cup?',
           a: `No. A US customary cup is 236.6 ml; a metric cup — used in Australia, New Zealand and much of Europe — is 250 ml, about 6% larger. An imperial cup, still seen in older British recipes, is 284 ml. For a cup of ${ing.name} that is a difference of roughly ${fmt(gPerCup * 0.0567)} g between US and metric.` },
         { q: 'Should I sift before or after measuring?',
-          a: 'It matters, and recipes are often ambiguous. "1 cup sifted flour" means sift first, then measure — which gives less flour than "1 cup flour, sifted", where you measure first. When in doubt, weigh.' },
+          a: 'The order matters, and recipes are often ambiguous. "1 cup sifted flour" means sift first, then measure — which gives less flour than "1 cup flour, sifted", where you measure first. When in doubt, weigh.' },
       ]);
 
       pages.push({

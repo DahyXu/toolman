@@ -79,7 +79,7 @@ export default async function () {
       { q: `Is a ${label} screen much bigger than a ${prev ? prev.s.d : ''}-inch one?`,
         a: prev
           ? `By area, <strong>${((base.area / dims(prev.s.d, main.r).area - 1) * 100).toFixed(0)}% bigger</strong>. Screens are sold by diagonal, which understates every step: going up ${n1(d - prev.s.d)} inches of diagonal here adds ${((base.area / dims(prev.s.d, main.r).area - 1) * 100).toFixed(0)}% of picture.`
-          : `This is the smallest size listed here.` },
+          : `This diagonal is the smallest listed here.` },
       { q: `What resolution should a ${label} screen be?`,
         a: `Pixel density decides that: ${COMMON_RES.map(([w, h, n]) => `${n} gives ${ppi(w, h, d)} PPI`).join(', ')}. Below about 80 PPI a screen looks coarse at desk distance but is fine across a room, which is why televisions and monitors of the same size are sold at different resolutions.` },
     ]);

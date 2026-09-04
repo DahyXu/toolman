@@ -65,7 +65,7 @@ export default async function () {
             a: `A <strong>${r.fits}</strong> hex head. <a href="/thread/">The full metric thread chart</a> gives the tapping drill and clearance hole for it too.` }
         : { q: `Where is ${r.label} used?`,
             a: r.kind === 'metric'
-              ? `It sits between the standard hex head sizes rather than on one, so it turns up on proprietary fasteners, plumbing fittings and older machinery rather than on ordinary bolts.`
+              ? `This size sits between the standard hex head sizes rather than on one, so it turns up on proprietary fasteners, plumbing fittings and older machinery rather than on ordinary bolts.`
               : `Imperial spanner sizes are "across flats" measurements and are still standard on American vehicles, plumbing and older machinery everywhere.` },
     ]);
 

@@ -43,7 +43,7 @@ Go          time.Unix(ts, 0).UTC()
 Bash        date -u -d @$ts</code></pre>`,
   faq: [
     { q: 'How do I know if a number is seconds or milliseconds?', a: 'Count the digits. A current timestamp in seconds has 10 digits; in milliseconds it has 13. This tool detects the unit automatically and shows which one it used.' },
-    { q: 'Why is epoch time based on 1 January 1970?', a: 'It was chosen when Unix was developed in the early 1970s as a convenient recent reference point that fit comfortably in the integer sizes of the day.' },
+    { q: 'Why is epoch time based on 1 January 1970?', a: 'The 1970 epoch was chosen when Unix was developed in the early 1970s as a convenient recent reference point that fit comfortably in the integer sizes of the day.' },
     { q: 'Does Unix time include leap seconds?', a: 'No. Unix time deliberately pretends every day has exactly 86,400 seconds, which keeps arithmetic simple but means it drifts from true astronomical time by the number of leap seconds inserted so far.' },
     { q: 'Can a timestamp be negative?', a: 'Yes. Negative values represent instants before 1970 — for example <code>-86400</code> is 31 December 1969.' },
     { q: 'What time zone is a Unix timestamp in?', a: 'None, and that is the point. It always denotes an instant in UTC; time zones only matter when you format it for a human.' },

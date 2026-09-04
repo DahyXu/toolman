@@ -60,7 +60,7 @@ export default async function () {
         ? { q: `What comes before and after P${r.p}?`,
             a: `Coming up from coarse, <strong>P${coarser.p}</strong> (${f1(coarser.um)} µm) and then this; the next step finer is <strong>P${finer.p}</strong> at ${f1(finer.um)} µm. Skipping more than one step leaves scratches the finer paper cannot remove — the usual cause of a surface that looks fine dry and terrible once finish goes on.` }
         : { q: `Is P${r.p} at the end of the range?`,
-            a: coarser ? 'This is the finest grit generally stocked.' : 'This is the coarsest grit in common use.' },
+            a: coarser ? 'This grade is the finest generally stocked.' : 'This grade is the coarsest in common use.' },
     ]);
 
     pages.push({

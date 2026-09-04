@@ -125,12 +125,12 @@ export default async function () {
       { q: `What voltage is a ${r.code}?`, a: `<strong>${r.volts} V</strong> (${r.chem}).` },
       r.decoded
         ? { q: `What do the numbers in ${r.code} mean?`,
-            a: `They are the size. <strong>${String(r.code).replace(/^[A-Z]+/, '').slice(0, 2)} is the diameter in millimetres and ${String(r.code).replace(/^[A-Z]+/, '').slice(2)} is the ${r.kind === 'coin' ? 'thickness' : 'length'} in tenths of a millimetre</strong> — so ${r.code} is ${one(r.d)} mm by ${one(r.h)} mm. The rule holds for every coin cell and every lithium-ion cylinder named this way.` }
+            a: `The digits are the size. <strong>${String(r.code).replace(/^[A-Z]+/, '').slice(0, 2)} is the diameter in millimetres and ${String(r.code).replace(/^[A-Z]+/, '').slice(2)} is the ${r.kind === 'coin' ? 'thickness' : 'length'} in tenths of a millimetre</strong> — so ${r.code} is ${one(r.d)} mm by ${one(r.h)} mm. The rule holds for every coin cell and every lithium-ion cylinder named this way.` }
         : { q: `What is another name for a ${r.code}?`,
             a: `${r.aliases.map((a) => `<strong>${esc(a)}</strong>`).join(', ')} — all the same cell.` },
       sameDia.length
         ? { q: `Can I use a ${sameDia[0].code} instead of a ${r.code}?`,
-            a: `They are the same diameter, ${one(r.d)} mm, and different ${r.kind === 'coin' ? 'thicknesses' : 'lengths'}: ${one(r.h)} mm against ${one(sameDia[0].h)}. ${sameDia[0].h < r.h ? `A ${sameDia[0].code} is thinner, so it may rattle or lose contact, and it holds less.` : `A ${sameDia[0].code} is thicker and often will not let the compartment close.`} Same voltage, so nothing is damaged by trying.` }
+            a: `${r.code} and ${sameDia[0].code} are the same diameter, ${one(r.d)} mm, and different ${r.kind === 'coin' ? 'thicknesses' : 'lengths'}: ${one(r.h)} mm against ${one(sameDia[0].h)}. ${sameDia[0].h < r.h ? `A ${sameDia[0].code} is thinner, so it may rattle or lose contact, and it holds less.` : `A ${sameDia[0].code} is thicker and often will not let the compartment close.`} Same voltage, so nothing is damaged by trying.` }
         : { q: `Is the ${r.code} rechargeable?`,
             a: r.chem === 'Lithium-ion' ? 'Yes — this is a rechargeable cell and must be charged in a charger designed for lithium-ion.' : `Not in this chemistry. ${r.chem} cells of this size are single-use; recharging one is a fire risk rather than a saving.` },
     ]);

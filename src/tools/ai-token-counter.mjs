@@ -68,7 +68,7 @@ export default {
 <li>Ask for structured, bounded output instead of free-form explanations you will discard.</li>
 </ol>`,
   faq: [
-    { q: 'How accurate is this token counter?', a: 'It is an estimate. Rather than a flat "characters ÷ 4" rule, it classifies the text into words, numbers, punctuation, whitespace and CJK segments and applies per-family weights, which tracks real tokenizers closely for ordinary prose and code. For billing-critical decisions, confirm with the provider’s official tokenizer.' },
+    { q: 'How accurate is this token counter?', a: 'This counter gives an estimate. Rather than a flat "characters ÷ 4" rule, it classifies the text into words, numbers, punctuation, whitespace and CJK segments and applies per-family weights, which tracks real tokenizers closely for ordinary prose and code. For billing-critical decisions, confirm with the provider’s official tokenizer.' },
     { q: 'Why do different models report different counts?', a: 'Each model family uses its own tokenizer and vocabulary. OpenAI’s o200k encoding, Anthropic’s tokenizer, Google’s SentencePiece variant and Llama’s tokenizer all split the same sentence slightly differently, especially for non-English text, code and emoji.' },
     { q: 'Does the counter send my prompt anywhere?', a: 'No. The whole calculation is a few hundred lines of JavaScript running in your browser, so it works offline and is safe for confidential prompts.' },
     { q: 'How many tokens is one page of text?', a: 'A page of single-spaced English is roughly 500 words, which is about 650–700 tokens. A 300-page book lands near 130,000 tokens.' },

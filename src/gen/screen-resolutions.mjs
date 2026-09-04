@@ -102,8 +102,8 @@ export default async function () {
         a: `${nf(px)} pixels, or <strong>${mp.toFixed(2)} megapixels</strong>.` },
       { q: `Is ${id} higher resolution than 1080p?`,
         a: px === 1920 * 1080
-          ? 'This <em>is</em> 1080p — 1920×1080, the Full HD standard.'
-          : `It has ${vs1080 >= 1 ? `<strong>${vs1080.toFixed(2)}×</strong> as many pixels as` : `<strong>${(vs1080 * 100).toFixed(0)}%</strong> of the pixels of`} a 1920×1080 frame.` },
+          ? `${id} <em>is</em> 1080p — 1920×1080, the Full HD standard.`
+          : `${id} has ${vs1080 >= 1 ? `<strong>${vs1080.toFixed(2)}×</strong> as many pixels as` : `<strong>${(vs1080 * 100).toFixed(0)}%</strong> of the pixels of`} a 1920×1080 frame.` },
       { q: `What size screen suits ${id}?`,
         a: `Pixel density is what decides that. ${DIAGS.map((d) => `${ppi(w, h, d)} PPI at ${d}&nbsp;in`).join(', ')}. Below roughly 110&nbsp;PPI text starts to look coarse; above about 200 the operating system will usually scale the interface rather than render it at native size.` },
     ]);

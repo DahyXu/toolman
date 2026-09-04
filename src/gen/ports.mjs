@@ -22,7 +22,7 @@ const P = [
   [445, 'SMB', 'TCP', 'Windows file and printer sharing.', 'Should never be reachable from the internet. This is the port WannaCry and NotPetya spread over.'],
   [465, 'SMTPS', 'TCP', 'Mail submission over implicit TLS.', 'Deprecated, then un-deprecated. Port 587 with STARTTLS is the more widely supported choice.'],
   [514, 'Syslog', 'UDP', 'Remote logging.', 'UDP syslog has no authentication and no delivery guarantee. Use TLS syslog on 6514 for anything that matters.'],
-  [587, 'SMTP submission', 'TCP', 'The port applications and mail clients use to send outbound mail, with authentication and STARTTLS.', 'This is the correct port for application email. Port 25 is for server-to-server relay and is widely blocked.'],
+  [587, 'SMTP submission', 'TCP', 'The port applications and mail clients use to send outbound mail, with authentication and STARTTLS.', 'This port is the correct one for application email. Port 25 is for server-to-server relay and is widely blocked.'],
   [636, 'LDAPS', 'TCP', 'LDAP over TLS.', 'Preferred over plain LDAP on 389 whenever credentials are involved.'],
   [993, 'IMAPS', 'TCP', 'IMAP over TLS — the standard for mail clients.', 'Use this rather than 143.'],
   [995, 'POP3S', 'TCP', 'POP3 over TLS.', 'Use this rather than 110, though IMAP is a better protocol for most people.'],

@@ -47,7 +47,7 @@ export default {
 <p>CSV has no types, no schema and no standard for nesting. If the consumer is another program rather than a spreadsheet, JSON, NDJSON or Parquet will save everyone time. CSV earns its place when a human needs to open the file in Excel, Numbers or Google Sheets.</p>`,
   faq: [
     { q: 'What JSON shape does this expect?', a: 'An array of objects — <code>[{...}, {...}]</code>. A single object is treated as a one-row array, and an object whose only value is an array is unwrapped automatically.' },
-    { q: 'How are nested objects handled?', a: 'They are flattened into dotted column names by default. Turn the checkbox off to keep the nested structure serialised as JSON inside a single cell instead.' },
+    { q: 'How are nested objects handled?', a: 'Nested objects are flattened into dotted column names by default. Turn the checkbox off to keep the nested structure serialised as JSON inside a single cell instead.' },
     { q: 'Is my data uploaded?', a: 'No. Parsing and conversion happen in your browser, so customer exports and internal data stay on your machine.' },
     { q: 'Why does Excel show my CSV in a single column?', a: 'Excel follows your regional list separator. In many European locales that is a semicolon, not a comma. Switch the delimiter above to semicolon and re-export.' },
     { q: 'Can it handle large files?', a: 'Files up to a few tens of megabytes convert fine. Beyond that, a streaming command-line tool such as <code>jq</code> or <code>miller</code> is a better fit.' },

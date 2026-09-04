@@ -53,8 +53,8 @@ export default {
   faq: [
     { q: 'Why is a space sometimes %20 and sometimes +?', a: 'In the path and in modern query strings a space is <code>%20</code>. In <code>application/x-www-form-urlencoded</code> data — what an HTML form submits — it is <code>+</code>. Both decode back to a space, but only in the right context.' },
     { q: 'Should I encode the whole URL?', a: 'No. Encode each piece before assembling. Encoding a finished URL escapes the <code>://</code> and <code>?</code> that give it structure, or leaves parameter separators unescaped inside values.' },
-    { q: 'Does URL encoding provide any security?', a: 'It prevents structural injection into a URL, which matters. It is not a defence against XSS or SQL injection — those need output escaping and parameterised queries at their own layer.' },
-    { q: 'How are non-English characters handled?', a: 'They are converted to UTF-8 bytes first, then each byte is percent-escaped. That is why one Chinese character usually becomes three <code>%</code> sequences.' },
+    { q: 'Does URL encoding provide any security?', a: 'URL encoding prevents structural injection into a URL, which matters. It is not a defence against XSS or SQL injection — those need output escaping and parameterised queries at their own layer.' },
+    { q: 'How are non-English characters handled?', a: 'Non-English characters are converted to UTF-8 bytes first, then each byte is percent-escaped. That is why one Chinese character usually becomes three <code>%</code> sequences.' },
   ],
   related: ['base64-encode-decode', 'json-formatter', 'hash-generator'],
   script: `

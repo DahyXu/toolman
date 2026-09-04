@@ -43,7 +43,7 @@ export default {
 <li><strong>Non-Latin scripts.</strong> A Japanese or Arabic interface needs filler in the same script; Latin gives no sense of the real line height or character width.</li>
 </ul>`,
   faq: [
-    { q: 'Is lorem ipsum real Latin?', a: 'It is derived from real Latin but deliberately scrambled, with words altered and syllables removed, so it does not form meaningful sentences.' },
+    { q: 'Is lorem ipsum real Latin?', a: 'Lorem ipsum is derived from real Latin but deliberately scrambled, with words altered and syllables removed, so it does not form meaningful sentences.' },
     { q: 'How many words are in a paragraph?', a: 'This generator produces 40–70 words per paragraph, close to the typical length of a body paragraph in web copy.' },
     { q: 'Does using lorem ipsum hurt SEO?', a: 'Only if it reaches production. A live page full of placeholder text has no useful content to rank and looks broken to visitors, so remove it before publishing.' },
     { q: 'Can I use the generated text commercially?', a: 'Yes. The text is nonsense with no copyright attached, and it is meant to be thrown away before launch.' },
