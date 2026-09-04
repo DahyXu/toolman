@@ -47,6 +47,11 @@ const rows = BEDS.map(([name, id, w, h, unit, region, note]) => ({
   wmm: mmOf(w, unit), hmm: mmOf(h, unit),
 }));
 
+// bed-compare.mjs pairs these up; exporting the normalised rows means the two
+// files cannot disagree about a mattress dimension.
+export const BED_ROWS = rows;
+export const BED_SHORT = SHORT;
+
 const cm = (mm) => (mm / 10).toFixed(mm % 10 === 0 ? 0 : 1);
 const inch = (mm) => {
   const v = inches(mm);
@@ -149,6 +154,7 @@ ${FAQ.html}
     h1: 'Bed and mattress sizes',
     crumbs: [{ name: 'Bed sizes', path: '/bed-size/' }],
     body: `<p class="muted">${rows.length} standard mattress sizes across North America, the UK and continental Europe, in inches and centimetres, with the room each one needs.</p>
+<p><a href="/bed-size/compare/">Choosing between two sizes?</a> Every pair worth comparing, with the width each sleeper gets and whether the same bedding fits both.</p>
 
 <h2>The names do not travel</h2>
 <p>This is the thing worth knowing before anything else. <strong>A UK King is ${cm(ukKing.wmm)} cm wide and a US King is ${cm(usKing.wmm)} cm</strong> — a difference of ${Math.round((usKing.wmm - ukKing.wmm) / 10)} cm, which is more than the gap between a UK Single and a UK Small Double. The largest bed sold as standard in Britain, the Super King at ${cm(ukSuper.wmm)} cm, is <em>still</em> ${Math.round((usKing.wmm - ukSuper.wmm) / 10)} cm narrower than an ordinary American King.</p>
