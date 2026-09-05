@@ -1,3 +1,50 @@
+## The whole query table, and what it says
+
+Search Console's table paginates ten rows at a time and the controls resist
+automation, but all 999 rows are in the DOM. Reading them directly gives the
+picture the UI would not:
+
+    total                     999 queries, 2,309 impressions
+    winnable (no widget)      701 queries, 1,617 impressions
+
+Winnable impressions by position:
+
+    1-10      99
+    11-20     84
+    21-40    208
+    41+    1,226
+
+**Three quarters of everything winnable sits past position 40**, where the click
+rate is indistinguishable from zero. The 99 impressions in the top ten are the
+only place a click can currently come from, and they are almost all paper:
+
+    10.5  19  a8 size
+     9.6   9  junior legal paper size
+     9.2   6  a9 size
+     9.7   6  b1 size in inches
+    11.3   6  b1 paper size
+    10.0   5  b7 size
+    12.2   4  a2 in mm
+
+The pattern in that list is the finding. Every one is an **uncommon** size. The
+common ones are in the deep bucket:
+
+    40.5  22  a2 paper size
+    73.9  13  a2 size in cm
+    65.3  11  b5 size
+    77.2  11  a1 size
+
+Same section, same template, same depth — I measured: 477 to 642 words across
+A4, A2, A8, A9, B1, B7 and Junior Legal, with no useful spread. What separates
+position 9 from position 77 is not the page. It is that Adobe and papersizes.io
+are on the common sizes and nobody is on B7.
+
+So the honest reading of the on-page work: it is done, and it is not what is
+holding the common sizes back. The rare sizes rank where they rank because the
+field is empty, and they are where the first clicks will come from — 55
+impressions at positions 9 to 12, needing four or five places to reach the
+top five.
+
 ## The pipeline delivered: 13 → 755 → 3,320 impressions
 
 Verified in the Search Console performance report, 28-day window, no filters:
