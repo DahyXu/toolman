@@ -261,6 +261,7 @@ ${list.map(([n, i, w, h]) => `<tr><td><a href="/paper/${i}/"><strong>${esc(n)}</
       jsonld: [PXFAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${p300.w} × ${p300.h} px</strong></p>
 <p class="muted">at 300 DPI, the print standard · ${name} is ${w} × ${h} mm · ${((p300.w * p300.h) / 1e6).toFixed(1)} megapixels</p>
+<p>${name} size in pixels has no single answer, because a pixel is a length only once a resolution decides how many fit in an inch. The ${name} pixel size is <strong>${p300.w} × ${p300.h} px</strong> at the 300 DPI print standard and ${px(w, 72)} × ${px(h, 72)} px at the 72 DPI screen convention — every resolution in between is in the table below.</p>
 
 <h2>${name} at every resolution</h2>
 <p>A sheet of paper has no pixel size of its own. It has a physical size — ${w} × ${h} mm, or ${r2(IN(w))} × ${r2(IN(h))} inches — and a pixel count only appears once you choose how many pixels go in each inch.</p>
