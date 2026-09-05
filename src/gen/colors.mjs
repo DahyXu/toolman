@@ -2,6 +2,10 @@ import { esc, faq } from '../layout.mjs';
 import TW from '../data/tailwind-palette.mjs';
 
 // 148 CSS named colors — the canonical list every browser ships.
+// color-names.mjs builds a page per name; the hex direction is answered by
+// Google's own colour picker and the named direction is not.
+export const NAMED_COLORS = () => NAMED;
+
 const NAMED = {
   aliceblue: 'f0f8ff', antiquewhite: 'faebd7', aqua: '00ffff', aquamarine: '7fffd4', azure: 'f0ffff',
   beige: 'f5f5dc', bisque: 'ffe4c4', black: '000000', blanchedalmond: 'ffebcd', blue: '0000ff',
@@ -41,11 +45,11 @@ const HUE_NAMES = [
   [190, 'cyan'], [250, 'blue'], [290, 'violet'], [330, 'magenta'], [360, 'red'],
 ];
 
-const hex2rgb = (h) => ({ r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) });
+export const hex2rgb = (h) => ({ r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) });
 const rgb2hex = (r, g, b) =>
   [r, g, b].map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
 
-function rgb2hsl(r, g, b) {
+export function rgb2hsl(r, g, b) {
   r /= 255; g /= 255; b /= 255;
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, l = (mx + mn) / 2;
   let h = 0, s = 0;
@@ -314,6 +318,7 @@ export default async function () {
     h1: 'Color codes',
     crumbs: [{ name: 'Colors', path: '/color/' }],
     body: `<p class="muted">${all.length} color reference pages. Each one lists HEX, RGB, HSL and CMYK values, contrast ratios against black and white, a lightness scale and a set of harmonies. Need a specific color? Use the <a href="/color-converter/">color converter</a>.</p>
+<p><a href="/color/name/">Looking up a colour by name?</a> All 141 CSS keywords with their hex codes and the contrast figure a picker leaves out.</p>
 <p><a href="/color/tailwind/">Working in Tailwind CSS?</a> Every hue as a scale of eleven shades, with the contrast figure that decides which of them can carry text.</p>
 <h2>What a contrast ratio is, and the four numbers worth knowing</h2>
 <p>Contrast is the ratio between the light two colours reflect, and it runs from 1:1 for two identical colours to <strong>${maxContrast}:1</strong> for black on white — that is the ceiling, and nothing beats it. Four points on that scale carry rules:</p>
