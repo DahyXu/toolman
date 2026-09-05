@@ -133,6 +133,7 @@ ${FAQ.html}
       { name: 'CIDR', path: '/cidr/' },
     ],
     body: `<p class="muted">Every IPv4 prefix length, its mask and how many hosts it holds. Use the <a href="/subnet-calculator/">subnet calculator</a> to work out a specific network's range.</p>
+<p><a href="/cidr/mask/">Got a subnet mask instead?</a> Every mask with its prefix, host count and wildcard — 255.255.255.0 is /24.</p>
 <table><thead><tr><th style="width:5em">Prefix</th><th>Subnet mask</th><th>Wildcard</th><th style="text-align:right">Addresses</th><th style="text-align:right">Usable</th></tr></thead><tbody>
 ${ALL.map((p) => {
       const m = maskInt(p);
