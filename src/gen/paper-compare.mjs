@@ -49,8 +49,15 @@ export default function paperCompare() {
       };
       const sa = step(A);
       const sb = step(B);
-      const consecutive = sa && sb && sa.series === sb.series && Math.abs(sa.n - sb.n) === 1;
-      if (!consecutive && Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
+      const gap = sa && sb && sa.series === sb.series ? Math.abs(sa.n - sb.n) : null;
+      const consecutive = gap === 1;
+      // Within a lettered series the name does not tell you which is bigger — the
+      // number goes up as the sheet goes down — so the comparison is asked at any
+      // distance. Google's "people also ask" for "a8 size" offers "Is A8 bigger
+      // than A4?" (four steps) and "Is A5 bigger than A8?" (three). Four steps is
+      // sixteen times the area and about where the question stops being asked.
+      const sameSeries = gap !== null && gap <= 4;
+      if (!sameSeries && Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
 
       const slug = `${A.id}-vs-${B.id}`;
       const dw = r1(A.w - B.w); // positive when A is wider
@@ -76,6 +83,19 @@ export default function paperCompare() {
       const ratioA = r2(A.h / A.w);
       const ratioB = r2(B.h / B.w);
       const sameShape = Math.abs(ratioA - ratioB) < 0.01;
+
+      // "A4 is sixteen times A8" is a claim about these two sheets, not about
+      // the series in the abstract. Rounding to whole millimetres moves it a
+      // little, so allow a few percent and no more.
+      if (gap) {
+        const claimed = 2 ** gap;
+        const actual = Math.max(areaA, areaB) / Math.min(areaA, areaB);
+        if (Math.abs(actual - claimed) / claimed > 0.05) {
+          console.error(`
+✗ ${slug}: says ${claimed}x the area and the dimensions give ${Math.round(actual * 100) / 100}x`);
+          process.exitCode = 1;
+        }
+      }
 
       // Assert what the page claims. Each of these statements is generated
       // from arithmetic above and then printed as fact, so check the fact.
@@ -200,8 +220,8 @@ export default function paperCompare() {
 </tbody></table>
 
 <h2>Which is bigger</h2>
-${consecutive ? `<p><strong>${A.name} and ${B.name} are one step apart in the ${sa.series} series, so one is exactly twice the other.</strong> Two ${smaller.name} sheets side by side make ${an(bigger.name)}, and folding ${an(bigger.name)} in half across its long edge gives two ${smaller.name}. That is what the series is for, and it is why the scale factors below come out at 70.7% and 141.4% — one over the square root of two, and the square root of two.</p>` : ''}
-<p><strong>${bigger.name}</strong>, by ${areaPct}% in area. ${widerLine} ${tallerLine}</p>
+${gap && gap > 1 ? `<p><strong>${bigger.name} is ${2 ** gap} times the area of ${smaller.name}.</strong> They are ${gap} steps apart in the ${sa.series} series and each step halves the sheet, so the multiple is two to the power of ${gap}. The number in the name going up while the sheet goes down is why this has to be asked rather than read off.</p>` : ''}${consecutive ? `<p><strong>${A.name} and ${B.name} are one step apart in the ${sa.series} series, so one is exactly twice the other.</strong> Two ${smaller.name} sheets side by side make ${an(bigger.name)}, and folding ${an(bigger.name)} in half across its long edge gives two ${smaller.name}. That is what the series is for, and it is why the scale factors below come out at 70.7% and 141.4% — one over the square root of two, and the square root of two.</p>` : ''}
+<p>${gap ? '' : `<strong>${bigger.name}</strong>, by ${areaPct}% in area. `}${widerLine} ${tallerLine}</p>
 
 <h2>Printing one on the other</h2>
 <p>${fitLine}</p>
