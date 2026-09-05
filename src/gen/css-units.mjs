@@ -213,9 +213,51 @@ function valuePage(a, b, v, all) {
   const titleA = a.id === 'px' ? 'PX' : a.id.toUpperCase();
   const titleB = b.id === 'px' ? 'PX' : b.id.toUpperCase();
 
+  // px against a physical unit has no single answer: CSS defines 96 to the inch
+  // for layout, and print and image work use other numbers. Giving one figure
+  // answers a narrower question than the one being asked, and "pixel to mm" is
+  // a query Google has no widget for precisely because of that ambiguity.
+  const DPIS = [
+    { dpi: 72, use: 'The PostScript point, and the default in many image editors' },
+    { dpi: 96, use: 'The CSS reference — what a browser means by a pixel' },
+    { dpi: 150, use: 'Draft printing' },
+    { dpi: 300, use: 'Commercial print' },
+    { dpi: 600, use: 'Line art and archival scanning' },
+  ];
+  const PHYSICAL = new Set(['mm', 'cm', 'in']);
+  const physical = (a.id === 'px' && PHYSICAL.has(b.id)) || (b.id === 'px' && PHYSICAL.has(a.id));
+  // k is the factor at 96 DPI; scaling it by dpi/96 gives the same conversion
+  // at another resolution, in whichever direction the page runs.
+  const atDpi = (dpi) => (a.id === 'px' ? out * (96 / dpi) : out * (dpi / 96));
+  // Checking only the 96 row proves nothing. out \u00d7 (96/96) and out \u00d7 (96/96)
+  // are the same number whichever way round the scaling is written, so an
+  // inverted formula sailed through it \u2014 the check could not fail, which is
+  // the one property a check must not have. What separates the two is the
+  // direction: more dots per inch means a pixel covers less of an inch.
+  if (physical) {
+    if (Math.abs(atDpi(96) - out) > 1e-9) {
+      console.error(`\n\u2717 css-units ${a.id}-to-${b.id}: the 96 DPI row is ${atDpi(96)} where the page says ${out}`);
+      process.exitCode = 1;
+    }
+    const risesWithDpi = atDpi(300) > atDpi(72);
+    if (risesWithDpi !== (a.id !== 'px')) {
+      console.error(`\n\u2717 css-units ${a.id}-to-${b.id}: ${atDpi(72)} at 72 DPI against ${atDpi(300)} at 300 runs the wrong way`);
+      process.exitCode = 1;
+    }
+  }
+
+
   return {
     path,
-    title: `${v}${A} to ${B} — ${fmt(out)}${B} | Toolman`,
+    // A pixel against a physical unit has no answer without a resolution, so
+    // the title carries the one the figure assumes rather than presenting a
+    // conditional number as an absolute.
+    title: (() => {
+      const base = `${v}${A} to ${B} — ${fmt(out)}${B}`;
+      const withDpi = physical ? `${base} at 96 DPI` : base;
+      const full = `${withDpi} | ${titleA} to ${titleB}`;
+      return full.length <= 65 ? full : withDpi.length <= 65 ? withDpi : base;
+    })(),
     desc: `${v}${A} equals ${fmt(out)}${B}${anyRel ? ` at a 16 px ${basisShort}` : ''}. Shows the formula, the value at other ${anyRel ? `${basisShort}s` : 'common values'} and a table of nearby conversions.`,
     h1: `${v}${A} to ${B}`,
     crumbs: [
@@ -236,6 +278,17 @@ ${anyRel ? `
 <h2>${v}${A} at other ${basisShort}s</h2>
 <p>${relUnit ? relUnit.sym : ''} is measured against ${basis}, so the answer above holds only while that is 16&nbsp;px.${relUnit && relUnit.id === 'rem' ? " A visitor who has raised their browser's default — the accessibility setting rem exists to respect — is reading your page at one of the larger rows." : " Nested elements each compound on their parent, so this is the value for one level, not for the whole tree."}</p>
 <table><thead><tr><th>${basisShort.charAt(0).toUpperCase() + basisShort.slice(1)}</th><th>${v}${A} equals</th></tr></thead><tbody>${rootRows}</tbody></table>
+` : ''}
+${physical ? `
+<h2>${v}${A} at other resolutions</h2>
+<p>CSS fixes one inch at 96 pixels, and every figure above uses it. That is a
+definition for layout, not a measurement of your screen — a pixel is a physical
+length only once something decides how many go in an inch. Print work usually
+decides 300, image editors default to 72, and the answer moves with it.</p>
+<table><thead><tr><th>Resolution</th><th>${v}${A} equals</th><th>Where it applies</th></tr></thead><tbody>
+${DPIS.map((d) => `<tr${d.dpi === 96 ? ' style="font-weight:600"' : ''}><td>${d.dpi} DPI</td><td>${fmt(atDpi(d.dpi))}${B}</td><td>${esc(d.use)}</td></tr>`).join('')}
+</tbody></table>
+<p class="muted">Take the 96 DPI row unless you are preparing something for print, in which case take the one your printer asked for.</p>
 ` : ''}
 <h2>Nearby values</h2>
 <table><thead><tr><th>${A}</th><th>${B}</th></tr></thead><tbody>${nearRows}</tbody></table>

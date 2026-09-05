@@ -402,3 +402,24 @@ section of independent pages.
 
 **Where a metric is structurally floored, say so and stop.** Continuing to cut
 real pages to satisfy it is how a heuristic starts making the decisions.
+
+## A check evaluated at the point where both answers agree
+
+The pixel conversions needed a table of other resolutions, and the assertion I
+wrote for it was:
+
+    if (Math.abs(atDpi(96) - out) > 1e-9) { … }
+
+`atDpi(96)` is `out × (96/96)` whichever way round the scaling is written, so
+the check returns the same number for the correct formula and for its inverse.
+Planting the inversion changed every row of the published table and the build
+stayed green.
+
+It is a subtler version of the never-fails check than the ones before it: the
+code is reached, the comparison runs, the arithmetic is real. It is evaluated at
+the one input where the two candidate implementations cannot disagree.
+
+**Check a case where a wrong implementation would give a different answer.** The
+fix here was direction — more dots per inch means a pixel covers less of one —
+which is false under the inverse and true under the correct form at every
+resolution except 96.
