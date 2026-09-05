@@ -13,7 +13,7 @@ const CONTROL = {
   4: ['EOT', 'End of Transmission', 'Ended a transmission entirely. On a Unix terminal this is what Ctrl+D sends, which is why Ctrl+D at an empty prompt closes the shell: it signals end-of-file on the input.'],
   5: ['ENQ', 'Enquiry', 'Asked the receiving station to identify itself. Obsolete outside legacy serial links.'],
   6: ['ACK', 'Acknowledge', 'A positive reply — the message arrived intact. The name lives on in networking, where a TCP ACK does the same job with a different encoding.'],
-  7: ['BEL', 'Bell', 'Rang the physical bell on a teletype. Terminals still beep or flash on receiving it, which is why <code>printf "\\\\a"</code> makes a noise and why a stray byte in a binary file can make your terminal chirp.'],
+  7: ['BEL', 'Bell', 'Rang the physical bell on a teletype. Terminals still beep or flash on receiving it, which is why <code>printf "\\a"</code> makes a noise and why a stray byte in a binary file can make your terminal chirp.'],
   8: ['BS', 'Backspace', 'Moved the print head back one position. On paper terminals this was how you overstruck characters to make bold or accented letters. Modern terminals mostly send DEL (127) for the Backspace key instead.'],
   9: ['HT', 'Horizontal Tab', 'Advances to the next tab stop. The width of a tab is a display convention rather than a property of the character, which is the entire reason tabs-versus-spaces is an argument.'],
   10: ['LF', 'Line Feed', 'Moved the paper up one line without moving the carriage. Unix and macOS use it alone to end a line; Windows uses CR+LF. This single difference is behind most "the whole file shows as changed" diffs.'],
@@ -70,7 +70,7 @@ const NOTE = {
 };
 
 const ENTITY = { 34: 'quot', 38: 'amp', 60: 'lt', 62: 'gt', 39: 'apos' };
-const ESCAPE = { 0: '\\\\0', 7: '\\\\a', 8: '\\\\b', 9: '\\\\t', 10: '\\\\n', 11: '\\\\v', 12: '\\\\f', 13: '\\\\r', 27: '\\\\e', 34: '\\\\"', 39: "\\\\'", 92: '\\\\\\\\' };
+const ESCAPE = { 0: '\\0', 7: '\\a', 8: '\\b', 9: '\\t', 10: '\\n', 11: '\\v', 12: '\\f', 13: '\\r', 27: '\\\\e', 34: '\\\\"', 39: "\\\\'", 92: '\\\\\\\\' };
 
 const NAMES = {
   32: 'Space', 33: 'Exclamation mark', 34: 'Double quote', 35: 'Number sign', 36: 'Dollar sign',

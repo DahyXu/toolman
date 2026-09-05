@@ -446,3 +446,28 @@ not there.
 
 **Assertions check that what is written is true. Reading checks whether it is
 the right thing to have written.** They do not substitute for each other.
+
+## The escape trap, inside the tool written to fix the escape trap
+
+The ASCII bell page rendered `printf "\a"`. Copied, that prints a backslash
+and an "a" rather than ringing anything. Eighteen pages carried the same fault
+across every escape a reader might take from them.
+
+The script written to halve those backslashes used:
+
+    new RegExp(fourBackslashes + '([abfnrtv0])', 'g')
+
+Four backslashes in a *regex pattern* mean "match two literal backslashes". So
+it matched two, replaced them with two, and reported nine successful
+replacements — a no-op that counted itself as a fix, run twice before the
+source was checked and found unchanged.
+
+`split(from).join(to)` takes its argument as a literal string. There is no
+pattern layer for a backslash to be consumed by, and the fix worked first time.
+
+This is the fifth escape failure in this project and the second to survive its
+own success message. The rule stands and now has a corollary: **when the thing
+being fixed is escaping, use an API that has no escaping of its own.**
+
+`scripts/escaped-backslash.mjs` is in the audit. Planting `\n` in a page fails
+it.

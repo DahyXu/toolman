@@ -102,12 +102,12 @@ export default function portServices() {
           : `${s.name} uses <strong>port ${numbers[0]}</strong> over ${primary[2]}. ${primary[3]}`,
       },
       {
-        q: `Is port ${numbers[0]} safe to expose to the internet?`,
+        q: `What should I watch out for with port ${numbers[0]}?`,
         a: primary[4],
       },
       {
         q: `How do I check whether ${s.name} is listening?`,
-        a: `<code>sudo lsof -i :${numbers[0]}</code> on macOS or Linux, <code>netstat -ano | findstr :${numbers[0]}</code> on Windows. From another machine, <code>nc -zv host ${numbers[0]}</code> says whether anything answers.`,
+        a: `<code>sudo lsof -i :${numbers[0]}</code> on macOS or Linux, <code>netstat -ano | findstr :${numbers[0]}</code> on Windows. From another machine, <code>nc -${primary[2].includes('UDP') && !primary[2].includes('TCP') ? 'zuv' : 'zv'} host ${numbers[0]}</code> says whether anything answers.`,
       },
     ]);
 
@@ -130,13 +130,13 @@ ${s.lead ? `<p>${s.lead}</p>` : ''}
 ${table}
 </tbody></table>
 
-<h2>Exposing it</h2>
+<h2>What catches people out</h2>
 <p>${primary[4]}</p>
 
 <h2>Checking it is listening</h2>
 <pre><code>sudo lsof -i :${numbers[0]}          # macOS, Linux
 netstat -ano | findstr :${numbers[0]}   # Windows
-nc -zv host ${numbers[0]}               # from elsewhere</code></pre>
+nc -${primary[2].includes('UDP') && !primary[2].includes('TCP') ? 'zuv' : 'zv'} host ${numbers[0]}              # from elsewhere${primary[2].includes('UDP') && !primary[2].includes('TCP') ? ' (-u because this is UDP)' : ''}</code></pre>
 <p>An "address already in use" error on a port nothing appears to be holding usually means the socket is in <code>TIME_WAIT</code> rather than that a process has it — <a href="/port/">the ports reference</a> covers that and the ephemeral range.</p>
 
 ${FAQ.html}
