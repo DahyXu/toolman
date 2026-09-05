@@ -1,3 +1,47 @@
+## The one click named a thing; every reference here was keyed by its value
+
+Search Console now holds 755 impressions across 498 queries, and the single
+click this site has ever had came from:
+
+    ms sql ports        1 click, 1 impression
+
+That query names the service and wants the number. The section had 49 pages
+keyed by number and none keyed by name — the direction that converted was the
+one direction not served. Checking the rest found the same shape four times:
+
+    ports      1433 → SQL Server        query: "ms sql ports"
+    ASCII        32 → space             query: "ascii code for space"
+    colours #7FFF00 → chartreuse        query: "chartreuse hex code"
+    CIDR        /24 → 255.255.255.0     query: "255.255.255.0 cidr"
+
+All four verified on the live SERP before building. Two of the checks were the
+useful kind — the kind that changes the decision:
+
+**Colour is asymmetric.** Searching `#14b8a6` puts Google's own colour picker
+above every result, which is why that query has 22 impressions and no clicks.
+Searching `chartreuse hex code` returns no widget at all. Same colour, and the
+named form escapes the thing that makes the hex form worthless.
+
+**A PDF was winning.** The first result for `255.255.255.0 cidr` is a chart PDF
+from RIPE. When a PDF outranks every web page, Google has nothing better, which
+is the same signal as the Reddit and Quora threads that topped the tin and
+grams-to-cups queries.
+
+## Where the reverse direction does *not* need its own page
+
+Paper, wire gauge and batteries look like the same gap and are not. "210x297
+paper size" and "what gauge is 2mm wire" are real queries, but the answer
+already sits in the title of the page that holds it:
+
+    A4 Size — 210 × 297 mm, 8.27 × 11.69 in
+    14 AWG Wire — 1.628 mm, 0.0641 in, 2.08 mm², 15A
+    CR2032 Battery — 20 × 3.2 mm, 3V, BR2032
+
+The four that needed pages needed them because a service name, a character
+name, a colour name and a dotted mask cannot be carried in the title of the
+page keyed by the other thing. A dimension can. **Build the reverse direction
+when it needs a URL of its own, not whenever it exists.**
+
 ## The crawl burst is over, and it fetched about a third of the site
 
 Crawl stats to 2026-09-03:
