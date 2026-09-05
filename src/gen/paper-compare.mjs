@@ -5,6 +5,11 @@ import { esc, faq } from '../layout.mjs';
 // the pair only exists when the larger area is at most this much bigger.
 const MAX_AREA_RATIO = 1.5;
 
+// "a A2" reads wrong: A2 is said "ay-two" and starts with a vowel sound, while
+// B4 is "bee-four" and C5 is "see-five" and do not. The rule is about how the
+// name is pronounced, not how it is spelled.
+const an = (name) => `${/^[AEFHILMNORSX]/.test(name) ? 'an' : 'a'} ${name}`;
+
 const MM_PER_IN = 25.4;
 const IN = (mm) => mm / MM_PER_IN;
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -32,7 +37,20 @@ export default function paperCompare() {
       const B = all[j];
       const areaA = A.w * A.h;
       const areaB = B.w * B.h;
-      if (Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
+      // Consecutive sizes in a series are exactly twice each other by
+      // definition, so the area rule excluded every one of them — a2-vs-a3,
+      // a3-vs-a4, a4-vs-a5. Those are the comparisons people actually make:
+      // Google's own "people also ask" for "a2 size" leads with "Is A2 or A3
+      // bigger?". The halving is the point of the series, not a reason to skip
+      // the pair.
+      const step = (t) => {
+        const m = /^([ABC])(\d+)$/.exec(t.name);
+        return m ? { series: m[1], n: Number(m[2]) } : null;
+      };
+      const sa = step(A);
+      const sb = step(B);
+      const consecutive = sa && sb && sa.series === sb.series && Math.abs(sa.n - sb.n) === 1;
+      if (!consecutive && Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
 
       const slug = `${A.id}-vs-${B.id}`;
       const dw = r1(A.w - B.w); // positive when A is wider
@@ -182,6 +200,7 @@ export default function paperCompare() {
 </tbody></table>
 
 <h2>Which is bigger</h2>
+${consecutive ? `<p><strong>${A.name} and ${B.name} are one step apart in the ${sa.series} series, so one is exactly twice the other.</strong> Two ${smaller.name} sheets side by side make ${an(bigger.name)}, and folding ${an(bigger.name)} in half across its long edge gives two ${smaller.name}. That is what the series is for, and it is why the scale factors below come out at 70.7% and 141.4% — one over the square root of two, and the square root of two.</p>` : ''}
 <p><strong>${bigger.name}</strong>, by ${areaPct}% in area. ${widerLine} ${tallerLine}</p>
 
 <h2>Printing one on the other</h2>
