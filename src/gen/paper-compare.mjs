@@ -57,7 +57,19 @@ export default function paperCompare() {
       // than A4?" (four steps) and "Is A5 bigger than A8?" (three). Four steps is
       // sixteen times the area and about where the question stops being asked.
       const sameSeries = gap !== null && gap <= 4;
-      if (!sameSeries && Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
+      // JIS B is defined as 1.5 times the A series by area, so every A(n) against
+      // JIS B(n) lands exactly on the 1.5 cut-off and rounding decides which side.
+      // That is the comparison the series exists to make — Google's "people also
+      // ask" for "jis b5 size" opens with "Is JIS B5 the same as A5?" — so it is
+      // matched by number rather than left to a boundary.
+      const num = (t) => {
+        const m = /^(?:JIS )?([ABC])(\d+)$/.exec(t.name);
+        return m ? { series: t.series, letter: m[1], n: Number(m[2]) } : null;
+      };
+      const na = num(A);
+      const nb = num(B);
+      const crossStandard = na && nb && na.n === nb.n && na.series !== nb.series;
+      if (!sameSeries && !crossStandard && Math.max(areaA, areaB) / Math.min(areaA, areaB) > MAX_AREA_RATIO) continue;
 
       const slug = `${A.id}-vs-${B.id}`;
       const dw = r1(A.w - B.w); // positive when A is wider
@@ -220,7 +232,7 @@ export default function paperCompare() {
 </tbody></table>
 
 <h2>Which is bigger</h2>
-${gap && gap > 1 ? `<p><strong>${bigger.name} is ${2 ** gap} times the area of ${smaller.name}.</strong> They are ${gap} steps apart in the ${sa.series} series and each step halves the sheet, so the multiple is two to the power of ${gap}. The number in the name going up while the sheet goes down is why this has to be asked rather than read off.</p>` : ''}${consecutive ? `<p><strong>${A.name} and ${B.name} are one step apart in the ${sa.series} series, so one is exactly twice the other.</strong> Two ${smaller.name} sheets side by side make ${an(bigger.name)}, and folding ${an(bigger.name)} in half across its long edge gives two ${smaller.name}. That is what the series is for, and it is why the scale factors below come out at 70.7% and 141.4% — one over the square root of two, and the square root of two.</p>` : ''}
+${crossStandard ? `<p><strong>${A.name} and ${B.name} carry the same number and are not the same sheet.</strong> The Japanese B series is defined by area — JIS B0 is 1.5 square metres where A0 is 1 — so a JIS B sheet is half again the area of the A sheet of the same number, and about 22% longer on each edge. The number tells you where a sheet sits in its own series and nothing about which standard it belongs to.</p>` : ''}${gap && gap > 1 ? `<p><strong>${bigger.name} is ${2 ** gap} times the area of ${smaller.name}.</strong> They are ${gap} steps apart in the ${sa.series} series and each step halves the sheet, so the multiple is two to the power of ${gap}. The number in the name going up while the sheet goes down is why this has to be asked rather than read off.</p>` : ''}${consecutive ? `<p><strong>${A.name} and ${B.name} are one step apart in the ${sa.series} series, so one is exactly twice the other.</strong> Two ${smaller.name} sheets side by side make ${an(bigger.name)}, and folding ${an(bigger.name)} in half across its long edge gives two ${smaller.name}. That is what the series is for, and it is why the scale factors below come out at 70.7% and 141.4% — one over the square root of two, and the square root of two.</p>` : ''}
 <p>${gap ? '' : `<strong>${bigger.name}</strong>, by ${areaPct}% in area. `}${widerLine} ${tallerLine}</p>
 
 <h2>Printing one on the other</h2>

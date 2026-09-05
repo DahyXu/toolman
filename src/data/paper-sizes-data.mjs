@@ -61,6 +61,17 @@ const SIZES = [
   { name: 'Mass Market', id: 'mass-market', w: 107.95, h: 174.5, series: 'Book', note: 'The rack-sized paperback, 4.25 × 6.87 inches.' },
   { name: 'Index Card 3×5', id: 'index-card-3x5', w: 76.2, h: 127, series: 'Card', note: '3 × 5 inches, the standard US index card.' },
   { name: 'Super A3', id: 'super-a3', w: 329, h: 483, series: 'A', note: '329 × 483 mm, the oversized A3 that desktop inkjets use for bleed.' },
+  { name: 'JIS B0', id: 'jis-b0', w: 1030, h: 1456, series: 'JIS B', note: 'JIS B0 is 1030 × 1456 mm, the Japanese B series size, which is not the same as ISO B0.' },
+  { name: 'JIS B1', id: 'jis-b1', w: 728, h: 1030, series: 'JIS B', note: 'JIS B1 is 728 × 1030 mm, the Japanese B series size, which is not the same as ISO B1.' },
+  { name: 'JIS B2', id: 'jis-b2', w: 515, h: 728, series: 'JIS B', note: 'JIS B2 is 515 × 728 mm, the Japanese B series size, which is not the same as ISO B2.' },
+  { name: 'JIS B3', id: 'jis-b3', w: 364, h: 515, series: 'JIS B', note: 'JIS B3 is 364 × 515 mm, the Japanese B series size, which is not the same as ISO B3.' },
+  { name: 'JIS B4', id: 'jis-b4', w: 257, h: 364, series: 'JIS B', note: 'JIS B4 is 257 × 364 mm, the Japanese B series size, which is not the same as ISO B4.' },
+  { name: 'JIS B5', id: 'jis-b5', w: 182, h: 257, series: 'JIS B', note: 'JIS B5 is 182 × 257 mm, the Japanese B series size, which is not the same as ISO B5.' },
+  { name: 'JIS B6', id: 'jis-b6', w: 128, h: 182, series: 'JIS B', note: 'JIS B6 is 128 × 182 mm, the Japanese B series size, which is not the same as ISO B6.' },
+  { name: 'JIS B7', id: 'jis-b7', w: 91, h: 128, series: 'JIS B', note: 'JIS B7 is 91 × 128 mm, the Japanese B series size, which is not the same as ISO B7.' },
+  { name: 'JIS B8', id: 'jis-b8', w: 64, h: 91, series: 'JIS B', note: 'JIS B8 is 64 × 91 mm, the Japanese B series size, which is not the same as ISO B8.' },
+  { name: 'JIS B9', id: 'jis-b9', w: 45, h: 64, series: 'JIS B', note: 'JIS B9 is 45 × 64 mm, the Japanese B series size, which is not the same as ISO B9.' },
+  { name: 'JIS B10', id: 'jis-b10', w: 32, h: 45, series: 'JIS B', note: 'JIS B10 is 32 × 45 mm, the Japanese B series size, which is not the same as ISO B10.' },
 ];
 
 export default SIZES;

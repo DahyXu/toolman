@@ -17,6 +17,7 @@ const SERIES = {
   Card: ['Cards', 'Business card standards, which differ between North America and Europe.'],
   Photo: ['Photo prints', 'Common print and frame sizes, defined in inches.'],
   ARCH: ['Architectural', 'The US architectural series, defined in inches and built on a 4:3 or 3:2 ratio rather than the ANSI doubling. Drawing offices use ARCH where engineering offices use ANSI.'],
+  'JIS B': ['JIS B series (Japan)', 'The Japanese B series, which shares its names with ISO B and not its sizes. JIS defines B0 as 1.5 square metres against the A series’ 1, so every JIS B sheet is slightly larger than the ISO B of the same number — JIS B5 is 182 × 257 mm where ISO B5 is 176 × 250.'],
   Book: ['Book trim sizes', 'The finished page sizes commercial printers and print-on-demand services offer by name.'],
 };
 
