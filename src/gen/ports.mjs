@@ -53,6 +53,10 @@ const P = [
   [27017, 'MongoDB', 'TCP', 'The default MongoDB port.', 'Older versions bound to all interfaces with no authentication, which led to mass ransoming of exposed databases. Enable auth and bind privately.'],
 ];
 
+// port-services.mjs looks these up by service name, which is the direction the
+// one query that ever converted was written in.
+export const PORT_ROWS = P;
+
 const RANGES = [
   ['0–1023', 'Well-known ports', 'Assigned by IANA to standard services. On Unix, binding to these requires root or the <code>CAP_NET_BIND_SERVICE</code> capability — which is why development servers use 3000 or 8080 instead.'],
   ['1024–49151', 'Registered ports', 'Registered with IANA for specific applications, but usable by ordinary user processes. Most database and application servers live here.'],
@@ -149,6 +153,8 @@ ${FAQ.html}
 <table><thead><tr><th style="width:6em">Port</th><th>Service</th><th>Protocol</th></tr></thead><tbody>
 ${P.map(([port, service, proto]) => `<tr><td><a href="/port/${port}/"><strong>${port}</strong></a></td><td><a href="/port/${port}/">${esc(service)}</a></td><td>${proto}</td></tr>`).join('')}
 </tbody></table>
+<p><a href="/port/service/">Know the service but not the number?</a> The same data by name — SMTP, SSH, SQL Server and the rest, including the ones that use more than one port.</p>
+
 <h2>The three port ranges</h2>
 <table><thead><tr><th>Range</th><th>Name</th><th>What it means</th></tr></thead><tbody>
 ${RANGES.map(([r, n, d]) => `<tr><td><code>${r}</code></td><td>${n}</td><td>${d}</td></tr>`).join('')}
