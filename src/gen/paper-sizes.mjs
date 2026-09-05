@@ -91,17 +91,18 @@ export default async function () {
         const all = `${withCm}, ${r2(IN(w))} × ${r2(IN(h))} in`;
         return all.length <= 65 ? all : withCm.length <= 65 ? withCm : mm;
       })(),
-      desc: `${name} paper is ${w} × ${h} mm, ${r2(w / 10)} × ${r2(h / 10)} cm, or ${r2(IN(w))} × ${r2(IN(h))} inches — and ${px(w, 300)} × ${px(h, 300)} pixels at 300 DPI. What it is used for, and how it relates to every other size.`,
+      desc: `${name} size is ${w} × ${h} mm — ${r2(w / 10)} × ${r2(h / 10)} cm, ${r2(IN(w))} × ${r2(IN(h))} in, ${px(w, 300)} × ${px(h, 300)} px at 300 DPI. Full ${name} dimensions and what the sheet is for.`,
       h1: `${name} paper size`,
       crumbs: [{ name: 'Paper sizes', path: '/paper/' }, { name, path: `/paper/${id}/` }],
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${w} × ${h} mm</strong></p>
 <p class="muted">${r2(IN(w))} × ${r2(IN(h))} inches · ${r2(w / 10)} × ${r2(h / 10)} cm · aspect ratio 1:${ratio}</p>
+<p>${name} size is <strong>${w} × ${h} mm</strong>. Those are the ${name} dimensions a printer works to; the same sheet in centimetres, inches, points and pixels is below.</p>
 
 <h2>What ${name} is for</h2>
 <p>${DETAIL[id] || note}</p>
 
-<h2>${name} in every unit</h2>
+<h2>${name} dimensions in every unit</h2>
 <table><thead><tr><th>Unit</th><th>Width</th><th>Height</th></tr></thead><tbody>
 <tr><td>Millimetres</td><td>${w} mm</td><td>${h} mm</td></tr>
 <tr><td>Centimetres</td><td>${r2(w / 10)} cm</td><td>${r2(h / 10)} cm</td></tr>
