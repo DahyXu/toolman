@@ -85,6 +85,9 @@ const NAMES = {
 const isCtrl = (n) => n < 32 || n === 127;
 const glyph = (n) => (n === 32 ? 'space' : String.fromCharCode(n));
 
+// ascii-chars.mjs builds the character-first direction from these.
+export { CONTROL, NAMES, isCtrl, glyph, nameOf };
+
 function nameOf(n) {
   if (CONTROL[n]) return CONTROL[n][1];
   if (NAMES[n]) return NAMES[n];
@@ -199,6 +202,7 @@ ${FAQ.html}
       { name: 'ASCII', path: '/ascii/' },
     ],
     body: `<p class="muted">All 128 codes, with the control characters explained rather than left as blank cells.</p>
+<p><a href="/ascii/char/">Know the character but not the code?</a> The same 128 entries by name — space, newline, backslash, at sign.</p>
 <p class="muted">To see a whole string in binary, hex and UTF-8 bytes at once, use the <a href="/text-to-binary/">text to binary converter</a>.</p>
 
 <h2>Control characters (0–31)</h2>
