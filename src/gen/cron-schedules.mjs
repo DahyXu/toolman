@@ -116,6 +116,19 @@ const parseField = (f, lo, hi) => {
     return out;
 };
 
+// The hub says a Quartz expression pasted into a crontab becomes a job at
+// 00:00 on the 12th of every month. That is a claim about how this file's own
+// parser reads `0 0 12 * *`, so ask it.
+{
+  const runs = nextRuns('0 0 12 * *', 3);
+  const wrong = runs.filter((d) => d.getUTCHours() !== 0 || d.getUTCMinutes() !== 0 || d.getUTCDate() !== 12);
+  if (runs.length !== 3 || wrong.length) {
+    console.error(`
+✗ cron hub: says 0 0 12 * * is 00:00 on the 12th, and the parser gives ${runs.map((d) => d.toISOString()).join(', ')}`);
+    process.exitCode = 1;
+  }
+}
+
 // The hub prints specific results for the step syntax. They come from the same
 // parser the schedules do, and they are checked, because a reference page that
 // is wrong about its own examples is worse than one that omits them.
@@ -386,7 +399,7 @@ ${all.map((s) => `<tr><td><a href="/cron/${s.slug}/">${esc(s.title.charAt(0).toU
 <p>The reliable fix is to set the timezone explicitly where the scheduler allows it — <code>CRON_TZ=UTC</code> at the top of a crontab, <code>timeZone</code> in a Kubernetes CronJob, or the schedule expression's own timezone field in EventBridge — and to keep anything that must not run twice out of 01:00–03:00 entirely.</p>
 
 <h2>Five fields, unless it is six</h2>
-<p>Standard Unix cron takes five fields, starting at minutes. Quartz and Spring's scheduler take six, starting at <em>seconds</em>, so an expression copied between them is shifted by one place and silently means something else: <code>0 0 12 * * ?</code> in Quartz is noon, and the same string in Unix cron is not valid at all.</p>
+<p>Standard Unix cron takes five fields, starting at minutes. Quartz and Spring's scheduler take six, starting at <em>seconds</em>, so an expression copied between them is shifted by one place and silently means something else. <code>0 0 12 * * ?</code> is noon in Quartz. Paste it into a crontab and Unix cron reads the first five fields as the schedule and everything after them as the command — so it becomes a job that runs at <strong>00:00 on the 12th of every month</strong> and tries to execute a program called <code>?</code>. It is accepted, it is scheduled, and it fails somewhere you are not looking, which is worse than a syntax error would have been.</p>
 <p>Quartz also adds characters standard cron does not have — <code>L</code> for last, <code>W</code> for nearest weekday, <code>#</code> for "the nth weekday of the month". <code>0 0 12 ? * 2#1</code> is the first Monday of the month, which is the expression standard cron cannot express. If a snippet contains any of those, it is not a Unix crontab line.</p>`,
   });
 
