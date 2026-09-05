@@ -328,7 +328,8 @@ export default async function () {
 <tr><td>7:1</td><td>WCAG AAA</td><td>Body text where the standard is stricter, such as public-sector sites in some jurisdictions</td></tr>
 <tr><td>${maxContrast}:1</td><td>—</td><td>Black on white. There is nothing higher.</td></tr>
 </tbody></table>
-<p>The ratio is symmetrical: a colour's contrast against white does not depend on which of them is the text. What changes is legibility, and that is why a colour can pass at 4.5:1 as ink on a white page and still be a poor background for white text — the ratio is fine, and the eye is not.</p>
+<p>The ratio is symmetrical, and that catches people out. A colour at 4.5:1 against white is the same 4.5:1 whether the colour is the ink or the background — there is one pair and one number, so a palette cannot pass one way and fail the other.</p>
+<p>What is not symmetrical is how it reads. Light text on a dark ground appears to bleed outward at the edges, an effect called halation, which thins the apparent stroke and hurts small or light weights more than the same contrast does the other way round. The ratio says the combination is allowed; it does not say the two directions look alike, and a caption that works as dark ink often wants a heavier weight when it is reversed out.</p>
 
 <h2>Reading a hex code</h2>
 <p>A hex colour is three bytes written in base 16: <code>#RRGGBB</code>, each pair from <code>00</code> to <code>FF</code>, which is 0 to 255. <code>#FF0000</code> is red at full strength with no green and no blue. The three-digit form <code>#F00</code> is the same colour — each digit is doubled, so <code>#ABC</code> means <code>#AABBCC</code> — which is why only colours whose pairs happen to repeat can be written short.</p>
