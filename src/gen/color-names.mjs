@@ -19,6 +19,15 @@ const r2 = (n) => Math.round(n * 100) / 100;
 
 // Where a name came from, for the ones with a story. The rest are described
 // from their own values rather than padded with invented history.
+// CSS accepts both spellings for the greys, and they are the same colour byte
+// for byte. A second page for each would be a duplicate; naming the alias on
+// the page it already has costs nothing and answers the other spelling.
+const BRITISH = {
+  gray: 'grey', darkgray: 'darkgrey', darkslategray: 'darkslategrey',
+  dimgray: 'dimgrey', lightgray: 'lightgrey', lightslategray: 'lightslategrey',
+  slategray: 'slategrey',
+};
+
 const ORIGIN = {
   chartreuse: 'Named after the French liqueur, which takes its colour from the herbs it is macerated with. The liqueur is older than the colour name by about two centuries.',
   magenta: 'Named after the Battle of Magenta in 1859, fought the same year the dye was patented. The town is in Lombardy and the connection is purely commercial.',
@@ -43,6 +52,16 @@ export default function colorNames() {
   const entries = Object.entries(NAMED);
   const pages = [];
 
+  if (!NAMED.rebeccapurple) {
+    console.error('\n✗ color-names: the pages say rebeccapurple was added in 2014 and it is not in the list');
+    process.exitCode = 1;
+  }
+  for (const [us, uk] of Object.entries(BRITISH)) {
+    if (!NAMED[us]) {
+      console.error(`\n✗ color-names: ${us} is named as having the alias ${uk} and is not in the list`);
+      process.exitCode = 1;
+    }
+  }
   if (r2(contrast(WHITE, BLACK)) !== 21) {
     console.error(`\n✗ color-names: white on black computes as ${r2(contrast(WHITE, BLACK))}:1, not the defined 21:1`);
     process.exitCode = 1;
@@ -132,7 +151,8 @@ ${ORIGIN[name] ? `<h2>Where the name comes from</h2>\n<p>${ORIGIN[name]}</p>` : 
 <pre><code>color: ${name};
 color: #${hex};
 color: rgb(${rgb.r} ${rgb.g} ${rgb.b});</code></pre>
-<p>All three are the same colour. The keyword is one of the ${entries.length} CSS named colours, which every browser has agreed on since CSS 2.1 — the list has not changed since, and it will not.</p>
+<p>All three are the same colour. The keyword is one of the ${entries.length} CSS named colours — a list settled in CSS 2.1 and added to exactly once since, when <code>rebeccapurple</code> was standardised in 2014.</p>
+${BRITISH[name] ? `<p><code>${BRITISH[name]}</code> is the same colour: CSS accepts both spellings and they are byte for byte identical, so <code>color: ${name}</code> and <code>color: ${BRITISH[name]}</code> render the same.</p>` : ''}
 
 <h2>Colours close to ${name}</h2>
 <ul class="linklist">${near.map((x) => `<li><a href="/color/name/${x.n2}/"><span style="display:inline-block;width:.9em;height:.9em;vertical-align:-.1em;border-radius:3px;border:1px solid var(--line);background:#${x.h2}"></span> ${esc(x.n2)}</a> — #${x.h2.toUpperCase()}</li>`).join('')}</ul>

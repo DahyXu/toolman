@@ -423,3 +423,26 @@ the one input where the two candidate implementations cannot disagree.
 fix here was direction — more dots per inch means a pixel covers less of one —
 which is false under the inverse and true under the correct form at every
 resolution except 96.
+
+## Reading one page caught what four assertions did not
+
+The named-colour pages passed every check I wrote for them — valid hex, contrast
+inside 1:1 to 21:1, no slug collisions — and reading one end to end found two
+things none of them could see.
+
+The page said the CSS colour list "has not changed since CSS 2.1, and it will
+not". The index page of the same section says `rebeccapurple` was added in 2014.
+Two pages of one generator contradicting each other, and both statements were
+prose I wrote in the same hour.
+
+It also had no British spellings. `grey`, `darkgrey` and `lightgrey` are real
+CSS keywords and real search terms, and 141 pages of American spellings answer
+none of them. That is not a defect a checker finds, because nothing is wrong
+with what is there — something is missing, and absence has no signature.
+
+Both are now tied to the data: the build fails if `rebeccapurple` leaves the
+list while the sentence about it stays, and if an alias names a colour that is
+not there.
+
+**Assertions check that what is written is true. Reading checks whether it is
+the right thing to have written.** They do not substitute for each other.
