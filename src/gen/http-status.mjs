@@ -155,7 +155,8 @@ ${list.map(([code, name, , when]) => `<tr><td><a href="/http/${code}/"><strong>$
 </tbody></table>`;
     }).join('')}
 <h2>The four redirects, and why there are four</h2>
-<p>301 and 302 came first and were specified to preserve the request method. Browsers did not implement them that way: a redirected POST became a GET, the body was dropped, and enough of the web came to depend on that behaviour that the spec could not be enforced retroactively. 307 and 308 exist for exactly that reason — they are the same two meanings with the method preservation actually guaranteed.</p>
+<p>301 and 302 came first, and HTTP/1.1 said a user agent must not automatically redirect a non-GET request without asking the user. Browsers did something else: they redirected it silently as a GET and dropped the body. Enough of the web came to depend on that to make it unfixable, and RFC 7231 ended up documenting it as something a user agent <em>may</em> do “for historical reasons” — a specification conceding to what had already been built.</p>
+<p>307 and 308 exist because of that concession. They carry the same two meanings, temporary and permanent, with the method and body guaranteed to survive rather than merely expected to.</p>
 <table><thead><tr><th>Code</th><th>Meaning</th><th>Method after</th><th>Cached by default</th></tr></thead><tbody>
 <tr><td><a href="/http/301/"><code>301</code></a></td><td>Permanent</td><td>POST usually becomes GET</td><td><strong>Yes</strong></td></tr>
 <tr><td><a href="/http/302/"><code>302</code></a></td><td>Temporary</td><td>POST usually becomes GET</td><td>No</td></tr>
