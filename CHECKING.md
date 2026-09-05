@@ -447,6 +447,23 @@ not there.
 **Assertions check that what is written is true. Reading checks whether it is
 the right thing to have written.** They do not substitute for each other.
 
+A full reading pass over the pages written this week found eight faults and the
+assertions had caught none of them:
+
+    a FAQ answering a question the page did not ask
+    `nc -zv` recommended for a UDP-only service
+    eighteen escape sequences carrying a spare backslash
+    two pages of one generator contradicting each other on CSS history
+    no British spellings for any of the greys
+    contrast described as asymmetric when the ratio is one number
+    a Quartz expression called invalid when cron accepts and misreads it
+    301 and 302 described as specifying what they in fact forbade
+
+Four now have checks that fail. The other four could not have: a question that
+does not match its answer, a missing spelling, a muddled explanation and a
+wrong history are all things where nothing is malformed. Something is simply
+not what it should be, and only a reader notices that.
+
 ## The escape trap, inside the tool written to fix the escape trap
 
 The ASCII bell page rendered `printf "\a"`. Copied, that prints a backslash
