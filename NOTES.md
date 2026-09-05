@@ -1,3 +1,44 @@
+## The pipeline delivered: 13 → 755 → 3,320 impressions
+
+Verified in the Search Console performance report, 28-day window, no filters:
+
+    clicks         3      (was 1)
+    impressions    3,320  (was 755, and 13 four days ago)
+    queries        1,000  (the report's cap; was 498)
+    position       54
+
+Impressions multiplied by 4.4 in a day. That is the crawl-to-index pipeline
+arriving, not anything done in the last few hours — the pages behind it were
+published days ago and are only now being shown.
+
+The query mix changed with it. Paper is a major family for the first time:
+
+    a2 size          31
+    a2 paper size    22
+    a2 dimensions    21
+    a8 size          19
+
+Worth noting against the record: I cited A2 figures once before, from the
+discarded `site:` reading, and corrected myself for it. These are from the
+report and they are real. The earlier correction was still right — the numbers
+I used then were not evidence, whatever they later turned out to resemble.
+
+## What the shape says to do next
+
+Three groups, and only one of them is worth work:
+
+    password generator ×3   104 impressions, position ~65, competing with
+                            LastPass and Norton
+    colour hex, time,       ~60 impressions, answered above the results by
+    temperature             Google itself
+    paper A2/A8             93 impressions, no widget, competitors are Adobe
+                            and papersizes.io
+
+Paper is the winnable one and it is the one the title work already targeted.
+The three clicks are still too few to say anything about which page earns them;
+`ms sql ports` accounts for one and the report's table would not sort by clicks
+to show the other two.
+
 ## The one click named a thing; every reference here was keyed by its value
 
 Search Console now holds 755 impressions across 498 queries, and the single
