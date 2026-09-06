@@ -1,3 +1,69 @@
+## Third empty field: unified tap drill sizes
+
+`tap drill size for 1/4-20`, checked before anything was built:
+
+    answer widget       none
+    results             lincolnmachine.com — a machine shop's chart page
+                        Bolt Depot — a retailer
+                        6G Tools — a retailer
+                        American Fastener — a retailer
+                        Guhring — a tool maker
+                        Reddit r/Machinists, Quora
+    people also ask     "What size hole do I need for a 1/4-20 thread?"
+                        "What size drill bit do I need for a 1/4-20 bolt?"
+    people also search  "5/16-18 tap drill size"
+                        "1/4 tap drill size in mm"
+                        "metric tap drill size for 1 4 20"
+
+Every result is a retailer, a tool maker or a forum, and **every one of them
+serves a single table of all the sizes**. Nobody has a page per size. Meanwhile
+Google's own "people also search for" row is listing the per-size direction —
+the same signal that made the ports and ASCII-by-name sections worth building,
+and the same shape as the one click this site has ever received.
+
+Forty pages: 39 unified threads from 0-80 to 1-12, plus the chart. The metric
+half was already here at `/thread/`, so this completes the pair.
+
+Nothing is transcribed. Every drill comes from
+
+    tap drill = major diameter − 0.974 / threads per inch
+
+which is 75% of the 1.299/TPI thread height, then rounded to the nearest drill
+that exists. **That rule reproduced all 39 published chart values on the first
+run** — #7 for 1/4-20, F for 5/16-18, #21 for 10-32, 27/64" for 1/2-13. Nudging
+the thread-height constant by 4% breaks eleven of them, so the check is real.
+
+Note the rounding is to the *nearest* drill, not the nearest smaller one: 8-32
+works out at 0.1336 and the chart says #29 at 0.1360, which is above it.
+
+Two things these pages have that the chart pages do not: the drill at 50%, 65%
+and 85% engagement rather than only the chart's 75%, and the size in
+millimetres — which is a query Google itself lists and which no competitor
+answers.
+
+## Four wrong sentences the assertions could not have caught
+
+All from reading the pages after every check passed:
+
+- The page called `major − 1.299/TPI` the **minor diameter**. The published
+  minor diameter for 1/4-20 is 0.1887 and that arithmetic gives 0.1851. The
+  formula produces the 100%-thread drill, not the spec value, so the row now
+  says what it computed. **Do not publish a standards figure that has not been
+  checked against the standard** — that is the exact failure these pages exist
+  to replace.
+- 1/4-20 was described as "the most-searched tap size there is". No measurement
+  behind it. Cut.
+- The metric-comparison paragraph took the *absolute* difference and then
+  asserted a direction: "an M6 bolt is 0.35 mm larger" when M6 is 6 mm and a
+  1/4-20 is 6.35. The two directions are also different failures — a fatter
+  bolt jams, a thinner one goes in loose and strips — so one sentence could not
+  have covered both even with the right sign.
+- On 0-80 that same sentence had an M2 bolt "starting in the hole and then
+  binding". M2 is 2 mm; a 0-80 major diameter is 1.52. It does not go in at all.
+- On 10-32 it blamed the pitch — while printing 0.79 mm against 0.80 mm. The
+  reason those two do not interchange is 0.17 mm of diameter. **A clause that
+  is true in general can be false on the one page that prints the numbers.**
+
 ## Second empty field: US envelopes
 
 The query table said the site ranks ninth on B7 and A9 and fortieth on A2,
