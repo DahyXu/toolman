@@ -16,6 +16,7 @@ import TZD from '../data/timezone-detail.mjs';
 // apart and both are written CST in ordinary correspondence.
 const AMBIGUOUS = {
   BST: [{ name: 'Bangladesh Standard Time', off: 6, where: 'Bangladesh, all year' }],
+  AST: [{ name: 'Arabia Standard Time', off: 3, where: 'Saudi Arabia, Iraq, Kuwait, Bahrain, Qatar and Yemen' }],
   CST: [
     { name: 'China Standard Time', off: 8, where: 'all of mainland China, all year' },
     { name: 'Cuba Standard Time', off: -5, where: 'Cuba in winter' },
@@ -58,6 +59,18 @@ const Z = [
   { id: 'aest', ab: 'AEST', off: 10, name: 'Australian Eastern Standard Time', where: 'Sydney, Melbourne and Brisbane in the southern winter' },
   { id: 'aedt', ab: 'AEDT', off: 11, name: 'Australian Eastern Daylight Time', where: 'Sydney and Melbourne from October to April' },
   { id: 'nzst', ab: 'NZST', off: 12, name: 'New Zealand Standard Time', where: 'Auckland and Wellington in the southern winter' },
+  { id: 'ast', ab: 'AST', off: -4, name: 'Atlantic Standard Time', where: 'Halifax, Puerto Rico and the eastern Caribbean in winter' },
+  { id: 'bdt', ab: 'BDT', off: 6, name: 'Bangladesh Standard Time', where: 'Bangladesh, all year' },
+  { id: 'pkt', ab: 'PKT', off: 5, name: 'Pakistan Standard Time', where: 'Pakistan, all year' },
+  { id: 'npt', ab: 'NPT', off: 5.75, name: 'Nepal Time', where: 'Nepal, all year' },
+  { id: 'irst', ab: 'IRST', off: 3.5, name: 'Iran Standard Time', where: 'Iran, all year' },
+  { id: 'mmt', ab: 'MMT', off: 6.5, name: 'Myanmar Time', where: 'Myanmar, all year' },
+  { id: 'acst', ab: 'ACST', off: 9.5, name: 'Australian Central Standard Time', where: 'Adelaide and Darwin in winter' },
+  { id: 'acdt', ab: 'ACDT', off: 10.5, name: 'Australian Central Daylight Time', where: 'Adelaide in summer' },
+  { id: 'nzdt', ab: 'NZDT', off: 13, name: 'New Zealand Daylight Time', where: 'New Zealand from late September to early April' },
+  { id: 'wat', ab: 'WAT', off: 1, name: 'West Africa Time', where: 'Nigeria, Cameroon, Angola and much of central and western Africa' },
+  { id: 'eat', ab: 'EAT', off: 3, name: 'East Africa Time', where: 'Kenya, Tanzania, Ethiopia, Uganda and Somalia' },
+  { id: 'sast', ab: 'SAST', off: 2, name: 'South Africa Standard Time', where: 'South Africa, Lesotho and Eswatini' },
 ];
 
 const offStr = (o) => (o === 0 ? 'UTC+0' : 'UTC' + (o < 0 ? '−' : '+') + (Number.isInteger(o) ? o < 0 ? -o : o : (Math.abs(o) | 0) + ':' + String(Math.round((Math.abs(o) % 1) * 60)).padStart(2, '0')));
@@ -132,7 +145,16 @@ const dayNoteT = (d) => (d === 0 ? '' : d > 0 ? ' (next day)' : ' (previous day)
 function pairPage(a, b, all) {
   const d = b.off - a.off;
   const path = `/convert/${a.id}-to-${b.id}/`;
-  const dirWord = d === 0 ? 'the same time as' : d > 0 ? `${Math.abs(d)} hour${Math.abs(d) === 1 ? '' : 's'} ahead of` : `${Math.abs(d)} hour${Math.abs(d) === 1 ? '' : 's'} behind`;
+  const spanWords = (n) => {
+    const size = Math.abs(n);
+    const whole = Math.floor(size);
+    const mins = Math.round((size - whole) * 60);
+    const h = `${whole} hour${whole === 1 ? '' : 's'}`;
+    if (!mins) return h;
+    if (!whole) return `${mins} minutes`;
+    return `${h} ${mins} minutes`;
+  };
+  const dirWord = d === 0 ? 'the same time as' : `${spanWords(d)} ${d > 0 ? 'ahead of' : 'behind'}`;
 
   const rows = Array.from({ length: 24 }, (_, h) => {
     const t = shift(h, 0, d);
