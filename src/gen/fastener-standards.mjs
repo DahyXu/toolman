@@ -37,7 +37,7 @@ const corners = (s) => Math.round(s * ACROSS_CORNERS * 100) / 100;
 const STANDARDS = [
   {
     id: 'din-933', name: 'DIN 933', pair: 'iso-4017', family: 'hex', shank: 'full', sibling: 'din-931',
-    what: 'Hexagon head set screws — a hex head bolt threaded all the way to the head.',
+    what: 'Hexagon head bolts threaded all the way to the head — DIN’s own title calls these “set screws”, which today reads as a grub screw and is not what this is.',
     detail: 'DIN 933 is the fully threaded hex bolt: the thread runs the whole length, right up under the head. It is the bolt most people picture when they say "bolt", and it is the one to use when the joint is clamping through its full depth rather than bearing on a plain shank.',
   },
   {
@@ -73,7 +73,7 @@ const STANDARDS = [
   {
     id: 'iso-4032', name: 'ISO 4032', pair: 'din-934', family: 'nut',
     what: 'Hexagon regular nuts, style 1 — the ISO standard that replaced DIN 934.',
-    detail: 'ISO 4032 supersedes DIN 934. The thread is the same and the nuts thread onto the same bolts; the across-flats differs at the same sizes where the bolt heads differ, which is why an ISO nut and a DIN nut of the same thread can need different spanners.',
+    detail: 'ISO 4032 supersedes DIN 934. The thread is the same and the nuts thread onto the same bolts. Whether the across-flats also differs between the two nut standards is not something this site holds checked data for, so it is not stated here — check the figure against whichever standard the part was actually made to.',
   },
 ];
 
@@ -259,7 +259,7 @@ ${STANDARDS.filter((s) => s.family === family && !s.id.startsWith('iso')).map((s
 
 ${group('hex', 'Hex head bolts', 'The two DIN numbers here differ only in whether the thread runs all the way to the head. Both map to ISO numbers that changed the head size at three of the thirteen sizes.')}
 ${group('socket', 'Socket head cap screws', 'Driven by a hex key rather than a spanner. Here the DIN and ISO standards agree, and suppliers list them on one line.')}
-${group('nut', 'Hex nuts', 'The counterpart to the bolts above. The across-flats follows the same DIN/ISO split.')}
+${group('nut', 'Hex nuts', 'The counterpart to the bolts above. These pages carry the standard and its equivalent, not a dimension table — see below for why.')}
 
 <h2>Where the numbers on these pages come from</h2>
 <p>None of the dimensions here are transcribed from a catalogue. The standards themselves are paid documents and the free copies circulating are scans of supplier tables, which is the kind of source that produces a confident wrong figure. Every millimetre on these pages comes from the thread data this site already carries and checks, or is computed from it — across corners, for instance, is the across-flats divided by cos&nbsp;30°, which the build verifies for every size.</p>
