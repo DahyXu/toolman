@@ -79,6 +79,39 @@ const DECADE_USE = {
   green: 'Megohm values are for very slow timing, for bleeding charge off a capacitor after power-down, and for keeping a high-impedance input from floating. Currents here are in microamps, so the resistor dissipates almost nothing and the limiting factor is the voltage across it rather than the heat in it.',
 };
 
+
+// A surface-mount part has no room for bands and carries printed digits: two
+// significant figures and a zero count for ±5%, three and a zero count for ±1%.
+// Below ten ohms there is no room for the zero count either, so an R stands in
+// for the decimal point. `smd resistor code 103 value` returns DigiKey's
+// calculator and three YouTube shorts — the chart again, never the entry — and
+// this belongs on the page for the value rather than in a section of its own,
+// where /smd-resistor/103/ and /resistor/10k/ would be the same page twice.
+function smdThree(ohms) {
+  if (ohms < 10) {
+    const t = +ohms.toFixed(2);
+    return String(t).includes('.') ? String(t).replace('.', 'R') : `${t}R0`;
+  }
+  const zeros = Math.floor(Math.log10(ohms) + 1e-9) - 1;
+  const sig = Math.round(ohms / Math.pow(10, zeros));
+  return `${sig}${zeros}`;
+}
+function smdFour(ohms) {
+  if (ohms < 100) {
+    const t = +ohms.toFixed(2);
+    return String(t).includes('.') ? String(t).replace('.', 'R').padEnd(4, '0') : `${t}R0`;
+  }
+  const zeros = Math.floor(Math.log10(ohms) + 1e-9) - 2;
+  const sig = Math.round(ohms / Math.pow(10, zeros));
+  return `${sig}${zeros}`;
+}
+// Read the marking back the way somebody with the part in front of them would.
+function readSmd(code) {
+  if (code.includes('R')) return +code.replace('R', '.');
+  const zeros = +code.slice(-1);
+  return +code.slice(0, -1) * Math.pow(10, zeros);
+}
+
 // Read the bands the way a person reads the resistor, so the page's own claim
 // is checked rather than assumed.
 function decode(b1, b2, mult) {
@@ -165,6 +198,20 @@ export default async function () {
     }
   }
 
+  // Both markings have to decode to the value the page states, the same way the
+  // colour bands do. Three-digit and four-digit are two encodings of one number,
+  // so a rounding slip in either shows up here rather than on the page.
+  for (const r of rows) {
+    for (const code of [smdThree(r.ohms), smdFour(r.ohms)]) {
+      const back = readSmd(code);
+      if (Math.abs(back - r.ohms) > Math.max(r.ohms * 1e-9, 1e-9)) {
+        console.error(`
+✗ resistor ${fmt(r.ohms)}: the SMD marking ${code} reads back as ${fmt(back)}`);
+        process.exitCode = 1;
+      }
+    }
+  }
+
   // The first band is never black: a resistor whose first significant digit is
   // zero is not a value, and a table that produced one would be generating
   // resistors that do not exist.
@@ -190,6 +237,10 @@ export default async function () {
     const inE12 = E12.includes(e);
     const nearestE12 = E12.reduce((best, v) => Math.abs(v - e) < Math.abs(best - e) ? v : best) * r.scale;
     const decadeUse = DECADE_USE[mult];
+    const smd3 = smdThree(ohms);
+    const smd4 = smdFour(ohms);
+    const smd3Read = smd3.includes('R') ? `${smd3.replace('R', '.')} Ω — the R is the decimal point` : `${smd3.slice(0, -1)}${smd3.slice(-1) === '0' ? ' with no zeros after it' : smd3.slice(-1) === '1' ? ' followed by one zero' : ` followed by ${smd3.slice(-1)} zeros`}`;
+    const smd4Read = smd4.includes('R') ? `${smd4.replace('R', '.')} Ω — the R is the decimal point` : `${smd4.slice(0, -1)}${smd4.slice(-1) === '0' ? ' with no zeros after it' : smd4.slice(-1) === '1' ? ' followed by one zero' : ` followed by ${smd4.slice(-1)} zeros`}`;
     const low = ohms * (1 - tol / 100);
     const high = ohms * (1 + tol / 100);
 
@@ -283,6 +334,19 @@ ${[0.125, 0.25, 0.5, 1].map((w) => {
   ? `${fmt(ohms)} is one of the twelve E12 values as well as one of the twenty-four E24 ones, which means it is made at ±10% and ±5% both. In practice that makes it easier to find and cheaper: E12 values are what a beginner's assortment box contains, and a shop that stocks one range stocks this value.`
   : `${fmt(ohms)} is an E24 value that is <strong>not</strong> in the E12 series, so it is made at ±5% and tighter but not at ±10%. That is why it is missing from cheap assortment boxes, which are usually E12 only — and why a design that calls for ${fmt(ohms)} is harder to service from a beginner's drawer than one that calls for ${fmt(nearestE12)}.`}</p>
 <p>The nearest E12 value is <strong>${fmt(nearestE12)}</strong>${inE12 ? ' — this one' : `, ${Math.abs(Math.round((nearestE12 / ohms - 1) * 1000) / 10)}% away, which is inside the ±5% band of neither part but close enough to substitute in most non-critical positions`}.</p>
+
+<h2>The same resistor as a surface-mount marking</h2>
+<p>Surface-mount resistors have no room for bands, so they carry printed digits instead — and <code>${smd3}</code> is what ${fmt(ohms)} looks like on one. <strong>The scheme is the colour code with the colours replaced by the digits they stood for</strong>: two significant figures and a count of zeros.</p>
+<table><thead><tr><th>Marking</th><th>Used on</th><th>Reads as</th></tr></thead><tbody>
+<tr><td><code>${smd3}</code></td><td>Three-digit, ±5% parts</td><td>${smd3Read}</td></tr>
+<tr><td><code>${smd4}</code></td><td>Four-digit, ±1% parts</td><td>${smd4Read}</td></tr>
+</tbody></table>
+<p>${smd3.includes('R')
+  ? `Below ten ohms there are not two digits to work with before the decimal point, so an <strong>R marks the decimal place</strong>: ${fmt(ohms)} is printed <code>${smd3}</code>. The R is doing the job the multiplier band does on a through-hole part, and a marking with an R in it is always a low value — never a large one.`
+  : smd4.includes('R')
+    ? `The three-digit marking works the usual way here — <code>${smd3}</code> is ${smd3.slice(0, -1)} with ${smd3.slice(-1) === '0' ? 'nothing' : smd3.slice(-1) === '1' ? 'one zero' : `${smd3.slice(-1)} zeros`} after it. The four-digit one cannot, because <strong>there are not three figures before the decimal point</strong> at ${fmt(ohms)}, so it falls back to the R: <code>${smd4}</code>. That is why this decade is the one where the two schemes look least alike.`
+    : `A four-digit marking is not a different system, only a more precise one: it carries three significant figures instead of two and takes one off the zero count, which is why <code>${smd3}</code> and <code>${smd4}</code> are the same ${fmt(ohms)}. If a board has both on it, the four-digit parts are the ±1% ones.`}</p>
+<p>Very small ±1% parts use a third scheme, EIA-96, where two digits index a table of values and a letter gives the multiplier — <code>01C</code> rather than <code>1002</code>. It only covers the E96 series, so it has no marking for most of the E24 values on this site, and a marking with a letter in the middle is never one of these codes.</p>
 
 <h2>Where ${fmt(ohms)} turns up</h2>
 <p>${decadeUse}</p>
