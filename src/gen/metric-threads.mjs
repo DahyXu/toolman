@@ -16,7 +16,7 @@ import { faq } from '../layout.mjs';
 
 // [major Ø, coarse pitch, common fine pitch or null, clearance (ISO 273 medium),
 //  hex socket key, spanner across flats (DIN), spanner (ISO) if different, use]
-const THREADS = [
+export const THREADS = [
   [2, 0.4, null, 2.4, 1.5, 4, null, 'Electronics, small hinges and instrument work.'],
   [2.5, 0.45, null, 2.9, 2, 5, null, 'Laptop and small appliance assembly.'],
   [3, 0.5, null, 3.4, 2.5, 5.5, null, 'The smallest size in general workshop use — enclosures, brackets, 3D-printed parts.'],
