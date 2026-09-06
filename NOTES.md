@@ -1,3 +1,42 @@
+## The impression base, accounted for line by line
+
+Search Console re-read: **4 clicks, 5,150 impressions, position 54.6** — the
+same snapshot as before, and it will stay that way for days. Everything
+deployed today is not in it yet.
+
+The remaining question was whether the impressions already there could ever
+become clicks. Taking the table apart:
+
+    widget-answered (unit conversion, colour hex, date maths)   ~2,900
+    password generator cluster                                     129
+    paper sizes                                                  1,171
+    everything else, almost all past position 40                   ~950
+
+**The largest non-widget cluster in the whole table is unwinnable.** `password
+generator 8 characters` carries 76 impressions at position 67.7 and `password
+generator 15 characters` 53 at 77.1 — the biggest single thing here. The page
+serving them is not missing and not badly titled: `/password-length/8/` is
+already called "8 Character Password Generator". Page one is
+
+    LastPass · 1Password · Norton · RoboForm · Bitwarden · ESET
+
+Six major security companies, for whom a password generator is a customer
+acquisition funnel they spend real money on. Position 68 is exactly where a
+five-day-old domain belongs on that query, and no on-page work moves it.
+
+Paper sizes are contested by Adobe, Canva and two dedicated paper references.
+The widget-answered impressions cannot be clicked by construction.
+
+So: **essentially none of the 5,150 impressions already earned is convertible
+in the near term.** Growth toward the click goal has to come from queries the
+site does not yet appear on at all — which is what the fastener, resistor and
+capacitor sections are for, and which is still unproven.
+
+That is the complete diagnosis. Three things were ruled out along the way —
+crawl depth, duplicate exposure, and the on-page match of the pages we already
+rank with — and each turned out not to be the constraint. What is left is
+domain authority and time, neither of which is written in this repository.
+
 ## Crawl depth and duplicate exposure, both measured — and neither is the problem
 
 Two technical explanations for sitting at position 54.6 were worth ruling out
