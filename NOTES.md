@@ -1,3 +1,49 @@
+## The weak fields are weak because the data is behind a paywall
+
+Three more candidates put through the strength-of-incumbent test:
+
+    6205 bearing dimensions    SKF, National Precision, EIS, and a wall of
+                               product listings                        REJECT
+    din 471 circlip dimensions roymech.co.uk, Arcon Ring, ITA Fasteners,
+                               Springmasters, Amesweb                    pass
+    woodruff key sizes chart   Reid Supply, Engineers Edge, stanho.com,
+                               Huyett, a Scribd PDF                      pass
+
+The bearing one is a clean rejection: SKF is the largest bearing maker in the
+world and has a page per bearing number. That is the test doing its job.
+
+The two that pass are the problem. **They are weak for a reason, and the reason
+excludes us from them.** Circlip dimensions live in DIN 471, woodruff keys in
+ANSI B17.2, nut dimensions in ISO 4032 — all paid documents. Nobody has built a
+good free reference because the numbers cannot be got reliably, which is why
+the incumbents are supplier catalogues with scanned tables and a Scribd upload.
+
+The no-transcription rule this section was built under is correct, and it rules
+out almost every field the incumbent test lets through. The fastener pages only
+worked because the DIN/ISO across-flats figures were already in the repository
+and already checked — that condition does not repeat for circlips, woodruff
+keys or nuts.
+
+### The intersection, written out
+
+What is actually buildable is the overlap of two conditions:
+
+1. the incumbents are weak, and
+2. the answer follows a rule that can be computed and checked, or is plain
+   public knowledge rather than a paid table.
+
+Everything on this site that works sits in that overlap — paper sizes (halving),
+tap drill (a formula, checked against 39 published values), CIDR (arithmetic),
+Roman numerals, ASCII, the fastener DIN/ISO mapping (an equivalence, not a
+dimension). **The site has already covered most of that overlap**, which is why
+the last several additions have been progressively harder to find and thinner
+when found.
+
+That is the honest ceiling on "write more pages" as a route to the click goal,
+and it is a different ceiling from the one recorded two entries ago. That one
+was about domain authority. This one is about there not being many more fields
+that are simultaneously winnable and honestly writable.
+
 ## The corrected test, applied — and it does discriminate
 
 A test that rejects everything is as useless as one that accepts everything, so
