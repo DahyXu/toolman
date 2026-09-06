@@ -1,3 +1,52 @@
+## The timezone field measured properly, and the arithmetic that follows
+
+The zone pages looked like the one promising field: `bst to brt` at position
+10.2 and `ict to pdt` at 13.3, no Google widget, mid-tier incumbents. Twelve
+zones were added on that basis, taking the section from 932 pairs to 1,770.
+
+Then two checks that should have come first.
+
+**They are indexed.** Searching an exact phrase from the template returns
+toolman.top pages for AEST→ICT, SGT→EEST, SGT→JST and EET→EST. Indexation is
+not the constraint here.
+
+**But 10.2 is the exception, not the rule.** Only two zone queries appear in
+Search Console at all. Checking a common pair directly:
+
+    sgt to jst    Savvy Time (twice), Global Time Hub, 24 Time Zones
+                  — toolman.top not on page one
+
+BST↔BRT is an odd pairing that few sites bother with. SGT↔JST is an ordinary
+one and Savvy Time owns it. **The site ranks where competition is thin, and the
+thin pairs are thin because nobody searches them.** That is the same shape as
+paper sizes ranking ninth on B7 and fortieth on A2, and as `ms sql ports` at
+position 1 with a single impression.
+
+### What that makes the ceiling
+
+Putting a number on it rather than repeating the shape. Suppose the 838 new
+pairs behave like the two that ranked: position 10–15, a handful of impressions
+a month each, and a click-through rate around 2% at that position.
+
+    838 pairs × ~3 impressions/month     ≈ 2,500 impressions
+    × 2% at position 10-15               ≈ 50 clicks/month
+                                         ≈ 1.7 clicks/day
+
+To reach 100 clicks a day by this route the site needs roughly **sixty times**
+that — on the order of fifty thousand long-tail pages ranking around position
+ten, or the same pages moved into the top three, which is the thing a five-day-
+old domain cannot do by writing more of them.
+
+This is not an argument against the work. The pages are correct, they are
+indexed, and they will accumulate. It is an argument against expecting the
+click goal to arrive from expansion alone, and it is the first time that
+expectation has been given a number instead of an adjective.
+
+**100 clicks a day needs a high-volume query won at position one to three.**
+Every field checked this week that has that volume — paper sizes, password
+generators, colour codes, ASCII, MySQL ports — is held by Adobe, Canva,
+LastPass, Bitwarden, Figma, Wikipedia or the vendor's own documentation.
+
 ## The impression base, accounted for line by line
 
 Search Console re-read: **4 clicks, 5,150 impressions, position 54.6** — the
