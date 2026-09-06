@@ -1,3 +1,42 @@
+## The corrected test, applied — and it does discriminate
+
+A test that rejects everything is as useless as one that accepts everything, so
+the strength-of-incumbent test was tried on a class the design brands do not
+touch: fastener standards.
+
+    din 933 dimensions      Fuller Fasteners, a193gradeb7.com, Big Bolt Nut,
+                            Scribd (a scanned PDF), Fasteners.eu, KIPP USA,
+                            Andrews Fasteners, sunhyings.com
+
+    iso 4762 dimensions     Fasteners.eu, Engineers Edge, iTeh Standards (a PDF
+                            sample), McMaster-Carr (a product picker, not a
+                            dimensions table), Industrial Fasteners Institute
+                            (selling the standard for $110)
+
+Every result is a fastener supplier's catalogue page, a PDF, or a body selling
+the document. The strongest name in either list is Engineers Edge. Several of
+the snippets are visibly mangled table OCR — "din933 DIAMETERS M1.6 to M2.5M3
+to. M2.5 P Pitch 0.35 0.4 0.45 a max", "k (nom.) 33.53".
+
+Set that beside `chartreuse hex code`, where the first four results are Figma,
+htmlcolorcodes, Canva and Adobe. **The test separates them, which is the whole
+point** — the previous test called both of them empty.
+
+The field is also large and it composes with what is already here: DIN 931,
+933, 934, 125, 985, 912, 7991, 6921 and ISO 4014, 4017, 4032, 4762, 7380,
+10642, 7089 each carry a dimension table per size, and `/thread/`, `/tap-drill/`,
+`/screw/` and `/spanner/` already cover the neighbouring ground.
+
+Two cautions to carry into that build, both from this week:
+
+- The volume per query is small. This is a long-tail play by construction, and
+  the arithmetic in the entry above still applies: 100 clicks a day needs
+  thousands of these, not dozens.
+- Dimensions from a paid standard cannot be transcribed from a supplier's OCR'd
+  catalogue and asserted as the standard. Whatever goes in has to be either
+  computed from a rule that can be checked, or plainly attributed as the
+  common commercial figure rather than the specification.
+
 ## The named direction is refuted, and it did not need waiting for
 
 The previous entry said the named-direction premise was untested and that the
