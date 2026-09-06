@@ -4,6 +4,29 @@ import TZD from '../data/timezone-detail.mjs';
 
 // Fixed-offset zone abbreviations. Each abbreviation denotes one specific
 // offset, so these conversions are exact — no daylight-saving ambiguity.
+// Three of these abbreviations mean more than one thing, and the pages pick one
+// silently. Google's own results for `bst to brt` disagree about which BST is
+// meant — Savvy Time and World Time Buddy answer for British Summer Time and
+// say four hours, while 24timezones and FreeFileConvert answer for Bangladesh
+// and say nine. Somebody reading a meeting invitation cannot tell from the
+// letters alone, and a page that quietly assumes one of them is no better than
+// the ones that disagree.
+//
+// CST is the expensive one: US Central and China Standard are fourteen hours
+// apart and both are written CST in ordinary correspondence.
+const AMBIGUOUS = {
+  BST: [{ name: 'Bangladesh Standard Time', off: 6, where: 'Bangladesh, all year' }],
+  CST: [
+    { name: 'China Standard Time', off: 8, where: 'all of mainland China, all year' },
+    { name: 'Cuba Standard Time', off: -5, where: 'Cuba in winter' },
+  ],
+  IST: [
+    { name: 'Israel Standard Time', off: 2, where: 'Israel in winter' },
+    { name: 'Irish Standard Time', off: 1, where: 'Ireland in summer' },
+  ],
+};
+
+
 const Z = [
   { id: 'utc', ab: 'UTC', off: 0, name: 'Coordinated Universal Time', where: 'the global time standard, used by aviation, computing and science' },
   { id: 'gmt', ab: 'GMT', off: 0, name: 'Greenwich Mean Time', where: 'the UK and Ireland in winter, Portugal, Iceland and much of West Africa' },
@@ -38,6 +61,57 @@ const Z = [
 ];
 
 const offStr = (o) => (o === 0 ? 'UTC+0' : 'UTC' + (o < 0 ? '−' : '+') + (Number.isInteger(o) ? o < 0 ? -o : o : (Math.abs(o) | 0) + ':' + String(Math.round((Math.abs(o) % 1) * 60)).padStart(2, '0')));
+
+// Every alternative reading has to be a different offset from the one the pages
+// use, or naming it tells the reader nothing at all.
+for (const [ab, alts] of Object.entries(AMBIGUOUS)) {
+  const primary = Z.find((z) => z.ab === ab);
+  if (!primary) {
+    console.error(`\n✗ timezones: ${ab} is listed as ambiguous and is not a zone on this site`);
+    process.exitCode = 1;
+    continue;
+  }
+  for (const alt of alts) {
+    if (primary.off === alt.off) {
+      console.error(`\n✗ timezones: ${ab} and ${alt.name} are both ${offStr(alt.off)}, so there is nothing to disambiguate`);
+      process.exitCode = 1;
+    }
+  }
+}
+
+const gapWord = (n) => {
+  if (n === 0) return 'the same time as';
+  const size = Math.abs(n);
+  const num = size % 1 ? size.toFixed(1) : String(size);
+  return `${num} hour${size === 1 ? '' : 's'} ${n < 0 ? 'behind' : 'ahead of'}`;
+};
+
+// What the conversion becomes under the other reading. This is the number a
+// reader actually needs — not "BST is ambiguous" but "if yours is the Bangladesh
+// one, it is nine hours and not four".
+function ambiguitySection(a, b) {
+  const out = [];
+  for (const side of [a, b]) {
+    const alts = AMBIGUOUS[side.ab];
+    if (!alts) continue;
+
+    // b.off − a.off is how far b is from a. Substituting an alternative for one
+    // side changes that gap, and which side it is decides the sign.
+    const gapWith = (off) => (side === a ? b.off - off : off - a.off);
+
+    const rows = alts.map((alt) => `<tr><td>${alt.name}</td><td>${b.ab} is ${gapWord(gapWith(alt.off))} ${a.ab}</td></tr>`).join('');
+
+    out.push(`<h2>Which ${side.ab} is this?</h2>
+<p><strong>${side.ab} names more than one zone.</strong> This page reads it as <strong>${side.name}</strong> at ${offStr(side.off)}, which is the reading most converters take. ${alts.length === 1 ? 'There is one other:' : 'There are others:'} ${alts.map((x) => `<strong>${x.name}</strong> at ${offStr(x.off)}, used in ${x.where}`).join('; ')}.</p>
+<p>The letters on a meeting invitation do not say which one is meant. If yours is not ${side.name}, the answer above is wrong, and not by a little:</p>
+<table><thead><tr><th>If ${side.ab} means</th><th>Then</th></tr></thead><tbody>
+<tr><td>${side.name} <span class="muted">— assumed on this page</span></td><td>${b.ab} is ${gapWord(b.off - a.off)} ${a.ab}</td></tr>
+${rows}
+</tbody></table>
+<p>The large converter sites disagree about this as well: search for a ${side.ab} conversion and some of the results answer for one reading and some for another, none of them saying which they chose. Where it matters, ask which country the sender is in rather than which letters they typed.</p>`);
+  }
+  return out.join('\n');
+}
 
 function clock(h, m = 0) {
   const hh = ((h % 24) + 24) % 24;
@@ -149,7 +223,7 @@ function pairPage(a, b, all) {
 })();
 </script>
 
-<h2>Best time to schedule a meeting</h2>
+${ambiguitySection(a, b)}<h2>Best time to schedule a meeting</h2>
 <p>${overlapText}</p>
 <table><thead><tr><th>${a.ab}</th><th>${b.ab}</th><th>Suitable?</th></tr></thead><tbody>${business}</tbody></table>
 
