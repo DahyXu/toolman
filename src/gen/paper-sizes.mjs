@@ -151,7 +151,35 @@ function seriesMaths(name, series, w, h) {
   return parts.map((x) => `<p>${x}</p>`).join('');
 }
 
+
+// The nine sizes named by their inches — Photo 4×6, Index Card 3×5, US Trade
+// 6×9 — are searched as they are typed: "8x10 inches paper size" with a letter
+// x, or "8 by 10 paper size" with the word. The page rendered the typographic
+// sign twelve times and neither spelling once. This is not keyword stuffing;
+// it is the size written the way the trade and the customer write it.
+const pairOf = (name) => {
+  const at = name.indexOf('×');
+  if (at < 0) return null;
+  const a = name.slice(0, at).trim().split(' ').pop();
+  const b = name.slice(at + 1).trim().split(' ')[0];
+  const isNum = (x) => x !== '' && String(Number(x)) === x;
+  return isNum(a) && isNum(b) ? { a, b } : null;
+};
+
 export default async function () {
+  // The first version of pairOf used a regex that lost its backslashes on the
+  // way into this file and became /(d+)s*×s*(d+)/, which matches nothing. The
+  // build passed, the nine sentences rendered as empty strings, and the only
+  // way anyone would have found out is by reading a page. Count them.
+  {
+    const named = SIZES.filter(([name]) => name.includes('×'));
+    const paired = named.filter(([name]) => pairOf(name));
+    if (paired.length !== named.length || named.length === 0) {
+      console.error(`
+✗ paper: ${named.length} size(s) are named with a × and pairOf reads ${paired.length} of them`);
+      process.exitCode = 1;
+    }
+  }
   const pages = [];
 
   for (const [name, id, w, h, series, note] of SIZES) {
@@ -184,6 +212,7 @@ export default async function () {
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${w} × ${h} mm</strong></p>
 <p class="muted">${r2(IN(w))} × ${r2(IN(h))} inches · ${r2(w / 10)} × ${r2(h / 10)} cm · aspect ratio 1:${ratio}</p>
 <p>${name} size is <strong>${w} × ${h} mm</strong>. Those are the ${name} dimensions a printer works to; the same sheet in centimetres, inches, points and pixels is below.</p>
+${(() => { const q = pairOf(name); return q ? `<p>It is written <strong>${q.a}x${q.b}</strong> and <strong>${q.a} by ${q.b}</strong> as often as ${q.a}×${q.b} — the same sheet however it is typed. Sizes named by their inches like this one get asked for by the numbers rather than by a letter code, which is why the spelling varies and the sheet does not.</p>` : ''; })()}
 
 <h2>What ${name} is for</h2>
 <p>${DETAIL[id] || note}</p>
