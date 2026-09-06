@@ -201,9 +201,24 @@ export default function paperCompare() {
       let shared = 0;
       while (shared < wa.length - 1 && shared < wb.length - 1 && wa[shared] === wb[shared]) shared++;
       const strip = (w) => w.join(' ').replace(/^\((.*)\)$/, '$1');
+      // The prefix collapser turns "JIS B4 vs JIS B5" into "JIS: B4 vs B5".
+      // The US envelopes share a suffix instead — "A1 Envelope (US) vs A2
+      // Envelope (US)" spends a quarter of the title saying the same three
+      // words twice. Factor the tail out the same way.
+      let tail = 0;
+      while (tail < wa.length - 1 - shared && tail < wb.length - 1 - shared
+        && wa[wa.length - 1 - tail] === wb[wb.length - 1 - tail]) tail++;
+
       const pairLabel = shared > 0
-        ? `${wa.slice(0, shared).join(' ')}: ${strip(wa.slice(shared))} vs ${strip(wb.slice(shared))}`
-        : `${A.name} vs ${B.name}`;
+        // A prefix ending in an abbreviation belongs to the number after it:
+        // "Envelope No.: 9 vs 11" is the colon form applied where it does not
+        // fit. "Envelope No. 9 vs 11" is how the size is actually written.
+        ? (wa[shared - 1].endsWith('.')
+            ? `${wa.slice(0, shared).join(' ')} ${strip(wa.slice(shared))} vs ${strip(wb.slice(shared))}`
+            : `${wa.slice(0, shared).join(' ')}: ${strip(wa.slice(shared))} vs ${strip(wb.slice(shared))}`)
+        : tail > 0
+          ? `${wa.slice(0, wa.length - tail).join(' ')} vs ${wb.slice(0, wb.length - tail).join(' ')} ${wa.slice(wa.length - tail).join(' ')}`
+          : `${A.name} vs ${B.name}`;
 
       const title = (() => {
         const base = pairLabel;

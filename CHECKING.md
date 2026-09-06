@@ -488,3 +488,112 @@ being fixed is escaping, use an API that has no escaping of its own.**
 
 `scripts/escaped-backslash.mjs` is in the audit. Planting `\n` in a page fails
 it.
+
+## A backslash in a plain template literal is an escape, and the check went blind
+
+The paper consistency check reads inch figures out of prose and compares them
+with the table. Envelope sizes are written in eighths, so the number parser had
+to learn vulgar fractions. The pattern was assembled like this:
+
+    const NUM = `[\d.]+[${GLYPHS}]?|[${GLYPHS}]`;
+    const DIMS = new RegExp(`(${NUM})\s*×\s*(${NUM})\s*(mm|inch)`, 'g');
+
+That reads correctly and is wrong. Inside a template literal `\d` is just `d`
+and `\s` is just `s`, so the pattern actually built was:
+
+    ([d.]+[⅛¼⅜½⅝¾⅞]?|…)s*×s*(…)s*(mm|inch)
+
+It matches nothing. The check had been failing on a real error one command
+earlier; after this edit it printed a clean site. **It went from finding the
+fault to finding nothing, with the data unchanged, and that was read as the
+fault being fixed.**
+
+`String.raw` is the form that keeps the backslash, and the file now uses it.
+
+Two rules come out of this, both sharpening ones already here:
+
+- **A check that starts passing without the data changing has not been fixed.
+  It has stopped looking.** The passing run needs the same suspicion as a
+  failing one whenever the check itself was touched.
+- The escape trap now has a third layer. Regex patterns eat backslashes,
+  heredocs eat backslashes, and template literals eat backslashes. In this
+  session the shell heredoc silently turned `[\s\S]` into `[sS]` and `\\d` into
+  `d` on two separate occasions, in scripts written to avoid exactly that. The
+  only writes that survived unaltered were the ones that built the character
+  from `String.fromCharCode(92)` and read the file back to confirm it.
+
+## An empty heading is well-formed HTML
+
+`seriesMaths()` returned `''` for any size outside the A, B, C and US series and
+the page printed the heading regardless. Forty-four paper pages shipped with
+
+    <h2>How JIS B5 relates to the rest of the series</h2>
+    <h2>About JIS B5</h2>
+
+Eleven of them were the JIS B pages added the day before, by me. Nothing caught
+it across two full audits: the pages have titles, descriptions, an h1, inbound
+links, valid JSON-LD and no accessibility faults. Every existing check passed
+because **nothing is malformed — the section is simply not there.**
+
+`scripts/empty-sections.mjs` is now in the audit. It compares a heading against
+the text before the next heading *of the same or higher level*: the first
+version stopped at the next heading of any level and reported 9,432 pages,
+because an `<h2>` whose content is a run of `<h3>`s has nothing of its own in
+between. That is the calibration failure this project keeps repeating — a first
+draft that fires on the whole site is measuring the template, not the fault.
+
+## An exemption list written from what a section ought to be called
+
+Eight tool pages fill a section from JavaScript, so those headings are empty in
+the static HTML on purpose. Writing them into an allowlist by name, from what
+each section looked like it should be called, got **four of ten names wrong** —
+"Breakdown" for "How it breaks down", "Results" for "Binary view". The check
+rejected all four, which is the only reason they were noticed.
+
+The exemption now needs two things: the name, and evidence — an element inside
+the empty section whose id the page's own script writes to. The name records
+that somebody decided this on purpose; the evidence means a tool section that
+stops being filled loses its exemption without anyone having to remember.
+
+## Reading the envelope pages, again
+
+Every assertion passed and the pages still said four wrong things, all found by
+reading them:
+
+- "The largest standard sheet that goes in flat is **JIS B7**" — on a US
+  invitation envelope. Arithmetically true, and useless to anyone holding one.
+  The candidate pool now excludes standards nobody mails in that envelope.
+- "Announcement envelopes are cut a quarter of an inch over their card, so the
+  card is 4.13 × 5.5 inches." The real A2 card is 4¼ × 5½: an eighth over on
+  width, a quarter over on height, and an A7 is a quarter over on both. There
+  is no single margin, so a sentence computed from one had to go. **A rule
+  invented to make a number computable is not a rule.**
+- The No. 6¾ page called itself the small business envelope in one section and
+  said it was "too small for a folded Letter sheet, which keeps it in the card
+  and reply-slip range" three paragraphs later. The fold list was missing the
+  quartered fold that actually fits.
+- Two hand-written claims contradicted the geometry on their own page: a No. 14
+  "takes a Letter folded once the short way" (that fold is 139.7 mm across and
+  the envelope is 127), and a No. 9 is "a quarter inch shorter and an eighth
+  narrower" than a No. 10 when it is a quarter narrower and five eighths
+  shorter.
+
+The last two were caught by printing the computed fit next to the hand-written
+sentence for all thirteen envelopes at once. That is worth doing whenever prose
+and data describe the same object: **put the two side by side and read the
+column, rather than checking whether an assertion fires.**
+
+## Appending with `\n` to a CRLF file splits the file in two
+
+The envelope entries were appended to `paper-sizes-data.mjs` and
+`paper-detail.mjs` with `'\n' + rows`. Both files are CRLF. Everything built and
+every audit passed, because Node does not care. But the next script to process
+the file line by line — splitting on `\r\n` — saw all eleven new entries glued
+onto the end of the previous line, found two matches where it expected
+thirteen, and did nothing. It reported zero replacements twice before the cause
+was found.
+
+The sibling failure is already recorded here: a `replace()` matching
+`'];\n\nexport default SIZES;'` silently did nothing on the same file. Same
+cause, opposite direction. **Detect the file's line ending, use it for what you
+write, and normalise after appending.**

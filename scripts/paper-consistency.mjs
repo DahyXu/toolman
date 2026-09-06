@@ -38,12 +38,31 @@ for (const [w, h] of EXTERNAL) known.push([w, h], [w / 25.4, h / 25.4]);
 // Trade names round: Super A3 is 329 × 483 mm and is sold as "13 × 19 inches".
 const nearKnown = (a, b, tol) => known.some(([x, y]) => Math.abs(x - a) <= tol && Math.abs(y - b) <= tol);
 
+// Inch figures are written the way the trade writes them — 4⅜ × 5¾, not
+// 4.375 × 5.75. Read as a plain number that is "4", and the pair "4⅜ × 5¾"
+// silently reduces to a "4 × 5" that matches no sheet — or, worse, matches
+// the wrong one. The parser has to see the fraction to check the figure.
+const VULGAR = { '⅛': 0.125, '¼': 0.25, '⅜': 0.375, '½': 0.5, '⅝': 0.625, '¾': 0.75, '⅞': 0.875 };
+const GLYPHS = Object.keys(VULGAR).join('');
+// A backslash inside a plain template literal is an escape: `[d.]` is the
+// string "[d.]" and `s` is "s". Written that way this pattern quietly became
+// [d.]+s*×s*, matched nothing, and reported a clean site by being unable to
+// look at it. String.raw is the form that keeps the backslash.
+const NUM = String.raw`[\d.]+` + '[' + GLYPHS + ']?|[' + GLYPHS + ']';
+const DIMS = new RegExp('(' + NUM + ')' + String.raw`\s*×\s*` + '(' + NUM + ')' + String.raw`\s*` + '(mm|inch)', 'g');
+const value = (t) => {
+  const f = VULGAR[t[t.length - 1]];
+  if (f === undefined) return +t;
+  const whole = t.slice(0, -1);
+  return (whole ? +whole : 0) + f;
+};
+
 const wrong = [];
 for (const r of rows) {
   const text = DETAIL[r.id];
   if (!text) continue;
-  for (const m of text.matchAll(/([\d.]+)\s*×\s*([\d.]+)\s*(mm|inch)/g)) {
-    const a = +m[1], b = +m[2];
+  for (const m of text.matchAll(DIMS)) {
+    const a = value(m[1]), b = value(m[2]);
     const isMm = m[3] === 'mm';
     // ISO sizes are published rounded to the millimetre, so allow 1 mm; inch
     // figures are trade designations and allow a twentieth of an inch.

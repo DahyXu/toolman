@@ -51,8 +51,8 @@ const SIZES = [
   { name: 'B10', id: 'b10', w: 31, h: 44, series: 'B', note: 'The smallest standard B size.' },
   { name: 'C3', id: 'c3', w: 324, h: 458, series: 'C', note: 'Takes an unfolded A3 sheet, or a C4 envelope inside it.' },
   { name: 'C7', id: 'c7', w: 81, h: 114, series: 'C', note: 'Takes an A7 sheet unfolded — the size of a small card envelope.' },
-  { name: 'Envelope No. 10', id: 'envelope-10', w: 104.775, h: 241.3, series: 'C', note: '4.125 × 9.5 inches, the standard US business envelope.' },
-  { name: 'A7 Envelope (US)', id: 'envelope-a7-us', w: 133.35, h: 184.15, series: 'C', note: '5.25 × 7.25 inches, the US invitation envelope. Unrelated to ISO A7.' },
+  { name: 'Envelope No. 10', id: 'envelope-10', w: 104.775, h: 241.3, series: 'US Envelope', note: '4.125 × 9.5 inches, the standard US business envelope.' },
+  { name: 'A7 Envelope (US)', id: 'envelope-a7-us', w: 133.35, h: 184.15, series: 'US Envelope', note: '5.25 × 7.25 inches, the US invitation envelope. Unrelated to ISO A7.' },
   { name: 'Photo 6×8', id: 'photo-6x8', w: 152.4, h: 203.2, series: 'Photo', note: '6 × 8 inches, a 3:4 print size.' },
   { name: 'Photo 8×12', id: 'photo-8x12', w: 203.2, h: 304.8, series: 'Photo', note: '8 × 12 inches — the 2:3 enlargement that needs no cropping.' },
   { name: 'Photo 11×14', id: 'photo-11x14', w: 279.4, h: 355.6, series: 'Photo', note: '11 × 14 inches, a common gallery frame size.' },
@@ -72,6 +72,17 @@ const SIZES = [
   { name: 'JIS B8', id: 'jis-b8', w: 64, h: 91, series: 'JIS B', note: 'JIS B8 is 64 × 91 mm, the Japanese B series size, which is not the same as ISO B8.' },
   { name: 'JIS B9', id: 'jis-b9', w: 45, h: 64, series: 'JIS B', note: 'JIS B9 is 45 × 64 mm, the Japanese B series size, which is not the same as ISO B9.' },
   { name: 'JIS B10', id: 'jis-b10', w: 32, h: 45, series: 'JIS B', note: 'JIS B10 is 32 × 45 mm, the Japanese B series size, which is not the same as ISO B10.' },
+  { name: 'A1 Envelope (US)', id: 'envelope-a1-us', w: 92.075, h: 130.175, series: 'US Envelope', note: '3.625 × 5.125 inches. The smallest US announcement envelope, also sold as a 4 Bar. Unrelated to ISO A1.' },
+  { name: 'A2 Envelope (US)', id: 'envelope-a2-us', w: 111.125, h: 146.05, series: 'US Envelope', note: '4.375 × 5.75 inches. The US reply-card and invitation envelope. Unrelated to ISO A2 paper.' },
+  { name: 'A6 Envelope (US)', id: 'envelope-a6-us', w: 120.65, h: 165.1, series: 'US Envelope', note: '4.75 × 6.5 inches. Takes a 4 by 6 inch card or photo. Unrelated to ISO A6.' },
+  { name: 'A8 Envelope (US)', id: 'envelope-a8-us', w: 139.7, h: 206.375, series: 'US Envelope', note: '5.5 × 8.125 inches. A tall US announcement envelope. Unrelated to ISO A8.' },
+  { name: 'A9 Envelope (US)', id: 'envelope-a9-us', w: 146.05, h: 222.25, series: 'US Envelope', note: '5.75 × 8.75 inches. A large US announcement envelope. Unrelated to ISO A9.' },
+  { name: 'A10 Envelope (US)', id: 'envelope-a10-us', w: 152.4, h: 241.3, series: 'US Envelope', note: '6 × 9.5 inches. The largest standard US announcement envelope. Unrelated to ISO A10.' },
+  { name: 'Envelope No. 6 3/4', id: 'envelope-6-75', w: 92.075, h: 165.1, series: 'US Envelope', note: '3.625 × 6.5 inches. The small US business envelope, used for statements and remittance slips.' },
+  { name: 'Envelope No. 9', id: 'envelope-9', w: 98.425, h: 225.425, series: 'US Envelope', note: '3.875 × 8.875 inches. The US reply envelope, sized to slip inside a No. 10 unfolded.' },
+  { name: 'Envelope No. 11', id: 'envelope-11', w: 114.3, h: 263.525, series: 'US Envelope', note: '4.5 × 10.375 inches. A US business envelope one step larger than a No. 10.' },
+  { name: 'Envelope No. 12', id: 'envelope-12', w: 120.65, h: 279.4, series: 'US Envelope', note: '4.75 × 11 inches. A long US business envelope for bulkier mailings.' },
+  { name: 'Envelope No. 14', id: 'envelope-14', w: 127, h: 292.1, series: 'US Envelope', note: '5 × 11.5 inches. The largest of the US commercial envelope numbers.' },
 ];
 
 export default SIZES;

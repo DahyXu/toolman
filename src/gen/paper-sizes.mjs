@@ -18,6 +18,7 @@ const SERIES = {
   Photo: ['Photo prints', 'Common print and frame sizes, defined in inches.'],
   ARCH: ['Architectural', 'The US architectural series, defined in inches and built on a 4:3 or 3:2 ratio rather than the ANSI doubling. Drawing offices use ARCH where engineering offices use ANSI.'],
   'JIS B': ['JIS B series (Japan)', 'The Japanese B series, which shares its names with ISO B and not its sizes. JIS defines B0 as 1.5 square metres against the A series’ 1, so every JIS B sheet is slightly larger than the ISO B of the same number — JIS B5 is 182 × 257 mm where ISO B5 is 176 × 250.'],
+  'US Envelope': ['US envelope sizes', 'The American envelope standards: the commercial numbers, which carry folded Letter sheets, and the announcement A sizes, which carry cards. The announcement names collide with ISO A paper and have nothing to do with it — an A2 envelope is 111 × 146 mm where A2 paper is 420 × 594.'],
   Book: ['Book trim sizes', 'The finished page sizes commercial printers and print-on-demand services offer by name.'],
 };
 
@@ -41,7 +42,91 @@ function seriesMaths(name, series, w, h) {
     out.push('That single difference is why documents laid out for one system never move cleanly to the other, and why a "fit to page" print from Letter to A4 leaves uneven margins rather than simply shrinking.');
     return out.map((x) => `<p>${x}</p>`).join('');
   }
-  if (!m) return '';
+  // A size outside a halving series still has a relationship worth stating —
+  // what fits inside it, or which standard sheet it sits closest to. Returning
+  // '' here printed the heading above nothing on 44 pages, including the eleven
+  // JIS B sizes added a day earlier, and no assertion noticed because an empty
+  // section is well-formed HTML.
+  if (!m) {
+    const parts = [];
+    const ratio = (Math.max(w, h) / Math.min(w, h)).toFixed(3);
+    const find = (id) => SIZES.find((s) => s[1] === id);
+    const jis = /^JIS B(\d+)$/.exec(name);
+
+    if (jis) {
+      const n = +jis[1];
+      const halvings = Math.pow(2, n);
+      const isoB = find(`b${n}`);
+      const isoA = find(`a${n}`);
+      parts.push(`JIS B0 is defined as <strong>1.5 square metres</strong>, where ISO A0 is one. ${name} is that sheet halved <strong>${n === 0 ? 'no times — it is the base of the series' : n === 1 ? 'once' : n + ' times'}</strong>, so ${n === 0 ? 'its area is the full 1.5&nbsp;m&sup2;' : `its area is ${(1.5 / halvings).toFixed(n > 5 ? 5 : 4).replace(/0+$/, '').replace(/\.$/, '')}&nbsp;m&sup2; and ${halvings.toLocaleString()} of them tile one JIS B0`}.`);
+      if (isoA) {
+        parts.push(`That 1.5 against 1 is why the series exists: at ${w} &times; ${h}&nbsp;mm, ${name} is about <strong>22% longer on each edge than A${n}</strong> (${isoA[2]} &times; ${isoA[3]}&nbsp;mm), filling the gap the A series leaves between one size and the next.`);
+      }
+      if (isoB) {
+        parts.push(`It is <strong>not the same sheet as ISO B${n}</strong>, which is ${isoB[2]} &times; ${isoB[3]}&nbsp;mm. The two standards share every name in the series and agree on none of the sizes, so a tray, binder or sleeve cut for one will not take the other. Ask a printer for "B${n}" outside Japan and you will get the ISO sheet.`);
+      }
+      parts.push(`Scaling between neighbouring JIS B sizes is the same &radic;2 as the A series &mdash; <strong>141%</strong> up, <strong>71%</strong> down &mdash; because JIS B is built by halving too. Only the starting area differs.`);
+      return parts.map((x) => `<p>${x}</p>`).join('');
+    }
+
+    if (series === 'US Envelope') {
+      // What actually goes in it. Computed against the sheets in this table
+      // rather than asserted, so a wrong dimension shows up as a wrong claim.
+      // The pool excludes the B series in both standards: naming a JIS B7 as
+      // the sheet that fits a US invitation envelope is arithmetically true and
+      // useless to anybody holding one.
+      const CLEAR = 3; // envelopes are cut a few millimetres over their contents
+      const NOT_HERE = new Set(['B', 'JIS B', 'C', 'US Envelope', 'Book']);
+      const fits = SIZES
+        .filter((s) => !NOT_HERE.has(s[4]))
+        .filter((s) => s[2] + CLEAR <= w && s[3] + CLEAR <= h)
+        .sort((a, b) => b[2] * b[3] - a[2] * a[3])[0];
+      // A No. 6¾ carries a Letter sheet quartered, which the first version of
+      // this list did not contain — so the page said "too small for a folded
+      // Letter" three paragraphs under a description calling it the small
+      // business envelope. Reporting the largest fold that fits says one thing
+      // per envelope and cannot contradict the paragraph above it.
+      const FOLDS = [
+        ['a Letter sheet folded in half', 215.9, 139.7],
+        ['an A4 sheet folded in half', 210, 148.5],
+        ['a Letter sheet folded in three', 215.9, 93.13],
+        ['an A4 sheet folded in three', 210, 99],
+        ['a Letter sheet folded in half and then in three', 71.97, 139.7],
+        ['an A4 sheet folded in half and then in three', 70, 148.5],
+      ];
+      const goesIn = ([, fw, fh]) =>
+        (fw + CLEAR <= w && fh + CLEAR <= h) || (fh + CLEAR <= w && fw + CLEAR <= h);
+      // Sorting purely by area named an A4 fold on a No. 10 — the envelope
+      // the Letter fold was invented for — because A4 in three is 20,790 mm²
+      // against Letter's 20,107. On an American envelope the American sheet
+      // is the one to name; A4 only appears when no Letter fold fits.
+      const byArea = (a, b) => b[1] * b[2] - a[1] * a[2];
+      const possible = FOLDS.filter(goesIn);
+      const letterFolds = possible.filter(([label]) => label.includes('Letter'));
+      const folded = (letterFolds.length ? letterFolds : possible).sort(byArea)[0];
+
+      parts.push(`At ${w} &times; ${h}&nbsp;mm (${r2(IN(w))} &times; ${r2(IN(h))} inches) the aspect ratio is <strong>1:${ratio}</strong>. US envelopes are not a halving series: each size is cut to hold a particular sheet or card, so the numbers step irregularly and nothing scales cleanly to anything else.`);
+
+
+      parts.push(fits
+        ? `Of the standard sheets on this site, the largest that goes in flat is <strong>${fits[0]}</strong> at ${fits[2]} &times; ${fits[3]}&nbsp;mm, with a few millimetres to spare on each edge.`
+        : `No standard sheet on this site goes in flat &mdash; this envelope is cut for a card or a folded sheet rather than for a full sheet size.`);
+      parts.push(folded
+        ? `Folded, the largest standard sheet it takes is <strong>${folded[0]}</strong>.`
+        : `No standard sheet folds down small enough to go in, which puts it in the card and reply-slip range rather than the business range.`);
+      return parts.map((x) => `<p>${x}</p>`).join('');
+    }
+
+    const nearest = SIZES
+      .filter((s) => s[4] === 'A')
+      .sort((a, b) => Math.abs(a[2] * a[3] - w * h) - Math.abs(b[2] * b[3] - w * h))[0];
+    parts.push(`At ${w} &times; ${h}&nbsp;mm (${r2(IN(w))} &times; ${r2(IN(h))} inches) the aspect ratio is <strong>1:${ratio}</strong>. This size is not part of a halving series, so there is no fixed scaling factor to the next size up or down &mdash; each one is defined on its own terms.`);
+    if (nearest) {
+      const pct = Math.round(((w * h) / (nearest[2] * nearest[3]) - 1) * 100);
+      parts.push(`The closest ISO sheet by area is <strong>${nearest[0]}</strong> at ${nearest[2]} &times; ${nearest[3]}&nbsp;mm &mdash; ${pct === 0 ? 'near enough the same area' : `this size is ${Math.abs(pct)}% ${pct > 0 ? 'larger' : 'smaller'}`}. The proportions differ, though: ${nearest[0]} is 1:1.414 like every A size, and this one is 1:${ratio}, so content laid out for one does not fill the other without cropping or white space.`);
+    }
+    return parts.map((x) => `<p>${x}</p>`).join('');
+  }
   const letter = m[1], n = +m[2];
   const inA0 = Math.pow(2, n);
   const parts = [];

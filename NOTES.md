@@ -1,3 +1,57 @@
+## Second empty field: US envelopes
+
+The query table said the site ranks ninth on B7 and A9 and fortieth on A2,
+with no useful difference in page depth between them — position is about who
+else is on the query, not about the page. JIS B was the first empty field found
+that way. US envelopes are the second, and they were checked the same way
+before anything was built.
+
+`a2 envelope size`:
+
+    answer widget       none
+    result 1            envelopes.com — a shop that sells them
+    result 2            Reads.ie — a stationer's size guide
+    people also ask     "What is the size of an A2 envelope?"
+                        "What are the differences between A2 and A4 envelopes?"
+                        "What is the difference between A1 and A2 envelopes?"
+
+No reference site on the query, and the PAA is asking the confusion question
+directly. The US announcement envelopes are named A1 to A10 and have nothing to
+do with ISO A paper — an A2 envelope is 111 × 146 mm where A2 paper is
+420 × 594 — which is the same collision that made JIS B and the UK/US King bed
+comparison worth writing.
+
+Eleven sizes added: the announcement range (A1, A2, A6, A8, A9, A10) and the
+commercial numbers (6¾, 9, 11, 12, 14), alongside the No. 10 and A7 already
+here. 9,300 → 9,474 pages, counting pixel pages and comparisons.
+
+The thirteen US envelopes were moved out of the ISO C series into their own,
+because the page had been printing "Other ISO C series sizes" above a table of
+American envelopes. They are not ISO C sizes and the heading was simply wrong.
+
+## What the envelope build turned up that had nothing to do with envelopes
+
+Two faults older than this work, both found while checking it:
+
+- **Forty-four paper pages had an empty section.** `seriesMaths()` returned an
+  empty string for anything outside A, B, C and US, and the heading printed
+  anyway — including on the eleven JIS B pages added the day before. Two full
+  audits had passed over them. There is now a check for it, and every one of
+  the 44 has real content: the JIS pages get the 1.5 m² derivation and the
+  ISO-B comparison, the envelopes get what fits inside them flat and folded,
+  and the photo, card, ARCH and book sizes get their nearest ISO sheet by area.
+- **The inch figures in prose were never actually being checked**, because the
+  parser read "4⅜" as 4. Teaching it vulgar fractions is what surfaced the No.
+  12 error, and planting an eighth-inch slip now fails the check.
+
+## Where this leaves the click goal
+
+Three clicks. The strategy the query table produced has not changed: position 9
+on an empty query beats position 40 on a contested one, so find fields with no
+answer widget and no reference site on them. JIS B and US envelopes are the two
+found so far. Neither will show in Search Console until the pages are crawled,
+and the crawl budget observed here is the constraint — not the writing.
+
 ## The whole query table, and what it says
 
 Search Console's table paginates ten rows at a time and the controls resist
