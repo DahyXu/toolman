@@ -1,3 +1,58 @@
+## The named direction is refuted, and it did not need waiting for
+
+The previous entry said the named-direction premise was untested and that the
+thing to do was wait for the new sections to accumulate impressions. That was
+wrong in one respect: the question can be answered immediately by looking at
+the results pages those sections were built to win.
+
+    chartreuse hex code        Figma, htmlcolorcodes, Canva, Adobe,
+      (for /color/name/)       Wikipedia, Pinterest, color-hex, atmos.style
+
+    mysql port number          dev.mysql.com, Server Fault, Stack Overflow,
+      (for /port/service/)     Kinsta, DbVisualizer, dev.mysql.com again
+
+    ascii code for backslash   theasciicode.com.ar, ascii-code.com,
+      (for /ascii/char/)       IBM, Wikipedia, ascii-code.com/character
+
+toolman.top is on none of them. And the occupants are Figma, Canva, Adobe,
+Wikipedia, the MySQL vendor documentation and Stack Overflow.
+
+The note that started this said `chartreuse hex code` has no answer widget
+where `#14b8a6` does. That is true and it was the wrong thing to check. There
+is no widget there **because Figma and Adobe are there** — Google has no need
+to answer a question four design companies already answer. Worse, the ASCII
+case was visible in the original note and read backwards: it recorded that the
+site ranking first for "ascii code for space" uses the URL `/character/space`,
+and treated that as proof the direction was worth taking rather than as proof
+it was already taken.
+
+### What the one win actually was
+
+`ms sql ports` sits at position 1.0 and produced the only click. The shape is
+not "a named lookup" — it is an oddly-phrased, tiny-volume query no large site
+has a page for. But the same table has `ldap tcp port` at position 78 and
+`ldap port tcp` at 80.5, which are the same shape and rank nowhere.
+
+One impression at position 1 against two at 78 and 80 is not a pattern. **The
+single click has been treated as evidence of a strategy for a week, and it is
+one event.**
+
+### Where that leaves the method
+
+Three tests have now been used to pick what to build, in order of how much they
+were worth:
+
+1. Is there an answer widget? — necessary, and cheap, but nowhere near
+   sufficient.
+2. What kind of sites are on page one? — recorded "a retailer and a stationer"
+   as an empty field. Bolt Depot and Quill are retailers with real authority.
+3. **How strong are they?** — never applied. Applying it retroactively kills
+   the colour, ASCII and port name sections, and puts A8 behind Adobe twice.
+
+Nothing here says the pages are bad. It says the queries were chosen by a test
+that could not tell an empty field from a well-defended one, and a five-day-old
+domain loses every well-defended field regardless of what is written on it.
+
 ## The empty-field premise, measured — and mostly wrong
 
 Read from Search Console on 2026-09-06: **4 clicks, 5,150 impressions, average
