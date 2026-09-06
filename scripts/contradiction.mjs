@@ -67,6 +67,13 @@ for (const f of walk(dist)) {
 
   // 2. A <title> that says the same phrase twice, which is what "Developer
   //    Tools — Free Online Developer Tools" was.
+  //
+  //    A 110 Ω resistor really is brown brown brown gold, and a 33 kΩ really
+  //    is orange orange orange gold. The repeat there is the fact the page
+  //    exists to state, not a title padded out with its own category — so
+  //    the resistor pages are named as an exemption rather than the check
+  //    being loosened for everyone.
+  if (url.startsWith('/resistor/')) continue;
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
   const bare = title.replace(/\s*\|.*$/, '').toLowerCase();
   const words = bare.split(/[\s—–-]+/).filter((w) => w.length > 3);
