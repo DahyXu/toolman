@@ -1,3 +1,105 @@
+## The empty-field premise, measured — and mostly wrong
+
+Read from Search Console on 2026-09-06: **4 clicks, 5,150 impressions, average
+position 54.6**, 1,000 queries.
+
+Removing the shapes Google answers itself (unit conversion, colour hex,
+date arithmetic) leaves **722 winnable queries carrying 2,231 impressions**:
+
+    position 1-3        1 query        1 impression     1 click
+    position 4-10      60 queries    110 impressions    0 clicks
+    position 11-20     62 queries    111 impressions    0 clicks
+    position 21-40    147 queries    312 impressions    0 clicks
+    position 41+      452 queries  1,697 impressions    0 clicks
+
+Zero clicks from 110 page-one impressions is not an anomaly to explain. At a
+realistic position-9 click-through rate the expected figure is about two, and
+we got none. **Nothing here needs a title rewrite.** Seventy-six per cent of
+winnable impressions sit past position 40, which is the whole problem.
+
+### By section, and the trap in it
+
+    section    queries  impressions  clicks  avg position
+    colour          11           80       0           9.5
+    time            75          207       0          23.1
+    paper          352        1,171       0          57.1
+    other          540        1,739       0          58.5
+    thread          13           38       0          73.3
+    port             9           22       1          81.9
+
+**The two sections that rank best are the two Google answers in the results
+page.** Colour averages position 9.5 and cannot be clicked, because the swatch
+is right there. Paper, the section with actual volume, averages 57.
+
+That is not a coincidence and it is the trap in "find an empty field": a field
+is empty *because* the clicks were taken. Nobody invests in pages Google has
+already answered, so ranking is easy and worthless. The two conditions are
+close to anti-correlated, and the test used so far only checked the first.
+
+### `a8 size` was never an empty field
+
+The earlier reading — that uncommon paper sizes rank ninth "because that land
+is empty" — does not survive looking at the results page. For `a8 size`:
+
+    1  contracts.dot.state.oh.us     6  neenahpaper.com
+    2  adobe.com  (A8 page)          7  papersizes.org
+    3  quill.com                     8  canva.com
+    4  adobe.com  (A7 page!)         9  prepressure.com
+    5  papersizes.io
+
+Adobe twice, Canva, two dedicated paper references, a state government site.
+Adobe's *A7* page outranks us for "a8 size". We are twelfth. A8 ranks better
+than A2 because the competition is thinner, not absent — and a five-day-old
+domain does not outrank Adobe by writing more words.
+
+**The competitor test has to include how strong the competitors are, not only
+what kind of site they are.** "A retailer and a stationer" was recorded as an
+empty field; Bolt Depot and Adobe are not weak sites.
+
+### What has actually been validated: nothing yet
+
+`ms sql ports` is at position 1.0 and produced the one click. That is **one
+impression on one query** — a single event, and it has been carrying far more
+weight in these notes than a single event can.
+
+The three sections built to exploit it — `/port/service/`, `/ascii/char/`,
+`/color/name/` — have produced **no impressions at all**. Every colour query in
+the table is the hex direction (`#14b8a6`), not one is the named direction the
+`/color/name/` pages were built for. Those pages are two to four days old, so
+this is *unknown*, not refuted.
+
+Which means the core prediction of the last week's work is still untested, and
+three more sections (JIS B, US envelopes, tap drill) have just been built on
+top of it. **The next thing to do is not a fourth section.** It is to let the
+existing ones accumulate enough impressions to say whether the named direction
+ranks and whether it clicks.
+
+### On the click goal
+
+100 clicks a day is roughly 3,000 a month. At the position-1 click-through rate
+that needs something like 11,000 monthly impressions on queries we rank first
+for. We currently have 5,150 impressions in total and hold first place on one.
+
+The honest position: this is not reachable by adding content in the near term.
+It needs either authority the domain does not have yet, or a base of thousands
+of genuinely low-competition named lookups each earning a click or two — and
+whether that second one works is exactly what the untested sections will say.
+
+### Index coverage is not readable yet
+
+The coverage report shows "1 indexed, 3 not indexed" over a chart ending
+2026-08-21 — before this site launched. It is describing the previous owner's
+four URLs. Meanwhile 1,000 distinct queries are producing impressions, which
+one indexed page cannot do. **The coverage report is stale; the performance
+report is the live truth.** Do not plan from coverage until its chart reaches
+the launch date.
+
+Sitemaps were checked at the same time and are fine: all five parts return 200
+and `sitemap.xml` lists all five. The `sitemap-1.xml` … `sitemap-4.xml` rows
+marked "could not be fetched" were submitted on 2026-09-01 against a structure
+that has since changed; they serve 200 now and are redundant with the
+`sitemaps/pages-N.xml` set.
+
 ## Third empty field: unified tap drill sizes
 
 `tap drill size for 1/4-20`, checked before anything was built:
