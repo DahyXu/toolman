@@ -1,3 +1,51 @@
+## Crawl depth and duplicate exposure, both measured — and neither is the problem
+
+Two technical explanations for sitting at position 54.6 were worth ruling out
+before writing anything else.
+
+**Crawl depth is fine.** Nothing on the site is more than four clicks from the
+home page and 82% is within three:
+
+    0 clicks       1     1 click      116     2 clicks   3,939
+    3 clicks   3,943     4 clicks   1,802
+
+For 9,801 pages that is a flat site, and the deepest sections are `cooking` at
+an average of 3.20 and `convert` at 3.01.
+
+**The duplicate measurement, and the number I nearly reported.** `/convert/` is
+4,809 pages — 49% of the site — and the thinnest thing here at 234 unique
+words. Sampling sibling pages gave **100% vocabulary overlap** between
+`/convert/10-mm-to-pt/` and `/convert/12-mm-to-pt/`, which looked like half the
+site being word-for-word identical.
+
+It was an artefact of the measurement. The tokeniser matched `[a-z]{2,}` and
+therefore **threw away every digit** — so two pages that differ only in their
+numbers score 100% by construction. This is the same failure as reusing a
+`site:` reading after recording it as invalid: a number produced by a method
+that cannot see the thing that differs.
+
+Measured properly, by replacing every number with a placeholder and comparing
+the prose skeleton:
+
+    convert pages                                    4,809
+    distinct prose skeletons                         2,434
+    pages in a cluster of 10 or more identical       1,462
+    largest identical-prose cluster                     71
+
+So about 15% of the site sits in large templated clusters, not 49%. That is
+real and worth knowing, and it is not grounds for what the first number would
+have justified — de-indexing half the site, which is slow to undo and would
+have been done on a figure the method could not have got right.
+
+The `/convert/` pages also rank: `1440 seconds to minutes` sits at position
+10.6. Google is not treating them as spam. They earn no clicks because the
+answer is in the results page, which is a different problem with a different
+answer, and one that no amount of editing those pages fixes.
+
+**Neither of these is why the site has four clicks.** The reason is still the
+one measured two entries ago: a domain a few days old sitting at position 54.6,
+with 76% of its winnable impressions past position 40.
+
 ## The weak fields are weak because the data is behind a paywall
 
 Three more candidates put through the strength-of-incumbent test:
