@@ -231,10 +231,107 @@ function states(a, b) {
   return [...seen.values()].sort((x, y) => y.days - x.days);
 }
 
+
+// Countries, as the set of cities in this data that sit in them. A country with
+// more than one city here spans more than one offset, and "what is the time
+// difference to X" has no single answer for it — which is the whole content of
+// the country pages.
+const COUNTRY_OF = {
+  london: 'the United Kingdom', dublin: 'Ireland', lisbon: 'Portugal',
+  paris: 'France', berlin: 'Germany', madrid: 'Spain', rome: 'Italy',
+  amsterdam: 'the Netherlands', stockholm: 'Sweden', warsaw: 'Poland',
+  athens: 'Greece', helsinki: 'Finland', istanbul: 'Türkiye', moscow: 'Russia',
+  dubai: 'the United Arab Emirates', karachi: 'Pakistan', delhi: 'India',
+  dhaka: 'Bangladesh', bangkok: 'Thailand', jakarta: 'Indonesia',
+  singapore: 'Singapore', 'hong-kong': 'Hong Kong', beijing: 'China',
+  manila: 'the Philippines', tokyo: 'Japan', seoul: 'South Korea',
+  perth: 'Australia', brisbane: 'Australia', sydney: 'Australia',
+  melbourne: 'Australia', auckland: 'New Zealand',
+  'new-york': 'the United States', chicago: 'the United States',
+  denver: 'the United States', 'los-angeles': 'the United States',
+  anchorage: 'the United States', honolulu: 'the United States',
+  toronto: 'Canada', vancouver: 'Canada', 'mexico-city': 'Mexico',
+  'sao-paulo': 'Brazil', 'buenos-aires': 'Argentina', lima: 'Peru',
+  lagos: 'Nigeria', johannesburg: 'South Africa', nairobi: 'Kenya',
+};
+
+// Only pairs where one side spans more than one offset. The rest would be
+// their own city pages with a country name substituted in.
+const spansZones = (c) => new Set(c.cities.map((x) => x.off)).size > 1;
+const countrySlug = (name) => name.replace(/^the /, '').toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const COUNTRIES = (() => {
+  const by = new Map();
+  for (const r of rows) {
+    const name = COUNTRY_OF[r.id];
+    if (!name) continue;
+    const rec = by.get(name) || { name, id: countrySlug(name), cities: [] };
+    rec.cities.push(r);
+    by.set(name, rec);
+  }
+  // Widest first inside each country, so the table reads east to west.
+  for (const c of by.values()) c.cities.sort((x, y) => y.off - x.off);
+  return [...by.values()];
+})();
+
+// Every city has to belong to a country, or it silently vanishes from this half
+// of the section while still having city pages.
+for (const r of rows) {
+  if (!COUNTRY_OF[r.id]) {
+    console.error(`\n✗ time-difference: ${r.city} is in no country, so it appears on no country page`);
+    process.exitCode = 1;
+  }
+}
+// And no two countries may collide on a slug.
+{
+  const seen = new Map();
+  for (const c of COUNTRIES) {
+    if (seen.has(c.id)) {
+      console.error(`\n✗ time-difference: ${seen.get(c.id)} and ${c.name} both want the country slug "${c.id}"`);
+      process.exitCode = 1;
+    }
+    seen.set(c.id, c.name);
+  }
+}
+
 const clockLine = (r) => r.rule === 'none'
   ? `${r.city} does not change its clocks`
   : `${r.city} goes forward on ${RULE[r.rule].forward} and back on ${RULE[r.rule].back}`;
 
+// Listing a clock-change rule per city repeats the same sentence once per
+// city: India to the United States said "goes forward on the second Sunday in
+// March and back on the first Sunday in November" five times in one paragraph.
+// The rule is the thing to group by.
+const offsetGroups = (cities) => {
+  const by = new Map();
+  for (const c of cities) {
+    const list = by.get(c.off) || [];
+    list.push(c.city);
+    by.set(c.off, list);
+  }
+  const names = (list) => list.length === 1 ? list[0]
+    : list.slice(0, -1).join(", ") + " and " + list[list.length - 1];
+  return [...by.entries()].sort((x, y) => y[0] - x[0])
+    .map(([off, list]) => `${names(list)} at ${offStr(off)}`).join(", ");
+};
+const clockSummary = (cities) => {
+  const byRule = new Map();
+  for (const c of cities) {
+    const list = byRule.get(c.rule) || [];
+    list.push(c.city);
+    byRule.set(c.rule, list);
+  }
+  const names = (list) => list.length === 1 ? list[0]
+    : list.slice(0, -1).join(", ") + " and " + list[list.length - 1];
+  return [...byRule.entries()].map(([rule, list]) => rule === "none"
+    ? `${names(list)} ${list.length === 1 ? "does" : "do"} not change ${list.length === 1 ? "its clocks" : "their clocks"}`
+    : `${names(list)} ${list.length === 1 ? "goes" : "go"} forward on ${RULE[rule].forward} and back on ${RULE[rule].back}`
+  ).join("; ");
+};
+// Country names here carry their article — "the United States" — so a name at
+// the start of a sentence needs the capital put back.
+const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 const hhmm = (mins) => {
   let m = ((mins % 1440) + 1440) % 1440;
   const h24 = Math.floor(m / 60), mm = m % 60;
@@ -289,6 +386,7 @@ export default async function () {
   }
 
   const ids = pairs.map(([a, b]) => `${a.id}-${b.id}`);
+  const pairIds = new Set(ids);
 
   for (const [a, b] of pairs) {
     const id = `${a.id}-${b.id}`;
@@ -441,6 +539,154 @@ ${outbound.map(([a, b]) => {
     });
   }
 
+
+  // Country pairs. The value here is the thing every converter gets wrong on
+  // multi-zone countries: there is no single difference between India and the
+  // United States, there are six, and they move on different weekends.
+  for (const A of COUNTRIES) for (const B of COUNTRIES) {
+    if (A === B) continue;
+    if (!spansZones(A) && !spansZones(B)) continue;
+    const cells = [];
+    for (const a of A.cities) for (const b of B.cities) {
+      const st = states(a, b);
+      const by = new Map();
+      for (const x of st) by.set(x.gap, (by.get(x.gap) || 0) + x.days);
+      const ranked = [...by.entries()].sort((x, y) => y[1] - x[1]);
+      cells.push({ a, b, usual: ranked[0][0], all: ranked.map(([g]) => g) });
+    }
+    const distinct = [...new Set(cells.map((c) => c.usual))];
+    const multi = A.cities.length > 1 || B.cities.length > 1;
+    const anyVaries = cells.some((c) => c.all.length > 1);
+    const widest = cells.reduce((m, c) => Math.abs(c.usual) > Math.abs(m.usual) ? c : m, cells[0]);
+    const narrowest = cells.reduce((m, c) => Math.abs(c.usual) < Math.abs(m.usual) ? c : m, cells[0]);
+
+    const headline = distinct.length === 1
+      ? spanWords(distinct[0])
+      : `${shortSpan(narrowest.usual)} to ${shortSpan(widest.usual)} hours`;
+
+    const FAQ = faq([
+      {
+        q: `What is the time difference between ${A.name} and ${B.name}?`,
+        a: distinct.length === 1
+          ? `<strong>${gapWords(distinct[0], A.name, B.name)}</strong>${anyVaries ? ', for most of the year — it changes when the clocks do.' : ' all year.'}`
+          : `<strong>There is no single figure.</strong> ${B.cities.length > 1 ? `${B.name} spans ${B.cities.length} of the offsets in this data` : `${A.name} spans ${A.cities.length} of the offsets in this data`}, so the difference runs from ${spanWords(narrowest.usual)} (${narrowest.a.city} to ${narrowest.b.city}) to ${spanWords(widest.usual)} (${widest.a.city} to ${widest.b.city}). Any converter giving one number for this pair has quietly picked a city.`,
+      },
+      {
+        q: `How many hours ahead is ${B.name} of ${A.name}?`,
+        a: distinct.length === 1
+          ? `${gapWords(distinct[0], A.name, B.name)}. ${anyVaries ? 'That figure holds for most of the year and shifts by an hour around the clock changes.' : 'Neither country changes its clocks against the other, so the figure holds all year.'}`
+          : `It depends which part of ${B.cities.length > 1 ? B.name : A.name} you mean. The table on this page gives every combination; the extremes are ${spanWords(narrowest.usual)} and ${spanWords(widest.usual)}.`,
+      },
+      {
+        q: `Does the difference between ${A.name} and ${B.name} change during the year?`,
+        a: anyVaries
+          ? `Yes. ${cells.filter((c) => c.all.length > 1).length} of the ${cells.length} city combination${cells.length === 1 ? '' : 's'} here shift${cells.filter((c) => c.all.length > 1).length === 1 ? 's' : ''} by an hour at some point, because the two sides change their clocks on different weekends or one of them does not change at all.`
+          : `No. Neither side changes its clocks in a way that moves the gap, so the figure on this page is right in January and in July alike.`,
+      },
+    ]);
+
+    pages.push({
+      path: `/time-difference/country/${A.id}-${B.id}/`,
+      title: `${A.name.replace(/^the /, '')} to ${B.name.replace(/^the /, '')} Time Difference — ${headline}`,
+      desc: distinct.length === 1
+        ? `${gapWords(distinct[0], A.name, B.name)}${anyVaries ? ' for most of the year' : ' all year'}. Every city combination, the weeks the gap changes, and the working-hours overlap.`
+        : `There is no single time difference between ${A.name} and ${B.name} — it runs from ${spanWords(narrowest.usual)} to ${spanWords(widest.usual)} depending on the cities. Every combination, and the weeks each one changes.`,
+      h1: `Time difference between ${A.name} and ${B.name}`,
+      crumbs: [
+        { name: 'Time differences', path: '/time-difference/' },
+        { name: 'By country', path: '/time-difference/country/' },
+        { name: `${A.name} to ${B.name}`, path: `/time-difference/country/${A.id}-${B.id}/` },
+      ],
+      jsonld: [FAQ.schema],
+      body: `<p class="big" style="font-size:1.5rem;margin:.3em 0"><strong>${distinct.length === 1 ? gapWords(distinct[0], A.name, B.name) : `${spanWords(narrowest.usual)} to ${spanWords(widest.usual)}, depending on the city`}</strong></p>
+
+${multi ? `<h2>Why there is no single answer</h2>
+<p>${[A, B].filter((c) => c.cities.length > 1).map((c) => `${cap(c.name)} spans <strong>${new Set(c.cities.map((x) => x.off)).size} different offsets</strong> in this data — ${offsetGroups(c.cities)}`).join('; and ')}. A converter that answers "${A.name} to ${B.name}" with one number has picked a city without telling you which, which is why two of them will give you two different answers to the same question.</p>` : ''}
+
+<h2>Every combination</h2>
+<table><thead><tr><th>From</th><th>To</th><th>Usual difference</th><th>Changes in the year</th></tr></thead><tbody>
+${cells.map((c) => `<tr><td><a href="/time-difference/${c.a.id}/">${esc(c.a.city)}</a></td><td><a href="/time-difference/${c.b.id}/">${esc(c.b.city)}</a></td><td>${pairIds.has(`${c.a.id}-${c.b.id}`) ? `<a href="/time-difference/${c.a.id}-${c.b.id}/">${spanWords(c.usual)}${c.usual === 0 ? '' : c.usual > 0 ? ' ahead' : ' behind'}</a>` : `${spanWords(c.usual)}${c.usual === 0 ? '' : c.usual > 0 ? ' ahead' : ' behind'}`}</td><td>${c.all.length > 1 ? `yes — also ${c.all.slice(1).map((g) => spanWords(g)).join(', ')}` : 'no'}</td></tr>`).join('')}
+</tbody></table>
+
+<h2>When the gap moves</h2>
+<p>${anyVaries
+  ? `${cells.filter((c) => c.all.length > 1).length} of these ${cells.length} combinations change by an hour at some point in the year. ${clockSummary([...A.cities, ...B.cities])}. Where the two sides change on different weekends, there is a stretch of days when the difference is what neither party expects.`
+  : `None of these combinations changes through the year. ${clockSummary([...A.cities, ...B.cities])}.`}</p>
+
+${FAQ.html}
+
+<h2>About these places</h2>
+${[...A.cities, ...B.cities].map((c) => `<p><strong>${esc(c.city)}.</strong> ${CITY_NOTE[c.id]}</p>`).join('')}
+
+<h2>The same pair from the other end</h2>
+<p>This page reads the difference as ${B.name} against ${A.name}. <a href="/time-difference/country/${B.id}-${A.id}/">${cap(B.name)} to ${A.name}</a> states the same gap the other way round, which is the one to send someone if they are the one doing the travelling.</p>
+
+<h2>Other country pairs</h2>
+<ul class="linklist">${COUNTRIES.filter((c) => c !== A && c !== B && (spansZones(A) || spansZones(c))).slice(0, 10).map((c) => `<li><a href="/time-difference/country/${A.id}-${c.id}/">${esc(A.name)} to ${esc(c.name)}</a></li>`).join('')}</ul>
+
+<p>${[A, B].filter(spansZones).map((c) => `<a href="/time-difference/country/${c.id}/">Every ${c.name} pair</a> · `).join('')}<a href="/time-difference/country/">All country pairs</a> · <a href="/time-difference/">City pairs</a></p>`,
+    });
+  }
+
+
+  // A page per country, so every country pair is two clicks from the section
+  // root. The city half needed exactly this and for exactly this reason.
+  for (const C of COUNTRIES.filter(spansZones)) {
+    const others = COUNTRIES.filter((x) => x !== C);
+    const spanNote = new Set(C.cities.map((x) => x.off)).size > 1
+      ? `<p><strong>${cap(C.name)} spans more than one offset</strong> — ${offsetGroups(C.cities)} — so a time difference to ${C.name} is a range rather than a figure. Each page below gives every combination.</p>`
+      : `<p>${cap(C.name)} keeps one offset, ${offStr(C.cities[0].off)}, and ${clockSummary(C.cities).replace(new RegExp('^' + C.cities[0].city + ' '), '')}.</p>`;
+    pages.push({
+      path: `/time-difference/country/${C.id}/`,
+      title: `${cap(C.name).replace(/^The /, '')} Time Difference to ${others.length} Countries`,
+      desc: `The time difference between ${C.name} and ${others.length} other countries, including every city combination where either side spans more than one time zone.`,
+      h1: `${cap(C.name)}: time differences`,
+      crumbs: [
+        { name: 'Time differences', path: '/time-difference/' },
+        { name: 'By country', path: '/time-difference/country/' },
+        { name: cap(C.name), path: `/time-difference/country/${C.id}/` },
+      ],
+      body: `${spanNote}
+<table><thead><tr><th>Country</th><th>Offsets there</th><th>Difference from ${C.name}</th></tr></thead><tbody>
+${others.map((O) => {
+  const cells = [];
+  for (const a of C.cities) for (const b of O.cities) {
+    const by = new Map();
+    for (const x of states(a, b)) by.set(x.gap, (by.get(x.gap) || 0) + x.days);
+    cells.push([...by.entries()].sort((x, y) => y[1] - x[1])[0][0]);
+  }
+  const lo = cells.reduce((m, g) => Math.abs(g) < Math.abs(m) ? g : m, cells[0]);
+  const hi = cells.reduce((m, g) => Math.abs(g) > Math.abs(m) ? g : m, cells[0]);
+  const range = lo === hi ? spanWords(lo) : `${spanWords(lo)} to ${spanWords(hi)}`;
+  return `<tr><td><a href="/time-difference/country/${C.id}-${O.id}/">${esc(O.name)}</a></td><td>${[...new Set(O.cities.map((x) => x.off))].map(offStr).join(', ')}</td><td>${range}</td></tr>`;
+}).join('')}
+</tbody></table>
+<p><a href="/time-difference/country/">Every country pair</a> · <a href="/time-difference/">City pairs</a></p>`,
+    });
+  }
+
+  pages.push({
+    path: '/time-difference/country/',
+    title: 'Time Difference Between Countries — Including the Multi-Zone Ones',
+    desc: `The time difference between ${COUNTRIES.length} countries, both ways. Countries that span several zones get every combination rather than one number picked from a capital, which is what most converters quietly do.`,
+    h1: 'Time differences between countries',
+    crumbs: [
+      { name: 'Time differences', path: '/time-difference/' },
+      { name: 'By country', path: '/time-difference/country/' },
+    ],
+    body: `<p>${COUNTRIES.length * (COUNTRIES.length - 1)} country pairs. Where a country spans more than one offset, the page gives every combination instead of quietly answering for the capital.</p>
+<h2>The countries that do not have one answer</h2>
+<table><thead><tr><th>Country</th><th>Offsets here</th><th>Cities</th></tr></thead><tbody>
+${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) => `<tr><td><strong>${esc(c.name)}</strong></td><td>${[...new Set(c.cities.map((x) => x.off))].map(offStr).join(', ')}</td><td>${c.cities.map((x) => esc(x.city)).join(', ')}</td></tr>`).join('')}
+</tbody></table>
+<p>For any of these, "what is the time difference to X" has as many answers as the country has zones. A single figure is a city in disguise.</p>
+<h2>Why the list is short</h2>
+<p>There is no page here for, say, Japan to France, because it would be <a href="/time-difference/tokyo-paris/">Tokyo to Paris</a> with the country names swapped in — both countries keep one clock, so the city answer <em>is</em> the country answer. The pages that exist are the ones where that is not true.</p>
+<h2>Every country in this data</h2>
+<ul class="cols">${COUNTRIES.map((c) => `<li>${new Set(c.cities.map((x) => x.off)).size > 1 ? `<a href="/time-difference/country/${c.id}/">${esc(c.name)}</a>` : esc(c.name)} <span class="muted">${[...new Set(c.cities.map((x) => x.off))].map(offStr).join(', ')}</span></li>`).join('')}</ul>
+<p><a href="/time-difference/">City pairs</a> · <a href="/convert/time-zones/">Time zones by abbreviation</a></p>`,
+  });
+
   const byRegion = (pred, heading) => `<h3>${heading}</h3>
 <ul class="cols">${rows.filter(pred).map((r) => `<li><a href="/time-difference/${r.id}/">${esc(r.city)}</a> <span class="muted">${offStr(r.off)}</span></li>`).join('')}</ul>`;
 
@@ -460,7 +706,7 @@ ${byRegion((r) => r.off >= 0 && r.off <= 3, 'Europe and Africa')}
 ${byRegion((r) => r.off > 3 && r.off <= 6, 'The Middle East and South Asia')}
 ${byRegion((r) => r.off > 6, 'East Asia and Oceania')}
 
-<p><a href="/convert/time-zones/">Time zones by abbreviation</a> · <a href="/cron/">Cron schedules</a></p>`,
+<p><a href="/time-difference/country/">Time differences between countries</a> · <a href="/convert/time-zones/">Time zones by abbreviation</a> · <a href="/cron/">Cron schedules</a></p>`,
   });
 
   return pages;
