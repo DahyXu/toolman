@@ -23,7 +23,7 @@ import { esc, faq, ring } from '../layout.mjs';
 
 // Number drills, #1 to #60. The sizes below #60 are not used for tapping
 // anything in this table.
-const NUMBER_DRILLS = [
+export const NUMBER_DRILLS = [
   [1, 0.2280], [2, 0.2210], [3, 0.2130], [4, 0.2090], [5, 0.2055], [6, 0.2040],
   [7, 0.2010], [8, 0.1990], [9, 0.1960], [10, 0.1935], [11, 0.1910], [12, 0.1890],
   [13, 0.1850], [14, 0.1820], [15, 0.1800], [16, 0.1770], [17, 0.1730], [18, 0.1695],
@@ -36,7 +36,7 @@ const NUMBER_DRILLS = [
   [55, 0.0520], [56, 0.0465], [57, 0.0430], [58, 0.0420], [59, 0.0410], [60, 0.0400],
 ];
 
-const LETTER_DRILLS = [
+export const LETTER_DRILLS = [
   ['A', 0.234], ['B', 0.238], ['C', 0.242], ['D', 0.246], ['E', 0.250], ['F', 0.257],
   ['G', 0.261], ['H', 0.266], ['I', 0.272], ['J', 0.277], ['K', 0.281], ['L', 0.290],
   ['M', 0.295], ['N', 0.302], ['O', 0.316], ['P', 0.323], ['Q', 0.332], ['R', 0.339],
@@ -45,14 +45,14 @@ const LETTER_DRILLS = [
 ];
 
 // Fractional drills in 64ths, 1/64 to 1 inch.
-const FRACTION_DRILLS = [];
+export const FRACTION_DRILLS = [];
 for (let i = 1; i <= 64; i++) {
   let num = i, den = 64;
   while (num % 2 === 0 && den % 2 === 0) { num /= 2; den /= 2; }
   FRACTION_DRILLS.push([`${num}/${den}`, i / 64]);
 }
 
-const DRILLS = [
+export const DRILLS = [
   ...NUMBER_DRILLS.map(([n, d]) => ({ label: `#${n}`, sort: `no. ${n}`, d })),
   ...LETTER_DRILLS.map(([l, d]) => ({ label: l, sort: `letter ${l}`, d })),
   ...FRACTION_DRILLS.map(([f, d]) => ({ label: `${f}"`, sort: `fractional ${f}`, d })),
@@ -60,7 +60,7 @@ const DRILLS = [
 
 // The nearest drill that exists. Not the nearest *smaller* drill: an 8-32 works
 // out at 0.1336 and the published chart says #29 at 0.1360, which is above it.
-function nearestDrill(target) {
+export function nearestDrill(target) {
   let best = DRILLS[0];
   for (const drill of DRILLS) {
     if (Math.abs(drill.d - target) < Math.abs(best.d - target)) best = drill;
@@ -69,7 +69,7 @@ function nearestDrill(target) {
 }
 
 // [designation, major diameter, threads per inch, series, what it is for]
-const THREADS = [
+export const THREADS = [
   ['0-80', 0.060, 80, 'UNF', 'Instrument and optical work; the smallest unified thread in general use.'],
   ['1-64', 0.073, 64, 'UNC', 'Small electronics and hinge screws.'],
   ['1-72', 0.073, 72, 'UNF', 'The fine version of the same screw, used where the material is thin.'],
@@ -114,7 +114,7 @@ const THREADS = [
 // 0.75 × 1.299, where 1.299/TPI is the full thread height of a 60° unified
 // thread. Everything on these pages comes out of this one constant.
 const ENGAGEMENT_75 = 0.974;
-const theoretical = (major, tpi, pct) => major - (1.299 * (pct / 100)) / tpi;
+export const theoretical = (major, tpi, pct) => major - (1.299 * (pct / 100)) / tpi;
 
 // The published 75% tap drill for every designation above, from the standard
 // charts. The point of listing them is to prove the formula rather than to be
@@ -136,7 +136,7 @@ const PUBLISHED = {
 const an = (label) => (/^[8]/.test(label) || /^M/.test(label) ? 'an ' : 'a ') + label;
 const An = (label) => an(label).charAt(0).toUpperCase() + an(label).slice(1);
 
-const MM = (inch) => inch * 25.4;
+export const MM = (inch) => inch * 25.4;
 const r2 = (n) => Math.round(n * 100) / 100;
 const r4 = (n) => Math.round(n * 10000) / 10000;
 const slug = (designation) => designation.replace(/\//g, '-').replace(/-/g, '-').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
