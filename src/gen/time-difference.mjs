@@ -601,7 +601,7 @@ ${outbound.map(([a, b]) => {
       body: `<p class="big" style="font-size:1.5rem;margin:.3em 0"><strong>${distinct.length === 1 ? gapWords(distinct[0], A.name, B.name) : `${spanWords(narrowest.usual)} to ${spanWords(widest.usual)}, depending on the city`}</strong></p>
 
 ${multi ? `<h2>Why there is no single answer</h2>
-<p>${[A, B].filter((c) => c.cities.length > 1).map((c) => `${cap(c.name)} spans <strong>${new Set(c.cities.map((x) => x.off)).size} different offsets</strong> in this data — ${offsetGroups(c.cities)}`).join('; and ')}. A converter that answers "${A.name} to ${B.name}" with one number has picked a city without telling you which, which is why two of them will give you two different answers to the same question.</p>` : ''}
+<p>${[A, B].filter((c) => c.cities.length > 1).map((c) => `${cap(c.name)} spans <strong>${new Set(c.cities.map((x) => x.off)).size} different offsets</strong> in this data — ${offsetGroups(c.cities)}`).join('; and ')}. One number cannot cover ${[A, B].filter((c) => c.cities.length > 1).map((c) => new Set(c.cities.map((x) => x.off)).size).join(' and ')} offsets, so any single figure for "${A.name} to ${B.name}" is a choice of city — declared or not. That is why two sources can both be right and still disagree, and why the useful answer is the table rather than the number.</p>` : ''}
 
 <h2>Every combination</h2>
 <table><thead><tr><th>From</th><th>To</th><th>Usual difference</th><th>Changes in the year</th></tr></thead><tbody>
@@ -668,13 +668,13 @@ ${others.map((O) => {
   pages.push({
     path: '/time-difference/country/',
     title: 'Time Difference Between Countries — Including the Multi-Zone Ones',
-    desc: `The time difference between ${COUNTRIES.length} countries, both ways. Countries that span several zones get every combination rather than one number picked from a capital, which is what most converters quietly do.`,
+    desc: `The time difference between ${COUNTRIES.length} countries, both ways. Countries that span several zones get every combination rather than one number picked from a capital, which is what a single figure amounts to.`,
     h1: 'Time differences between countries',
     crumbs: [
       { name: 'Time differences', path: '/time-difference/' },
       { name: 'By country', path: '/time-difference/country/' },
     ],
-    body: `<p>${COUNTRIES.length * (COUNTRIES.length - 1)} country pairs. Where a country spans more than one offset, the page gives every combination instead of quietly answering for the capital.</p>
+    body: `<p>${COUNTRIES.length * (COUNTRIES.length - 1)} country pairs. Where a country spans more than one offset, the page gives every combination instead of answering for one city.</p>
 <h2>The countries that do not have one answer</h2>
 <table><thead><tr><th>Country</th><th>Offsets here</th><th>Cities</th></tr></thead><tbody>
 ${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) => `<tr><td><strong>${esc(c.name)}</strong></td><td>${[...new Set(c.cities.map((x) => x.off))].map(offStr).join(', ')}</td><td>${c.cities.map((x) => esc(x.city)).join(', ')}</td></tr>`).join('')}

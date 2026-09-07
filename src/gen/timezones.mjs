@@ -121,7 +121,7 @@ function ambiguitySection(a, b) {
 <tr><td>${side.name} <span class="muted">— assumed on this page</span></td><td>${b.ab} is ${gapWord(b.off - a.off)} ${a.ab}</td></tr>
 ${rows}
 </tbody></table>
-<p>The large converter sites disagree about this as well: search for a ${side.ab} conversion and some of the results answer for one reading and some for another, none of them saying which they chose. Where it matters, ask which country the sender is in rather than which letters they typed.</p>`);
+<p>Any converter has to pick one of these readings before it can answer, and two of them can pick differently — a page of search results for a ${side.ab} conversion can show you both answers with neither being wrong. The one to trust is whichever states the zone it means rather than only the letters. Where it matters, ask which country the sender is in.</p>`);
   }
   return out.join('\n');
 }
