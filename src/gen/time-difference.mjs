@@ -73,6 +73,55 @@ const CITIES = [
   ['nairobi', 'Nairobi', 'Kenya', 3, 'none'],
 ];
 
+const CITY_NOTE = {
+  'london': `London is the reference the rest of the system is measured from: Greenwich sits inside the city, and UTC±0 is its winter time. It does not stay there — Britain moves to UTC+1 for seven months of the year, which is why "London is GMT" is wrong more often than it is right.`,
+  'dublin': `Ireland is the only country whose summer time is legally the standard and whose winter time is the deviation — Irish Standard Time is UTC+1 and the clocks go *back* to UTC in October. The result is identical to Britain's and the legal description is inverted, which occasionally matters in contracts.`,
+  'lisbon': `Portugal keeps UTC, an hour behind neighbouring Spain despite sitting further west than most of it. The country tried Central European Time from 1992 to 1996 and abandoned it after schoolchildren were leaving home in the dark, which is the clearest natural experiment anyone has run on the question.`,
+  'paris': `France is on Central European Time and geographically should not be — Paris sits almost on the Greenwich meridian. It has been an hour ahead of the sun since the occupation in 1940 and never went back, which is why sunset in Paris is so much later than in London for the same latitude.`,
+  'berlin': `Berlin runs Central European Time, the offset shared by most of the continent from Spain to Poland. That single zone spans nearly 40 degrees of longitude, so noon by the clock and noon by the sun are three hours apart between its ends.`,
+  'madrid': `Spain is on Central European Time and sits west of Britain — Madrid is at the same longitude as Cardiff and keeps clocks an hour ahead of it. Franco moved the country onto German time in 1940 and it stayed, which is the reason Spanish dinner is at ten.`,
+  'rome': `Italy keeps Central European Time and is one of the few large European countries whose geography actually suits it, sitting near the 15th meridian the zone is defined on. Noon by the clock in Rome is close to noon by the sun.`,
+  'amsterdam': `The Netherlands kept its own offset of UTC+00:19:32 until 1937 — nineteen and a half minutes, set on Amsterdam itself. It moved to a round twenty minutes, then to Central European Time under occupation, and stayed there.`,
+  'stockholm': `Sweden is on Central European Time and far enough north that the offset is the least of the scheduling problem: midsummer daylight runs past midnight in the north of the country and December sun barely clears the horizon.`,
+  'warsaw': `Poland sits at the eastern edge of Central European Time, so its clocks run further from the sun than any other country in the zone — sunrise in Warsaw in December is after 7:40 while Madrid, three time-zone-widths west, is on the same clock.`,
+  'athens': `Greece keeps Eastern European Time, an hour ahead of most of the continent, and changes clocks on the same weekend as the rest of the EU. The gap to Central Europe is therefore fixed all year, which is unusual for a cross-border pair.`,
+  'helsinki': `Finland is on Eastern European Time and has campaigned harder than any other member state to end clock changes across the EU — the 2018 petition that put the question to the Commission was largely Finnish.`,
+  'istanbul': `Türkiye abandoned daylight saving in 2016 and fixed the clocks at UTC+3 permanently, so it is on what used to be its summer time all year. Winter mornings in Istanbul are correspondingly dark, and the gap to Europe changes twice a year from Europe's side alone.`,
+  'moscow': `Russia stopped changing its clocks in 2014 after two years on permanent summer time, settling Moscow at UTC+3. It is the only capital in this list whose country spans eleven time zones, and "Moscow time" is used for railway timetables across all of them.`,
+  'dubai': `The UAE keeps UTC+4 all year with no daylight saving, and the working week runs Monday to Friday only since 2022 — before that it was Sunday to Thursday, which made the overlap with Europe a different problem entirely.`,
+  'karachi': `Pakistan is UTC+5 and fixed. Daylight saving was introduced in 2002 and again in 2008, abandoned both times within a year, and the country has not tried since.`,
+  'delhi': `India runs a single zone at UTC+5:30 across nearly 30 degrees of longitude, so sunrise in the far northeast can be before five in the morning by the clock. Proposals to split the country in two have been made repeatedly and rejected each time.`,
+  'dhaka': `Bangladesh is UTC+6 with no daylight saving, and its abbreviation BST collides with British Summer Time — a five-hour error that catches converter sites as often as it catches people.`,
+  'bangkok': `Thailand is UTC+7 and fixed, and it counts years by the Buddhist Era, 543 ahead of the Gregorian one. A date in a Thai document may be 2569 for a year written 2026 elsewhere.`,
+  'jakarta': `Indonesia spans three zones and Jakarta is on the westernmost at UTC+7. The country is wide enough that a domestic flight can cross two of them, and the eastern islands are two hours ahead of the capital.`,
+  'singapore': `Singapore is UTC+8 despite sitting almost on the equator at a longitude that suggests UTC+7. It moved forward in 1982 to align with Malaysia and never moved back, so solar noon falls at about 1 PM.`,
+  'hong-kong': `Hong Kong is UTC+8 all year and has been since 1979, when it dropped a summer-time arrangement that had run intermittently since the 1940s. It shares the offset with mainland China, which simplifies a great deal.`,
+  'beijing': `China runs one time zone for the whole country at UTC+8, which is about five hours of sun from end to end. In Kashgar, in the far west, the sun is overhead at around 3 PM by the official clock, and local life runs on an unofficial parallel schedule.`,
+  'manila': `The Philippines is UTC+8 and fixed. Its abbreviation PHT is often written PST, which collides with US Pacific Standard Time sixteen hours away — one of the more expensive collisions in this list.`,
+  'perth': `Perth is UTC+8, the same as Singapore and Beijing, and is the only Australian capital that does not change its clocks. Western Australia has rejected daylight saving in four referendums, most recently in 2009.`,
+  'tokyo': `Japan is UTC+9 with no daylight saving anywhere, and has not had it since the occupation ended in 1952. The whole country runs one zone and the business day starts early, so the useful overlap with Europe is Japan's late afternoon.`,
+  'seoul': `South Korea is UTC+9, the same as Japan, and briefly used UTC+8:30 in 1954 and again in 1961. North Korea moved to UTC+8:30 in 2015 and back to UTC+9 in 2018 to match the South.`,
+  'brisbane': `Brisbane is UTC+10 and does not change its clocks, while Sydney and Melbourne — the same offset in winter — go an hour ahead in October. For half the year Queensland is an hour behind its southern neighbours, which is a standing annoyance for anyone scheduling across the east coast.`,
+  'sydney': `Sydney is UTC+10 in winter and UTC+11 from October to April. Its summer is the northern hemisphere's winter, so the gap to Europe and North America swings by two hours over the year rather than staying put.`,
+  'melbourne': `Melbourne keeps the same clock as Sydney, UTC+10 in winter and UTC+11 in summer, and changes on the same dates. The pair are the reason "Australian Eastern Time" needs the Standard or Daylight qualifier to mean anything between October and April.`,
+  'auckland': `New Zealand is UTC+12 in winter and UTC+13 in summer, which puts it among the first places to see each new day. Its summer time runs from late September to early April, the opposite half of the year to the northern hemisphere's.`,
+  'new-york': `New York is UTC−5 in winter and UTC−4 from March to November, and it changes clocks on different weekends from Europe — a fortnight in March and a week in autumn when the transatlantic gap is an hour off what everyone expects.`,
+  'toronto': `Toronto keeps the same clock as New York and changes on the same dates, so the two cities are never apart. Canada follows the US daylight-saving schedule rather than the European one, which is why Toronto and London drift for the same weeks New York and London do.`,
+  'chicago': `Chicago is UTC−6 in winter, the US Central zone, and the one people most often mean by an unqualified "CST" — a reading that collides with China Standard Time fourteen hours the other way.`,
+  'mexico-city': `Mexico abolished daylight saving in October 2022, so Mexico City sits at UTC−6 all year. It used to move with the US and no longer does, which means every gap to a US city now changes twice a year from the US side alone.`,
+  'denver': `Denver is UTC−7 in winter, the US Mountain zone, and the smallest of the four continental US zones by population. Arizona, in the same zone, does not change its clocks, so for half the year Denver and Phoenix are an hour apart.`,
+  'los-angeles': `Los Angeles is UTC−8 in winter and UTC−7 from March to November. California voted in 2018 to move to permanent daylight saving and has not been able to: the change needs an act of Congress, which has not come.`,
+  'vancouver': `Vancouver keeps the same clock as Los Angeles and Seattle and changes on the same dates. British Columbia legislated for permanent daylight saving in 2019, conditional on the US west coast doing the same, and is still waiting.`,
+  'anchorage': `Alaska is UTC−9 in winter, one hour behind the US Pacific coast, and covers a longitude range that would justify four zones. The state consolidated into one in 1983 so that Anchorage business hours would overlap with the rest of the country.`,
+  'honolulu': `Hawaii is UTC−10 and does not change its clocks, so it drifts an hour further from the mainland every March. It is the furthest behind of any populated US zone, and the overlap with a European working day is essentially nil.`,
+  'sao-paulo': `Brazil ended daylight saving in 2019, so São Paulo is UTC−3 all year. Before that the gap to Europe changed four times a year rather than twice, because the two hemispheres moved in opposite directions.`,
+  'buenos-aires': `Argentina is UTC−3 and fixed, and sits at a longitude that would suggest UTC−4 — the country is effectively on permanent summer time and has been since 1969, with brief exceptions.`,
+  'lima': `Peru is UTC−5 all year with no daylight saving, so it matches New York in winter and falls an hour behind it in summer. It shares the offset with Colombia and Ecuador, giving a large stretch of South America one fixed clock.`,
+  'lagos': `Nigeria is UTC+1 with no daylight saving. It matches Central European Time in winter and falls an hour behind in summer, so a standing Lagos–Berlin meeting moves twice a year entirely at the European end.`,
+  'johannesburg': `South Africa is UTC+2 and has not changed its clocks since two wartime years in the 1940s. The whole country keeps one zone, and the gap to the UK is two hours in winter and one in summer.`,
+  'nairobi': `Kenya is UTC+3 and fixed, sitting on the equator where day length barely varies — sunrise and sunset are near six o'clock all year, which is the practical reason daylight saving has no purpose here.`,
+};
+
 const RULE = {
   eu: { forward: 'the last Sunday in March', back: 'the last Sunday in October', hemisphere: 'north' },
   us: { forward: 'the second Sunday in March', back: 'the first Sunday in November', hemisphere: 'north' },
@@ -125,6 +174,15 @@ const spanWords = (n) => {
 
 const gapWords = (n, from, to) =>
   n === 0 ? `${to} is the same time as ${from}` : `${to} is ${spanWords(n)} ${n > 0 ? 'ahead of' : 'behind'} ${from}`;
+
+// A city with no note leaves its pages identical to any other city on the same
+// offset, which is exactly the 95% overlap this was added to fix.
+for (const r of rows) {
+  if (!CITY_NOTE[r.id]) {
+    console.error(`\n✗ time-difference: ${r.city} has no note, so its pages are interchangeable with any other city on ${offStr(r.off)}`);
+    process.exitCode = 1;
+  }
+}
 
 // Enumerating all four on/off combinations lists states that never happen. US
 // summer time runs from the second Sunday in March to the first Sunday in
@@ -298,6 +356,10 @@ ${spans.map((x) => `<tr><td>${x.states.map((y) => `${y.aDst ? 'summer' : 'standa
       ? `${a.city} stays put all year while ${b.city} moves, so the gap changes twice a year from ${b.city}'s side alone. A recurring meeting set in ${a.city}'s calendar will drift by an hour without anyone touching it.`
       : `${b.city} stays put all year while ${a.city} moves, so a meeting fixed in ${b.city}'s calendar shifts by an hour twice a year at ${a.city}'s end.`}</p>` : `<h2>The gap holds all year</h2>
 <p>Neither city changes its clocks — ${clockLine(a)} and ${clockLine(b)} — so ${spanWords(usual)} is the difference in January and in July alike. That is worth knowing about this pair specifically, because most international pairs do move and a recurring meeting between them does not need checking twice a year.</p>`}
+
+<h2>About ${a.city} and ${b.city}</h2>
+<p>${CITY_NOTE[a.id]}</p>
+<p>${CITY_NOTE[b.id]}</p>
 
 <h2>When they can both be at their desks</h2>
 ${overlap > 0 ? `<p>Nine-to-five in both cities overlaps for <strong>${overlap} hour${overlap === 1 ? '' : 's'}</strong> — ${hhmm(startA)} to ${hhmm(endA)} in ${a.city}, the same moment as ${hhmm(startA + shift)} to ${hhmm(endA + shift)} in ${b.city}.</p>` : `<p><strong>Nine-to-five in ${a.city} and nine-to-five in ${b.city} do not overlap at all.</strong> With ${spanWords(usual)} between them, one side is always outside working hours, and the practical question is which side takes the early start or the late finish rather than when to meet.</p>`}
