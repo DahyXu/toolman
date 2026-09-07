@@ -84,6 +84,7 @@ export default async function () {
 
     const FAQ = faq([
       { q: `What is ${num} in Roman numerals?`, a: `<strong>${r}</strong>` },
+      { q: `What number is ${r}?`, a: `<code>${r}</code> is <strong>${num}</strong>. Read left to right, adding each symbol and subtracting any that sits before a larger one.` },
       { q: `How do you read ${r}?`,
         a: `Work left to right, adding each symbol — except where a smaller symbol precedes a larger one, in which case it is subtracted. ${rows.map(([sym, val]) => `<code>${sym}</code> is ${inProse(val.split(' = ').pop())}`).join(', ')}${rows.length > 1 ? `, giving ${num} in total` : ''}.` },
       { q: `How do you write ${num} in words?`, a: `${spell(n)}.` },
@@ -103,6 +104,9 @@ export default async function () {
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:2.2rem;font-family:var(--mono);margin:.3em 0"><strong>${r}</strong></p>
 <p class="muted">${isYear ? 'The year' : 'The number'} <strong>${num}</strong> is written <strong>${r}</strong> in Roman numerals.${isYear ? ` As a year it appears in copyright lines and cornerstones written this way.` : ''}</p>
+
+<h2>What ${r} means</h2>
+<p><code>${r}</code> is the Roman numeral for <strong>${num}</strong>. If you have arrived here with the numeral rather than the number — off a clock face, a film credit, a monument or a book's front matter — that is the answer; the working is below.</p>
 
 <h2>How ${r} breaks down</h2>
 <table><thead><tr><th>Symbols</th><th>Value</th></tr></thead><tbody>
