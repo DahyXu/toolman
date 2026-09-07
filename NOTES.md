@@ -1,3 +1,60 @@
+## Fields checked and not built, so they are not checked again
+
+The incumbent test is cheap to run and worth recording either way. Four
+candidates this round, one built.
+
+    number 7 drill bit size     a 2011 Garage Journal forum thread at the top,
+                                then 6G Tools, a blog, Bolt Depot, Amazon
+                                → BUILT. The weakest field seen all week.
+
+    +44 country code            CountryCode.org, Talk360, Wikipedia, Revolut
+                                → REJECTED. A dedicated incumbent, Wikipedia,
+                                and two companies doing content marketing at it
+                                — a space with money behind it.
+
+    18 gauge steel thickness    Metal Supermarkets, Fabworks, Amardeep Steel,
+                                Quora
+                                → weak field, and blocked by our own rule.
+                                Steel gauge is a published table, not a formula.
+                                Aluminium sheet gauge is the Brown & Sharpe
+                                series and *is* computable, but a section
+                                covering only aluminium misses where the volume
+                                is. Held pending a decision on whether clearly
+                                attributed table values are acceptable.
+
+    3440x1440 aspect ratio      Reddit at the top — the thread is titled
+                                "21:9 or 43:18?" — then ViewSonic and KTC
+                                → ALREADY DONE. /resolution/3440x1440/ says
+                                "the ratio is 43:18, close to but not exactly
+                                21:9, which is why 21:9 video letterboxes very
+                                slightly on it".
+
+That last one is the test paying for itself in the other direction: checking
+before building found the work already finished, on a page that has been live
+since launch.
+
+## Where that leaves the buildable list
+
+Adding these to the earlier tally, the overlap of *weak incumbents* and *an
+answer that is a rule rather than a paid table* is now close to exhausted for
+this site. What has been built out of it this week:
+
+    fasteners        DIN/ISO equivalence and the across-flats split
+    tap drill        the 75% formula, checked against 39 published values
+    drill sizes      the same table turned round
+    resistors        E24 values, with SMD markings added to the same pages
+    capacitors       E12 three-digit codes
+    US envelopes     the announcement names that collide with ISO A paper
+    JIS B            a series that shares ISO B's names and none of its sizes
+    time zones       twelve more abbreviations, and which BST/CST/IST is meant
+    city times       2,029 pairs and the weeks the gap is not what it says
+    country times    210 pairs, where the question has several answers
+
+Everything remaining in that overlap that has been checked is either already
+served or fails the incumbent test. The next thing to build is not obvious, and
+that is a finding rather than a pause: **the constraint on this site has moved
+from what to write to whether anyone links to it.**
+
 ## The timezone field measured properly, and the arithmetic that follows
 
 The zone pages looked like the one promising field: `bst to brt` at position
