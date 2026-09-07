@@ -163,6 +163,7 @@ const offStr = (off) => {
 };
 
 const spanWords = (n) => {
+  if (n === 0) return 'no difference';
   const size = Math.abs(n);
   const whole = Math.floor(size);
   const mins = Math.round((size - whole) * 60);
@@ -172,6 +173,15 @@ const spanWords = (n) => {
   return `${h} ${mins} minutes`;
 };
 
+// A title has no room for "4 hours 30 minutes or 5 hours 30 minutes". Half and
+// three-quarter hours are written as fractions and the unit is said once.
+const FRACTION = { 0.25: String.fromCharCode(188), 0.5: String.fromCharCode(189), 0.75: String.fromCharCode(190) };
+const shortSpan = (n) => {
+  const size = Math.abs(n);
+  const whole = Math.floor(size);
+  const rest = Math.round((size - whole) * 100) / 100;
+  return `${whole}${FRACTION[rest] || (rest ? `.${String(rest).slice(2)}` : '')}`;
+};
 const gapWords = (n, from, to) =>
   n === 0 ? `${to} is the same time as ${from}` : `${to} is ${spanWords(n)} ${n > 0 ? 'ahead of' : 'behind'} ${from}`;
 
@@ -236,13 +246,20 @@ const dayNote = (mins) => (mins < 0 ? ' (previous day)' : mins >= 1440 ? ' (next
 export default async function () {
   const pages = [];
   const pairs = [];
-  for (const a of rows) for (const b of rows) if (a !== b && a.off !== b.off) pairs.push([a, b]);
+  for (const a of rows) for (const b of rows) {
+    if (a === b) continue;
+    // Not "do the standard offsets differ" — Brisbane and Sydney share UTC+10
+    // and are an hour apart for half the year. The test is whether the gap is
+    // ever non-zero.
+    if (states(a, b).every((x) => x.gap === 0)) continue;
+    pairs.push([a, b]);
+  }
 
-  // A pair the two cities share an offset on has nothing to convert, and the
-  // page would be a table of a number against itself.
+  // A pair with no difference on any day of the year has nothing to convert.
+  // Sharing a base offset is not that test.
   for (const [a, b] of pairs) {
-    if (a.off === b.off) {
-      console.error(`\n✗ time-difference: ${a.city} and ${b.city} are both ${offStr(a.off)}`);
+    if (states(a, b).every((x) => x.gap === 0)) {
+      console.error(`\n✗ time-difference: ${a.city} and ${b.city} are the same time on every day of the year`);
       process.exitCode = 1;
     }
   }
@@ -328,7 +345,17 @@ export default async function () {
       },
     ]);
 
-    const title = `${a.city} to ${b.city} Time Difference — ${spanWords(usual)}`;
+    const biggest = gaps.reduce((m, g) => Math.abs(g) > Math.abs(m) ? g : m, 0);
+    const smallest = gaps.reduce((m, g) => Math.abs(g) < Math.abs(m) ? g : m, biggest);
+    const oneStep = Math.abs(Math.abs(biggest) - Math.abs(smallest)) <= 1;
+    const headline = smallest === 0 && biggest !== 0
+      ? `Same Time or ${spanWords(biggest)}`
+      : !dominant && gaps.length > 1
+        ? (oneStep
+            ? `${shortSpan(smallest)} or ${shortSpan(biggest)} hours`
+            : `${spanWords(smallest)} to ${spanWords(biggest)}`)
+        : spanWords(usual);
+    const title = `${a.city} to ${b.city} Time Difference — ${headline}`;
 
     pages.push({
       path: `/time-difference/${id}/`,
