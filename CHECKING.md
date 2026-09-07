@@ -597,3 +597,105 @@ The sibling failure is already recorded here: a `replace()` matching
 `'];\n\nexport default SIZES;'` silently did nothing on the same file. Same
 cause, opposite direction. **Detect the file's line ending, use it for what you
 write, and normalise after appending.**
+
+## A shell one-liner truncated a 33 KB generator to 49 bytes
+
+Editing `time-difference.mjs` with `node -e "…"` from bash, mid-session, left
+the file 49 bytes long. The build then failed with "Unexpected end of input",
+which is at least loud; what made it recoverable was that the previous state was
+committed.
+
+This is the sixth escaping failure in this project and the first destructive
+one. The pattern across all six is the same: **content containing backslashes,
+template literals or multiple lines does not survive the trip through a shell
+argument.** Twice a regex arrived as `/(d+)s*×s*(d+)/` and matched nothing while
+the build passed. Once `[\s\S]` became `[sS]`. Once a check's pattern became
+`[d.]+s*×s*` and reported a clean site it could not see.
+
+The rule that has actually held: **write the edit to a file and run the file.**
+No shell layer, no quoting, and the script can check its own work — every patch
+script written after this now refuses to save if the file lost more than a tenth
+of its size, because a 33 KB file becoming 49 bytes is not an edit.
+
+That guard needs the right threshold. Written as "must not shrink at all" it
+fired on a legitimate edit that replaced a long link footer with a shorter one.
+A guard against catastrophe should not also be a guard against ordinary work.
+
+## A day count of 365 cannot catch a rule that never fires
+
+The time-difference pages walk the year to find which daylight-saving
+combinations actually occur. The check on that walk was that the days add up to
+365.
+
+Planting a broken rule — `onDst` returning false always — **passed**. Every day
+is still counted; they simply all land in one state. The count is 365 whether
+the rule works or not, so the check was measuring the loop, not the thing the
+loop was for.
+
+The invariant that does catch it: a city with a summer-time rule spends between
+120 and 245 days a year on it. Planting the same break now fails on every EU
+city at once.
+
+**A check on a total is usually a check on the iteration.** What is worth
+asserting is a property of the values, not their number.
+
+## Two entities with the same numbers produce the same page
+
+This has now happened three times in this project and been fixed the same way
+each time:
+
+    GMT→JST vs GMT→KST                94%   Japan and Korea are both UTC+9
+    anchorage-lisbon vs -london       95%   Lisbon and London are UTC+0, EU rule
+    australia-spain vs -sweden        95%   Spain and Sweden are UTC+1, EU rule
+
+Every computed thing — the offset, the table, the overlap window, the clock
+dates — is identical, and only a name differs. No amount of restructuring the
+computation helps, because the computation is genuinely the same.
+
+The fix is a paragraph per entity that no formula produces: Portugal tried
+Central European Time from 1992 to 1996 and gave up when children were walking
+to school in the dark; Ireland's summer time is legally the standard and the
+clocks go *back* to UTC in October. Each of the three fixes brought the worst
+pair from the mid-nineties to the low eighties.
+
+**When two pages share their arithmetic, the only thing left to differentiate
+them is knowledge**, and a build check should fail if an entity has none —
+without its note it is interchangeable with its twin, which is the condition
+being removed.
+
+## Generate what carries something, not what fills a grid
+
+Three sections this week made the same decision and it is worth stating once:
+
+- The resistor pages cover the E24 series, not all 10×10×9×6 band permutations,
+  because the others are resistors nobody manufactures.
+- The capacitor pages cover E12 significands, not all 100 two-digit codes.
+- The country time pages exist only where one side spans more than one offset,
+  because Japan to France is Tokyo to Paris with the country name substituted.
+
+The first cut of the country pages generated all 1,332 and hit 97% overlap. The
+restriction to 210 is not a compromise for the duplicate checker; it is the
+recognition that the other 1,122 had nothing to say that another page did not
+already say better.
+
+**A grid is not a content plan.** The question for each cell is whether there is
+something true of it specifically, and where the answer is no the cell should
+not become a page.
+
+## The most common value of a 50/50 split is a coin toss
+
+Brisbane and Sydney share UTC+10 and are an hour apart from October to April, so
+the gap is zero for 26 weeks and one hour for 26. Taking "the gap that holds for
+the most days" as the headline produced
+
+    Brisbane to Sydney Time Difference — no difference
+
+which is true of half the year and useless. Where the largest span holds less
+than about 60% of the time, the answer is the range and not the mode: *Same Time
+or 1 hour*.
+
+The related failure in the same code: selecting pairs on whether the standard
+offsets differ threw away 28 pairs that genuinely differ for part of the year,
+Brisbane and Sydney among them — one of the most-asked time questions in
+Australia. **The filter has to test the thing the page is about**, which was
+whether there is ever a difference, not whether the base offsets are unequal.
