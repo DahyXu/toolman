@@ -61,13 +61,24 @@ const decode = (code) => {
   return sig * MULTIPLIER[digit];
 };
 
+// Fixed decimal places cannot render a value whose magnitude is unknown in
+// advance: 0.39 pF in microfarads is 0.00000039, and toFixed(6) makes that a
+// zero. Significant figures hold across the whole range, and anything that
+// still rounds away gets exponential notation rather than a false zero.
+const sigFig = (v, digits = 4) => {
+  if (v === 0) return '0';
+  if (Math.abs(v) >= 1000) return (+v.toPrecision(digits)).toLocaleString('en-US');
+  const fixed = +v.toPrecision(digits);
+  if (Math.abs(fixed) < 1e-4) return fixed.toExponential(2);
+  return String(fixed);
+};
 const pfStr = (pf) => (+pf.toFixed(2)).toLocaleString('en-US');
 const fmt = (pf) => {
   if (pf >= 1e6) return `${+(pf / 1e6).toFixed(3)} µF`;
   if (pf >= 1e3) return `${+(pf / 1e3).toFixed(3)} nF`;
   return `${pfStr(pf)} pF`;
 };
-const allUnits = (pf) => `${pfStr(pf)} pF · ${+(pf / 1e3).toFixed(4)} nF · ${+(pf / 1e6).toFixed(6)} µF`;
+const allUnits = (pf) => `${pfStr(pf)} pF · ${sigFig(pf / 1e3)} nF · ${sigFig(pf / 1e6)} µF`;
 
 const reactance = (pf, hz) => 1 / (2 * Math.PI * hz * (pf * 1e-12));
 const ohms = (x) => {
@@ -137,6 +148,18 @@ export default async function () {
     }
   }
 
+  // The rendered figures, not the numbers behind them. pF, nF and µF were
+  // already checked as quantities and agreed; what went out was "0 µF" for a
+  // 0.39 pF part, because the renderer lost what the arithmetic had right.
+  for (const c of CODES) {
+    for (const [unit, shown] of [['nF', sigFig(c.pf / 1e3)], ['µF', sigFig(c.pf / 1e6)]]) {
+      if (Number(shown) === 0) {
+        console.error(`\n✗ capacitor ${c.code}: ${c.pf} pF renders as 0 ${unit}, which is not a capacitance`);
+        process.exitCode = 1;
+      }
+    }
+  }
+
   const codes = CODES.map((c) => c.code);
   const FREQ = [[50, '50 Hz — mains'], [1e3, '1 kHz — audio'], [1e5, '100 kHz — switching'], [1e7, '10 MHz — RF']];
 
@@ -153,7 +176,7 @@ export default async function () {
       },
       {
         q: `What is a ${code} capacitor in µF?`,
-        a: `<strong>${+uf.toFixed(6)} µF.</strong> Going from picofarads to microfarads is six decimal places, which is where most of the confusion with these codes comes from — ${pfStr(pf)} pF, ${+nf.toFixed(4)} nF and ${+uf.toFixed(6)} µF are the same capacitor written three ways.`,
+        a: `<strong>${sigFig(uf)} µF.</strong> Going from picofarads to microfarads is six decimal places, which is where most of the confusion with these codes comes from — ${pfStr(pf)} pF, ${sigFig(nf)} nF and ${sigFig(uf)} µF are the same capacitor written three ways.`,
       },
       {
         q: `What does the letter after ${code} mean?`,
@@ -187,8 +210,8 @@ export default async function () {
 <table><tbody>
 <tr><td>Marked code</td><td class="out">${code}</td></tr>
 <tr><td>Picofarads</td><td class="out">${pfStr(pf)} pF</td></tr>
-<tr><td>Nanofarads</td><td class="out">${+nf.toFixed(4)} nF</td></tr>
-<tr><td>Microfarads</td><td class="out">${+uf.toFixed(6)} µF</td></tr>
+<tr><td>Nanofarads</td><td class="out">${sigFig(nf)} nF</td></tr>
+<tr><td>Microfarads</td><td class="out">${sigFig(uf)} µF</td></tr>
 <tr><td>Farads</td><td class="out">${(pf * 1e-12).toExponential(2)} F</td></tr>
 </tbody></table>
 
@@ -236,7 +259,7 @@ ${FAQ.html}
     const list = CODES.filter((c) => c.digit === digit);
     return `<h3>Third digit ${digit} — ${digit === 8 || digit === 9 ? `× ${MULTIPLIER[digit]}` : `× 10<sup>${digit}</sup>`}</h3>
 <table><thead><tr><th>Code</th><th>Picofarads</th><th>Nanofarads</th><th>Microfarads</th></tr></thead><tbody>
-${list.map((c) => `<tr><td><a href="/capacitor/${c.code}/">${c.code}</a></td><td>${pfStr(c.pf)} pF</td><td>${+(c.pf / 1e3).toFixed(4)} nF</td><td>${+(c.pf / 1e6).toFixed(6)} µF</td></tr>`).join('')}
+${list.map((c) => `<tr><td><a href="/capacitor/${c.code}/">${c.code}</a></td><td>${pfStr(c.pf)} pF</td><td>${sigFig(c.pf / 1e3)} nF</td><td>${sigFig(c.pf / 1e6)} µF</td></tr>`).join('')}
 </tbody></table>`;
   };
 
