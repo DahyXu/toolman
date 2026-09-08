@@ -699,11 +699,32 @@ ${c.map((u) => `<url><loc>${SITE.origin}${u}</loc><lastmod>${lastmodOf(u)}</last
   // instead of another 404.
   fs.writeFileSync(path.join(dist, `sitemap-${i + 1}.xml`), xml);
 });
+// The newest lastmod of the URLs a shard actually contains. Stamping every
+// child with today's date told Google all seven shards changed every day,
+// including the two that had not changed all week — which is the same as
+// telling it nothing.
+const newestIn = (chunk) => chunk.reduce((m, u) => {
+  const d = lastmodOf(u);
+  return d > m ? d : m;
+}, chunk.length ? lastmodOf(chunk[0]) : now);
+
+// A sitemap index whose children all carry the same date is either a site
+// that genuinely changed everywhere at once or a bug. On a 13,000-page site
+// with seven shards it is the bug, and it is invisible in the output.
+const stampCheck = () => {
+  if (chunks.length < 2) return;
+  const dates = new Set(chunks.map(newestIn));
+  if (dates.size === 1) {
+    console.error(`\n✗ sitemap: all ${chunks.length} shards report the same lastmod (${[...dates][0]}), which is what stamping the build date looked like`);
+    process.exitCode = 1;
+  }
+};
 const CHILD = (i) => `${SITE.origin}/sitemaps/pages-${i + 1}.xml`;
+stampCheck();
 if (chunks.length > 1) {
   fs.writeFileSync(path.join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${chunks.map((_, i) => `<sitemap><loc>${CHILD(i)}</loc><lastmod>${now}</lastmod></sitemap>`).join('\n')}
+${chunks.map((c, i) => `<sitemap><loc>${CHILD(i)}</loc><lastmod>${newestIn(c)}</lastmod></sitemap>`).join('\n')}
 </sitemapindex>`);
 }
 
