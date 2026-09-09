@@ -28,7 +28,7 @@ const AMBIGUOUS = {
 };
 
 
-const Z = [
+export const Z = [
   { id: 'utc', ab: 'UTC', off: 0, name: 'Coordinated Universal Time', where: 'the global time standard, used by aviation, computing and science' },
   { id: 'gmt', ab: 'GMT', off: 0, name: 'Greenwich Mean Time', where: 'the UK and Ireland in winter, Portugal, Iceland and much of West Africa' },
   { id: 'est', ab: 'EST', off: -5, name: 'Eastern Standard Time', where: 'New York, Toronto, Miami and Atlanta in winter' },

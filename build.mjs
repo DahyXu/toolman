@@ -615,6 +615,8 @@ console.log(`lastmod: ${urls.length - unchanged} changed, ${unchanged} unchanged
 // more reliably and make it obvious in Search Console which section of the
 // site is being indexed. sitemap.xml becomes the index once there is more
 // than one chunk, so the submitted URL never changes.
+import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
+
 const CHUNK = 2000;
 
 // A new site gets a limited crawl budget, so the order pages appear in matters:
@@ -653,8 +655,48 @@ for (const u of new Set(written)) {
 // earn nothing. Ordering by that is the point: sitemap priority is a hint
 // Google says it largely disregards, but the sort decides which URLs land in
 // pages-1.xml, and that is the chunk it reads first.
-const WIDGET_ANSWERED = (u) => /^\/convert\/(\d|[a-z]{2,5}-to-[a-z]{2,5}\/$)/.test(u);
-const CLICK_WINNABLE = (u) => /\/compare\/./.test(u) || u.startsWith('/color/tailwind/');
+// `[a-z]{2,5}-to-[a-z]{2,5}` cannot tell bst-to-brt from mm-to-pt, and it was
+// filing both as pages Google answers above the results. It does not: the SERPs
+// for `bst to brt` and `ict to pdt` carry no time widget, and those two are the
+// best non-widget positions this site holds — 10.2 and 13.3. So 939 timezone
+// pair pages were being sorted into the last sitemap chunk as if they were
+// unwinnable, on a site whose crawl budget has reached 4,200 requests against
+// 13,033 pages.
+//
+// The zone list is the authority on which codes are zones, so it is imported
+// rather than pattern-matched.
+const ZONE_IDS = new Set(TZ_ZONES.map((z) => z.id));
+const isZonePair = (u) => {
+  const m = /^\/convert\/([a-z]{2,5})-to-([a-z]{2,5})\/$/.exec(u);
+  return !!m && ZONE_IDS.has(m[1]) && ZONE_IDS.has(m[2]);
+};
+const WIDGET_ANSWERED = (u) =>
+  /^\/convert\/(\d|[a-z]{2,5}-to-[a-z]{2,5}\/$)/.test(u) && !isZonePair(u);
+const CLICK_WINNABLE = (u) =>
+  /\/compare\/./.test(u) || u.startsWith('/color/tailwind/') || isZonePair(u)
+  || u.startsWith('/time-difference/');
+
+// A URL pattern deciding which pages Google answers for itself is a guess about
+// other people's search results, and the last one was wrong about 939 pages.
+// This checks the guess against what the pages actually are: a timezone pair
+// page carries the working-hours overlap table and a unit conversion page does
+// not, so anything filed as widget-answered that carries it has been
+// misclassified again.
+{
+  const wrong = [];
+  for (const u of urls) {
+    if (!WIDGET_ANSWERED(u)) continue;
+    let html;
+    try { html = fs.readFileSync(path.join(dist, u.slice(1), 'index.html'), 'utf8'); }
+    catch { continue; }
+    if (html.includes('working hours overlap')) wrong.push(u);
+  }
+  if (wrong.length) {
+    console.error(`\n✗ sitemap: ${wrong.length} page(s) sorted last as widget-answered are timezone pairs, whose results pages carry no widget:`);
+    for (const w of wrong.slice(0, 5)) console.error('    ' + w);
+    process.exitCode = 1;
+  }
+}
 
 function rank(u) {
   if (u === '/') return 0;                     // home
