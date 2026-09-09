@@ -687,6 +687,51 @@ ${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) 
 <p><a href="/time-difference/">City pairs</a> · <a href="/convert/time-zones/">Time zones by abbreviation</a></p>`,
   });
 
+// 2,243 pages sit in this section and they averaged 3.12 clicks from the home
+// page — home, hub, city, pair — which is deeper than anything else built this
+// week and puts them behind 4,906 other URLs in a crawl queue moving at about
+// 500 a day. The hub cannot link all 1,954 pairs without becoming a link farm,
+// but it can link the ones people actually look up, which pulls those to two
+// clicks.
+//
+// Chosen as the pairs between the largest business and travel centres, which is
+// what "what time is it there" is usually about. Every one is checked against
+// the generated set below, so a renamed city fails the build rather than
+// leaving a dead link on the section's front page.
+const FEATURED = [
+  ['london', 'new-york'], ['london', 'los-angeles'], ['london', 'tokyo'],
+  ['london', 'sydney'], ['london', 'delhi'], ['london', 'singapore'],
+  ['london', 'dubai'], ['london', 'hong-kong'], ['london', 'toronto'],
+  ['new-york', 'london'], ['new-york', 'los-angeles'], ['new-york', 'tokyo'],
+  ['new-york', 'delhi'], ['new-york', 'paris'], ['new-york', 'sydney'],
+  ['new-york', 'sao-paulo'], ['new-york', 'beijing'], ['new-york', 'dubai'],
+  ['los-angeles', 'new-york'], ['los-angeles', 'tokyo'], ['los-angeles', 'london'],
+  ['los-angeles', 'sydney'], ['los-angeles', 'delhi'], ['los-angeles', 'beijing'],
+  ['tokyo', 'london'], ['tokyo', 'new-york'], ['tokyo', 'singapore'],
+  ['delhi', 'london'], ['delhi', 'new-york'], ['delhi', 'singapore'],
+  ['delhi', 'dubai'], ['delhi', 'sydney'],
+  ['sydney', 'london'], ['sydney', 'new-york'], ['sydney', 'singapore'],
+  ['singapore', 'london'], ['singapore', 'new-york'],
+  ['dubai', 'london'], ['dubai', 'delhi'],
+  ['paris', 'new-york'], ['berlin', 'new-york'], ['toronto', 'london'],
+  ['beijing', 'new-york'], ['hong-kong', 'london'], ['sao-paulo', 'london'],
+];
+{
+  const have = new Set(pairs.map(([a, b]) => `${a.id}-${b.id}`));
+  const dead = FEATURED.filter(([a, b]) => !have.has(`${a}-${b}`));
+  if (dead.length) {
+    console.error(`\n✗ time-difference: ${dead.length} featured pair(s) that do not exist:`);
+    for (const [a, b] of dead.slice(0, 5)) console.error(`    ${a}-${b}`);
+    process.exitCode = 1;
+  }
+}
+const featuredHtml = `<h2>The pairs people look up most</h2>
+<p>Every pair has its own page; these are the ones asked for most often, and each says what the gap is and the weeks it is something else.</p>
+<ul class="cols">${FEATURED.filter(([a, b]) => rows.some((r) => r.id === a) && rows.some((r) => r.id === b)).map(([a, b]) => {
+  const A = rows.find((r) => r.id === a), B = rows.find((r) => r.id === b);
+  return `<li><a href="/time-difference/${a}-${b}/">${esc(A.city)} to ${esc(B.city)}</a></li>`;
+}).join('')}</ul>`;
+
   const byRegion = (pred, heading) => `<h3>${heading}</h3>
 <ul class="cols">${rows.filter(pred).map((r) => `<li><a href="/time-difference/${r.id}/">${esc(r.city)}</a> <span class="muted">${offStr(r.off)}</span></li>`).join('')}</ul>`;
 
@@ -700,6 +745,8 @@ ${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) 
 
 <h2>The number every converter leaves out</h2>
 <p>The difference between two cities is usually quoted as one number, and for most pairs it is one number for most of the year. It is not one number all year. <strong>The European Union changes its clocks on the last Sunday in March and the United States on the second Sunday</strong>, so for the fortnight between them London and New York are four hours apart rather than five — and a standing call moves by an hour with nobody touching it. Each pair page says which gaps apply and why.</p>
+
+${featuredHtml}
 
 ${byRegion((r) => r.off >= -10 && r.off <= -3, 'The Americas and the Pacific')}
 ${byRegion((r) => r.off >= 0 && r.off <= 3, 'Europe and Africa')}
