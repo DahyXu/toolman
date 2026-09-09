@@ -4,6 +4,15 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SITE, CATEGORIES } from './src/site.mjs';
 import { page, esc } from './src/layout.mjs';
+import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
+
+// The card for the time-zone section quoted 848 conversions, written when
+// there were 848. There are now 1,686. A count typed into prose drifts away
+// from the thing it counts, so it is derived from the same table the pages
+// are generated from — pairs of zones whose offsets differ, which is exactly
+// the rule the generator uses.
+const ZONE_PAIR_COUNT = TZ_ZONES.reduce((n, a) =>
+  n + TZ_ZONES.filter((b) => b !== a && b.off !== a.off).length, 0);
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root, 'dist');
@@ -390,7 +399,7 @@ ${allToolsBody}
 <li><a href="/convert/"><b>Unit converter</b><span>1,000+ conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
 <li><a href="/color/"><b>Color codes</b><span>600+ HEX colors with RGB, HSL, CMYK, contrast ratios and matching palettes.</span></a></li>
 <li><a href="/convert/css-units/"><b>CSS units</b><span>px, rem, em, pt and more — with an adjustable root font size.</span></a></li>
-<li><a href="/convert/time-zones/"><b>Time zones</b><span>848 conversions between EST, PST, UTC, CET, IST, JST and more.</span></a></li>
+<li><a href="/convert/time-zones/"><b>Time zones</b><span>${ZONE_PAIR_COUNT.toLocaleString()} conversions between EST, PST, UTC, CET, IST, JST and more.</span></a></li>
 <li><a href="/image/"><b>Image converters</b><span>PNG, JPG, WebP, SVG, AVIF and HEIC-adjacent formats, converted locally.</span></a></li>
 <li><a href="/http/"><b>HTTP status codes</b><span>Every code explained — what triggers it and how to actually fix it.</span></a></li>
 <li><a href="/cron/"><b>Cron schedules</b><span>Ready-made expressions for every common schedule, with next run times.</span></a></li>
@@ -410,6 +419,12 @@ ${allToolsBody}
 <li><a href="/battery/"><b>Battery sizes</b><span>Dimensions, voltage and equivalents — and why a CR2032 is called that.</span></a></li>
 <li><a href="/awg/"><b>Wire gauge</b><span>AWG in mm, area and resistance — and the formula the whole scale comes from.</span></a></li>
 <li><a href="/thread/"><b>Metric threads</b><span>Tapping drill, clearance hole and spanner size for M2 to M24.</span></a></li>
+<li><a href="/time-difference/"><b>Time differences</b><span>City to city, with the weeks each gap is not what every converter says it is.</span></a></li>
+<li><a href="/resistor/"><b>Resistor colour codes</b><span>Every E24 value both ways — bands to value, value to bands, and the SMD marking.</span></a></li>
+<li><a href="/capacitor/"><b>Capacitor codes</b><span>104 is 100 nF. Every three-digit code in pF, nF and µF, with the reactance.</span></a></li>
+<li><a href="/tap-drill/"><b>Tap drill sizes</b><span>The drill for every unified thread, and the arithmetic the chart figure comes from.</span></a></li>
+<li><a href="/drill-size/"><b>Drill sizes</b><span>Number, letter and fractional drills in inches and mm, and what each one taps.</span></a></li>
+<li><a href="/fastener/"><b>Fastener standards</b><span>DIN to ISO, and the three sizes where the same thread takes a different spanner.</span></a></li>
 <li><a href="/tyre/"><b>Tyre sizes</b><span>What 205/55R16 measures, which sizes replace it, and the speedometer effect.</span></a></li>
 <li><a href="/ring-size/"><b>Ring sizes</b><span>US, UK and EU conversion — and why the European size is just the measurement.</span></a></li>
 <li><a href="/bakeware/"><b>Baking tin sizes</b><span>Area, volume and which tin substitutes for which — and what it does to the time.</span></a></li>
@@ -615,8 +630,6 @@ console.log(`lastmod: ${urls.length - unchanged} changed, ${unchanged} unchanged
 // more reliably and make it obvious in Search Console which section of the
 // site is being indexed. sitemap.xml becomes the index once there is more
 // than one chunk, so the submitted URL never changes.
-import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
-
 const CHUNK = 2000;
 
 // A new site gets a limited crawl budget, so the order pages appear in matters:
@@ -697,6 +710,41 @@ const CLICK_WINNABLE = (u) =>
   if (wrong.length) {
     console.error(`\n✗ sitemap: ${wrong.length} page(s) sorted last as widget-answered are timezone pairs, whose results pages carry no widget:`);
     for (const w of wrong.slice(0, 5)) console.error('    ' + w);
+    process.exitCode = 1;
+  }
+}
+
+// Eleven sections were built in a week and not one of them was linked from the
+// home page's body. They were in the site-wide nav, which is chrome — Google
+// discounts it, and the inbound-link audit excludes it for the same reason. So
+// the pages Googlebot reaches first from the entry point it trusts most were
+// the sections built at launch, while 3,232 newer pages waited behind them on a
+// crawl budget of 4,200 requests against 13,033 pages.
+//
+// Nothing said so. Adding a section to the menu felt like linking it.
+{
+  const home = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+  const body = (home.split('<main')[1] || home).split('</main>')[0];
+  const linked = new Set([...body.matchAll(/href="(\/[^"]*)"/g)].map((m) => m[1]));
+
+  // A section worth the home page's attention: it has a hub of its own and
+  // enough beneath it to be a library rather than a page.
+  const counts = new Map();
+  for (const u of urls) {
+    const top = '/' + (u.split('/')[1] || '') + '/';
+    if (top === '//') continue;
+    counts.set(top, (counts.get(top) || 0) + 1);
+  }
+  const missing = [];
+  for (const [hub, n] of counts) {
+    if (n < 20) continue;
+    if (!urls.includes(hub)) continue;
+    if (linked.has(hub)) continue;
+    missing.push(`${hub} — ${n.toLocaleString()} pages, in the menu but not on the home page`);
+  }
+  if (missing.length) {
+    console.error(`\n✗ home page: ${missing.length} section(s) of 20+ pages that the home page body does not link to:`);
+    for (const m of missing) console.error('    ' + m);
     process.exitCode = 1;
   }
 }
