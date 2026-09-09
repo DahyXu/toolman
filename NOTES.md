@@ -1,3 +1,36 @@
+## Retraction: www.toolman.top is not dead, and it is not wasting crawl budget
+
+The crawl-budget entry below says www.toolman.top "does not answer at all", that
+Googlebot "has spent 165 requests on it", and that this "is where the 1%
+robots.txt-unavailable comes from". Two of those are wrong and the third has no
+support.
+
+`curl https://www.toolman.top/` returned 000 once. That single failure was taken
+as the state of the host and written into this file and two commit messages
+without being repeated. Checked properly:
+
+    https://www.toolman.top/             200, six times out of six
+    https://www.toolman.top/robots.txt   200, six times out of six
+    title                                短视频爆款知识库 · 内部工具
+    robots.txt                           Cloudflare's default content-signals
+                                         file — comments only, no Disallow
+
+It is a live site, it is the separate service these notes already recorded it
+as, and its 165 crawl requests went to pages that exist. Calling that "3.9% of
+the crawl budget spent on a host that answers nothing" was wrong twice over: the
+host answers, and the figure rested on the same single failed request.
+
+**The 1% of fetches where robots.txt was unavailable is still unexplained.** It
+may well be transient failures of the kind seen here — one call in seven failing
+on a host that is otherwise fine. What it is not is evidence about www, and it
+should not be cited as such.
+
+The rule this breaks is already in NOTES.md, written after reusing a `site:`
+reading that had been recorded as invalid within the hour: **name where a figure
+came from before writing it down.** A single curl that returned 000 is not a
+measurement of a host's availability; six that return 200 are the beginning of
+one.
+
 ## The constraint has a number: 4,200 crawl requests against 13,033 pages
 
 Search Console's crawl stats, read on 2026-09-09 — the report that should have
