@@ -1,3 +1,71 @@
+## The constraint has a number: 4,200 crawl requests against 13,033 pages
+
+Search Console's crawl stats, read on 2026-09-09 — the report that should have
+been opened a week ago:
+
+    total crawl requests        4,200
+    pages on the site          13,033
+    success (200)                 98%
+    robots.txt unavailable         1%
+    purpose            discovery 55% / refresh 45%
+    host          toolman.top 4,033 · www.toolman.top 165
+
+**Most of this site has never been fetched.** At roughly 500 requests a day it
+takes a month to work through 13,033 pages, and the queue grew by 3,232 in the
+two days before this reading — pages added faster than they can be crawled.
+
+That explains what three days of measurements could not:
+
+    2026-09-06    4 clicks   5,150 impressions   position 54.6
+    2026-09-09    4 clicks   7,000 impressions   position 55.8
+
+Impressions are up 36% and every one of them is from pages that shipped at
+launch. The eleven sections built since have no impressions, and exact phrases
+from them return nothing. They are not rejected; they are queued.
+
+### Which corrects the diagnosis twice over
+
+Two entries ago this said the constraint was domain authority and time. One
+entry ago it said new pages were not being indexed and the sitemap's lastmod
+signal was part of why. Both were describing the same thing from outside.
+Crawl budget is the measurement, and it carries a conclusion neither of those
+did: **adding pages while the queue is four times longer than the crawl rate
+makes things worse, not better.** The 3,232 pages added on the 7th and 8th
+pushed everything behind them further back.
+
+### The bug that was costing the most
+
+The sitemap ranks pages by editorial value so that the first chunk is what
+Googlebot reads first — a good design, and it had a rule in it that could not
+tell `bst-to-brt` from `mm-to-pt`:
+
+    /^\/convert\/(\d|[a-z]{2,5}-to-[a-z]{2,5}\/$)/
+
+Everything matching sorted last as a page Google answers above the results.
+939 of them were timezone pairs, whose results pages carry **no widget** — and
+`bst to brt` at position 10.2 and `ict to pdt` at 13.3 are the best non-widget
+positions this site holds. The one field with measured page-one ranking was at
+the back of a queue with room for a third of the site.
+
+Fixed by importing the zone list from the generator instead of guessing from
+the URL, and checked against the built pages: anything filed as widget-answered
+that carries the working-hours overlap table is a timezone page misclassified
+again. Planting the old rule fails on all 939.
+
+### Two things measured and left alone
+
+**www.toolman.top does not answer.** curl gets no connection at all, and
+Googlebot has spent 165 requests on it — which is the 1% of fetches where
+robots.txt was unavailable. A host whose robots.txt cannot be read is a host
+Googlebot slows down on. It is a separate service and not mine to repoint, so
+it is recorded rather than changed.
+
+**The Bing check did not work and produced no finding.** cn.bing.com ignores
+both `site:` and quoted phrases — a phrase that should return one result
+returned 258,000 — so nothing was learned about whether the new pages are in
+any index other than Google's. Recorded so that nobody reads the attempt as
+evidence.
+
 ## Fields checked and not built, so they are not checked again
 
 The incumbent test is cheap to run and worth recording either way. Four
