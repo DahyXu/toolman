@@ -699,3 +699,57 @@ offsets differ threw away 28 pairs that genuinely differ for part of the year,
 Brisbane and Sydney among them — one of the most-asked time questions in
 Australia. **The filter has to test the thing the page is about**, which was
 whether there is ever a difference, not whether the base offsets are unequal.
+
+## A planted test proves a check fires, not that it sees everything
+
+The sitemap ranking had a rule that could not tell `bst-to-brt` from
+`mm-to-pt`, so 1,686 timezone pages were sorted last as pages Google answers
+above the results. Fixing it needed a guard, and the guard read the built pages
+back rather than trusting the URL pattern: a timezone page carries the
+working-hours overlap table and a unit conversion does not.
+
+Planting the old rule failed the build on 939 pages, which looked like proof.
+
+It was not. The overlap table is on 939 of the 1,686 zone pages — the other 747
+say "Standard 9-5 working hours do not overlap at all", because those two zones
+have no overlap to tabulate. **The check could see 56% of what it was written
+to see, and the planted test passed anyway, because 939 failures is far more
+than enough to fail a build.**
+
+A planted error confirms the check is wired up and reachable. It says nothing
+about coverage, and the louder the failure the less it says: one deliberately
+broken case proves one case.
+
+Two things would have caught it:
+
+- **Count what the check looked at, not just what it found.** The guard reported
+  939 failures against a population it never stated. Had it said "939 of 1,770
+  candidates examined" the gap would have been visible in the output.
+- **Choose a marker that cannot vary with the answer.** The overlap table is
+  prose that changes when the arithmetic changes. The breadcrumb to
+  `/convert/time-zones/` is structural, present on all 1,686 and on no unit
+  page, and does not move when the content does.
+
+The same shape has now appeared twice in this file. The `atDpi(96)` assertion
+could not fail because it was evaluated where both answers agree; this one
+could fail, but only on the half of the population that happened to carry the
+string. **Ask what a check cannot see, not only whether it can fail.**
+
+## Adding a section to the menu is not linking to it
+
+Eleven sections were built in a week. Every one was added to the site-wide
+navigation in `layout.mjs`, and not one was linked from the home page's body.
+
+That felt like linking them, and it is not the same thing. This repository's own
+inbound-link audit excludes header, nav and footer — `scripts/inbound-links.mjs`
+was written on the premise that chrome links do not count — and then eleven
+sections were shipped relying on exactly those links.
+
+It mattered more than it usually would. Crawl stats show 4,200 fetches against
+13,033 pages, so what Googlebot reaches early from the home page is most of what
+it reaches at all, and 3,232 pages added in two days were queued behind the
+sections that shipped at launch.
+
+`build.mjs` now fails when a section with its own hub and twenty or more pages
+is missing from the home page body. It caught one on its first run: the card
+written to fix the problem pointed at `/drill/` and the hub is `/drill-size/`.
