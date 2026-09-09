@@ -678,10 +678,13 @@ const CLICK_WINNABLE = (u) =>
 
 // A URL pattern deciding which pages Google answers for itself is a guess about
 // other people's search results, and the last one was wrong about 939 pages.
-// This checks the guess against what the pages actually are: a timezone pair
-// page carries the working-hours overlap table and a unit conversion page does
-// not, so anything filed as widget-answered that carries it has been
-// misclassified again.
+  // This checks the guess against what the pages actually are. The first marker
+  // used was the working-hours overlap table, which appears on 939 of the 1,686
+  // zone pages — the other 747 say "do not overlap at all" instead. The check
+  // could therefore see only 56% of what it claimed to check, and still passed
+  // the planted test, because 939 failures is plenty to fail a build. The
+  // breadcrumb is on every zone page and no unit page, and does not depend on
+  // prose that changes with the answer.
 {
   const wrong = [];
   for (const u of urls) {
@@ -689,7 +692,7 @@ const CLICK_WINNABLE = (u) =>
     let html;
     try { html = fs.readFileSync(path.join(dist, u.slice(1), 'index.html'), 'utf8'); }
     catch { continue; }
-    if (html.includes('working hours overlap')) wrong.push(u);
+    if (html.includes('/convert/time-zones/')) wrong.push(u);
   }
   if (wrong.length) {
     console.error(`\n✗ sitemap: ${wrong.length} page(s) sorted last as widget-answered are timezone pairs, whose results pages carry no widget:`);
