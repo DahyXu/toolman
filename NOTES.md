@@ -1,3 +1,57 @@
+## What Google crawled and then refused
+
+The index report caught up on 2026-09-09 and finally shows the real state. The
+earlier reading of "1 indexed, 3 not" was describing the previous owner's URLs
+over a window that ended before this site launched.
+
+    indexed                              1,240
+    not indexed                          5,320
+      discovered, never crawled          4,906
+      crawled, not indexed                 407
+      404                                    2
+      401                                    1
+
+**Of the pages Googlebot actually fetched, 75% were indexed** — 1,240 of 1,647.
+The pages are not the problem. 4,906 have never been looked at, against a crawl
+rate of about 500 a day.
+
+### The 407 it did look at and declined
+
+This is the first direct evidence of what this site produces that Google does
+not want. The examples it lists:
+
+    /screen-size/  ×6   85, 27, 49, 14, 43 and 25 inch
+    /resolution/   ×2   3840x2160, 5120x1440
+    /tyre/         ×1   215/45R17
+    /bed-size/compare/ ×1
+
+Two things are true of all of them.
+
+**They are thin for what they are attempting.** `/resolution/3840x2160/` is 259
+words and is competing on "3840x2160" — a query Wikipedia, every display maker
+and every monitor retailer has a page for. `/screen-size/27-inch/` is 433 words
+against a section average of 695.
+
+**They are in commercially contested fields.** Monitors, TVs, tyres and beds are
+sold by people who spend money on those pages.
+
+Neither is a technical fault, and no amount of markup fixes it. Google fetched
+them, judged they added nothing to what already exists, and moved on.
+
+### Which is the first evidence for the corrected test
+
+The sections built this week on the strength-of-incumbent test are both deeper
+and in fields where the incumbents are suppliers and calculators:
+
+    resistor    1,187 words        fastener     713
+    tap-drill     875              capacitor    733
+
+Every one is longer than the pages being refused, and every one sits in a field
+whose results page was opened and found to hold no answer widget and no Adobe.
+They have not been crawled yet, so this proves nothing — but it is the first
+time the difference between what is being refused and what is being built can
+be stated in numbers rather than hoped for.
+
 ## Retraction: www.toolman.top is not dead, and it is not wasting crawl budget
 
 The crawl-budget entry below says www.toolman.top "does not answer at all", that
