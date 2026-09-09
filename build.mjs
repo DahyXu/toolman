@@ -678,6 +678,27 @@ for (const u of new Set(written)) {
 //
 // The zone list is the authority on which codes are zones, so it is imported
 // rather than pattern-matched.
+// Sections whose results pages were checked before the section was built, and
+// found to carry no answer widget. Each line records the query that was looked
+// at, because "no widget" is a claim about somebody else's search results and
+// six weeks from now nobody will remember which ones were actually opened.
+//
+// The evidence is not all the same strength. The zone pairs and /compare/ are
+// backed by measured position — `bst to brt` at 10.2 in Search Console. The
+// rest rest on the results page alone: no widget, and incumbents who are
+// suppliers, calculators and forum threads rather than Adobe or LastPass.
+// That is weaker, and it is still the best available for a page nothing has
+// ranked for yet.
+const VERIFIED_NO_WIDGET = [
+  ['/tap-drill/', 'tap drill size for 1/4-20 — suppliers, a tool maker, Reddit'],
+  ['/drill-size/', 'number 7 drill size — the same field, turned round'],
+  ['/fastener/', 'din 933 dimensions — eight suppliers and a Scribd scan'],
+  ['/resistor/', 'brown black red gold resistor value — calculators, no per-value page'],
+  ['/capacitor/', '104 capacitor value — small vendors, Reddit, Facebook'],
+  ['/time-difference/', 'london to new york time difference — mid-tier converters and a blog'],
+];
+const VERIFIED_PREFIXES = VERIFIED_NO_WIDGET.map(([p]) => p);
+
 const ZONE_IDS = new Set(TZ_ZONES.map((z) => z.id));
 const isZonePair = (u) => {
   const m = /^\/convert\/([a-z]{2,5})-to-([a-z]{2,5})\/$/.exec(u);
@@ -686,8 +707,8 @@ const isZonePair = (u) => {
 const WIDGET_ANSWERED = (u) =>
   /^\/convert\/(\d|[a-z]{2,5}-to-[a-z]{2,5}\/$)/.test(u) && !isZonePair(u);
 const CLICK_WINNABLE = (u) =>
-  /\/compare\/./.test(u) || u.startsWith('/color/tailwind/') || isZonePair(u)
-  || u.startsWith('/time-difference/');
+  u.includes('/compare/') || u.startsWith('/color/tailwind/') || isZonePair(u)
+  || VERIFIED_PREFIXES.some((prefix) => u.startsWith(prefix));
 
 // A URL pattern deciding which pages Google answers for itself is a guess about
 // other people's search results, and the last one was wrong about 939 pages.
