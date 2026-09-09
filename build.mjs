@@ -788,8 +788,44 @@ const PRIORITY = ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5', '0.4', '0.3'];
 
 urls.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 
+// Search Console, 2026-09-09: 1,240 pages indexed, 5,320 not, and 4,906 of
+// those are "Discovered – currently not indexed" — found, queued, never
+// fetched. Of the pages Googlebot did fetch, 75% were indexed, so the pages are
+// fine; there are simply more of them than the crawler will get to.
+//
+// Google's own guidance for that state is to reduce the number of low-value
+// URLs the site asks it to consider. 3,900 pages here are ones whose question
+// Google answers above the results — unit conversions and hex colours, checked
+// on the results pages themselves. They can rank and cannot be clicked: they
+// carry about 2,900 impressions a month and have produced zero clicks.
+//
+// So they come out of the sitemap. **They are not deindexed and not deleted.**
+// They stay live, stay internally linked, and stay in the index if they are
+// already in it. What changes is only what this site asks Googlebot to spend
+// its next 4,906 fetches on.
+//
+// Reversible by deleting this filter and rebuilding.
+const inSitemap = (u) => !WIDGET_ANSWERED(u);
+const trimmed = urls.filter(inSitemap);
+{
+  const dropped = urls.length - trimmed.length;
+  // If this ever removes nothing, the predicate has stopped matching and the
+  // comment above is describing something that no longer happens.
+  if (dropped === 0) {
+    console.error('\n✗ sitemap: the widget-answered filter removed no pages, so either the predicate broke or those pages are gone');
+    process.exitCode = 1;
+  }
+  // And if it ever removes most of the site, something has gone wrong the other
+  // way and the sitemap would stop declaring the pages that matter.
+  if (dropped > urls.length / 2) {
+    console.error(`\n✗ sitemap: the filter removed ${dropped} of ${urls.length} pages, which is more than half the site`);
+    process.exitCode = 1;
+  }
+  console.log(`sitemap: ${trimmed.length.toLocaleString()} URLs declared, ${dropped.toLocaleString()} widget-answered pages left out (still live, still linked)`);
+}
+
 const chunks = [];
-for (let i = 0; i < urls.length; i += CHUNK) chunks.push(urls.slice(i, i + CHUNK));
+for (let i = 0; i < trimmed.length; i += CHUNK) chunks.push(trimmed.slice(i, i + CHUNK));
 
 const prio = (u) => PRIORITY[rank(u)];
 chunks.forEach((c, i) => {
