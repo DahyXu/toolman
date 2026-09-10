@@ -194,7 +194,7 @@ export default async function () {
 </tbody></table>
 
 <h2>What ${label} costs to move and to store</h2>
-<p>A frame is width × height × three bytes of colour, before any compression touches it. At ${w.toLocaleString()} × ${h.toLocaleString()} that is <strong>${mbFrame} MB per frame</strong>, and video is frames per second:</p>
+<p>A frame is width × height × three bytes of colour, before any compression touches it. At ${w}&thinsp;×&thinsp;${h} that is <strong>${mbFrame} MB per frame</strong>, and video is frames per second:</p>
 <table><thead><tr><th>Frame rate</th><th>Uncompressed</th><th>An hour of it</th></tr></thead><tbody>
 ${[24, 30, 60, 120].map((fps) => {
   const bytesPerSec = w * h * 3 * fps;
