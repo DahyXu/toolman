@@ -75,6 +75,29 @@ export default async function () {
   const pages = [];
   const main = RATIOS[0];
 
+  // Viewing distance at a fixed angle is proportional to width, so a bigger
+  // screen has to sit further away. A distance that shrank with size would
+  // mean the half-angle had been applied to the wrong side of the triangle,
+  // which is an error that still prints plausible-looking feet.
+  {
+    const at = (diag, deg) => (dims(diag, main.r).w / 2) / Math.tan((deg / 2) * Math.PI / 180);
+    const bad = [];
+    for (const { d } of SIZES) {
+      for (const deg of [40, 30, 20]) {
+        const m = at(d, deg) * 2.54 / 100;
+        if (!(m > 0.2 && m < 12)) bad.push(`${d}-inch at ${deg}°: ${m.toFixed(2)} m`);
+      }
+      const bigger = SIZES.filter((s) => s.d > d)[0];
+      if (bigger && !(at(bigger.d, 30) > at(d, 30))) bad.push(`${bigger.d}-inch is not further away than ${d}-inch at the same angle`);
+    }
+    if (bad.length) {
+      console.error(`
+✗ screen-size: ${bad.length} viewing distance(s) that cannot be right:`);
+      for (const b of bad.slice(0, 5)) console.error('    ' + b);
+      process.exitCode = 1;
+    }
+  }
+
   for (const { d, kind } of SIZES) {
     const id = `${String(d).replace('.', '-')}-inch`;
     const base = dims(d, main.r);
@@ -134,6 +157,19 @@ ${others.sort((a, b) => a.d - b.d).map((s) => {
         return `<tr><td><a href="/screen-size/${String(s.d).replace('.', '-')}-inch/">${s.d} in</a></td><td>${n1(x.w)} in</td><td>${Math.round(x.area)} in²</td><td>${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%</td></tr>`;
       }).join('')}
 </tbody></table>
+
+<h2>How far to sit from a ${label} screen</h2>
+<p>There are two questions hiding in "how far away", and they have different answers. The <a href="/resolution/">resolution pages</a> answer one — the distance beyond which the pixels merge and a sharper panel stops being visible. This is the other: the distance at which a ${label} screen fills the part of your vision that film and broadcast are mastered for.</p>
+<p>The standards state it as a horizontal viewing angle, and the angle comes straight out of the screen's width. At 16:9 a ${label} screen is ${n1(base.w)} inches across:</p>
+<table><thead><tr><th>Field of view</th><th>Distance</th><th>What it is</th></tr></thead><tbody>
+${[[40, 'THX cinema — filling your vision, the front third of a theatre'], [30, 'SMPTE reference — the broadcast standard, comfortable for a long session'], [20, kind === 'tv' ? 'a large room — at this distance a smaller screen would look the same' : 'a desk distance, the whole screen in focus without moving your head']].map(([deg, why]) => {
+  const dist = (base.w / 2) / Math.tan((deg / 2) * Math.PI / 180);
+  return `<tr><td>${deg}°</td><td>${+(dist / 12).toFixed(1)} ft <span class="muted">(${+(dist * 2.54 / 100).toFixed(2)} m)</span></td><td>${why}</td></tr>`;
+}).join('')}
+</tbody></table>
+<p>${kind === 'tv'
+  ? `The SMPTE figure of ${+(((base.w / 2) / Math.tan(15 * Math.PI / 180)) * 2.54 / 100).toFixed(2)}&nbsp;m is roughly where a sofa sits in an ordinary room, which is the coincidence that makes this size sell. Sitting further back is not wrong — it just means a smaller screen would have looked the same.`
+  : `A ${label} panel usually sits on a desk, where the distance is set by your arms rather than by a standard. At arm's length — about 60&nbsp;cm — it subtends roughly <strong>${Math.round(2 * Math.atan((base.w / 2) / (60 / 2.54)) * 180 / Math.PI)} degrees</strong>, which is ${2 * Math.atan((base.w / 2) / (60 / 2.54)) * 180 / Math.PI > 34 ? 'past the broadcast reference and into the range where you turn your head to read the corners' : 'inside the comfortable range, with the whole screen in focus at once'}.`}</p>
 
 <h2>Pixel density at ${label}</h2>
 <p>The same resolution is sharp on a small screen and coarse on a large one, because sharpness is pixels per inch and the inches are not in the resolution.</p>
