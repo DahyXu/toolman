@@ -2,6 +2,16 @@ import { esc, faq, ring } from '../layout.mjs';
 import { DETAIL } from '../data/port-detail.mjs';
 
 // port, service, protocol, what it is, security note
+// Ports where a public-facing allow rule is never the right answer. Used both
+// by the verdict on each page and by the firewall commands under it, so the
+// two cannot disagree.
+const NEVER_PUBLIC = new Set([23, 445, 2375, 3306, 3389, 5432, 6379, 9200, 27017, 11211, 1433, 1521, 2049, 9000]);
+
+// And the ports whose whole purpose is to face the internet. For these the
+// blanket rule is the normal answer and the narrow one is the exception,
+// which is the reverse of every other port here.
+const PUBLIC_BY_DESIGN = new Set([80, 443, 53, 25]);
+
 const P = [
   [20, 'FTP data', 'TCP', 'The data channel of the classic File Transfer Protocol. The control channel is port 21.', 'Unencrypted. Use SFTP (port 22) or FTPS instead — plain FTP sends credentials in clear text.'],
   [21, 'FTP control', 'TCP', 'The command channel for FTP: login, directory listings and transfer commands.', 'Credentials travel in clear text. Anything exposed to the internet on port 21 will be found by scanners within hours.'],
@@ -66,6 +76,18 @@ const RANGES = [
 export default async function () {
   const pages = [];
 
+  // Every port named as never-public has to exist in the table, or the set is
+  // guarding a page that is not generated and the real one goes out with a
+  // blanket allow rule under a paragraph telling you not to use one.
+  {
+    const missing = [...NEVER_PUBLIC].filter((n) => !P.some((x) => x[0] === n));
+    if (missing.length) {
+      console.error(`
+✗ port: NEVER_PUBLIC names ${missing.join(", ")}, which ${missing.length === 1 ? "is not a port" : "are not ports"} in the table`);
+      process.exitCode = 1;
+    }
+  }
+
   for (const [port, service, proto, what, security] of P) {
     const related = ring(P, P.find((x) => x[0] === port), 18);
 
@@ -117,7 +139,7 @@ sudo lsof -ti :${port} | xargs kill        # Linux / macOS
 netstat -ano | findstr :${port}            # note the PID, then:
 taskkill /PID &lt;pid&gt; /F                    # Windows</code></pre>
 <h2>Should this port be open to the internet?</h2>
-<p>${[23, 445, 2375, 3306, 3389, 5432, 6379, 9200, 27017, 11211, 1433, 1521, 2049, 9000].includes(port)
+<p>${NEVER_PUBLIC.has(port)
   ? `<strong>No.</strong> Port ${port} should never be reachable from a public address. Bind it to localhost or a private network, and reach it through a VPN or bastion host if remote access is genuinely needed. Internet-wide scanners find newly exposed instances of this service within minutes.`
   : [80, 443, 8080, 8443].includes(port)
   ? `<strong>Yes</strong> — that is what it is for. Make sure whatever is listening is something you intend to expose, and that ${port === 80 ? 'it does nothing but redirect to HTTPS' : 'TLS is configured properly'}.`
@@ -126,6 +148,36 @@ taskkill /PID &lt;pid&gt; /F                    # Windows</code></pre>
   : [25, 587, 465, 993, 995, 143, 110].includes(port)
   ? `<strong>Only on a mail server.</strong> If this port is open on something that is not intentionally handling mail, you may be running an open relay — which will get the IP blacklisted quickly.`
   : `<strong>Usually not.</strong> Expose it only if a specific external client needs it, and restrict by source address where you can.`}</p>
+
+<h2>Opening or blocking port ${port}</h2>
+${PUBLIC_BY_DESIGN.has(port)
+  ? `<p>This one is meant to be reachable, so the blanket rule is the normal answer and the narrow form under it is for the case where the service is internal-only:</p>`
+  : NEVER_PUBLIC.has(port)
+    ? `<p>There is no blanket-allow rule on this page, because there is no case for one. ${service} on port ${port} should be reachable from named addresses or not at all, so what follows restricts rather than opens:</p>`
+    : `<p>Finding the port is usually the first half of the job. Start narrow — the second rule is there for services that genuinely serve the public, and most do not:</p>`}
+<pre><code># ufw — Debian, Ubuntu
+${PUBLIC_BY_DESIGN.has(port)
+  ? `sudo ufw allow ${port}/${proto.toLowerCase()}
+sudo ufw allow from 10.0.0.0/8 to any port ${port} proto ${proto.toLowerCase()}   # if it only serves internally`
+  : NEVER_PUBLIC.has(port)
+    ? `sudo ufw allow from 10.0.0.0/8 to any port ${port} proto ${proto.toLowerCase()}
+sudo ufw deny ${port}/${proto.toLowerCase()}                    # everything else`
+    : `sudo ufw allow from 10.0.0.0/8 to any port ${port} proto ${proto.toLowerCase()}
+sudo ufw allow ${port}/${proto.toLowerCase()}                   # only if it genuinely serves the public`}
+
+# firewalld — RHEL, Fedora, CentOS
+sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=10.0.0.0/8 port port=${port} protocol=${proto.toLowerCase()} accept'
+sudo firewall-cmd --reload
+
+# iptables, if you are still there
+sudo iptables -A INPUT -p ${proto.toLowerCase()} --dport ${port} -s 10.0.0.0/8 -j ACCEPT
+sudo iptables -A INPUT -p ${proto.toLowerCase()} --dport ${port} -j DROP
+
+# Windows
+New-NetFirewallRule -DisplayName "${service} ${port}" -Direction Inbound -Protocol ${proto.toUpperCase()} -LocalPort ${port} -RemoteAddress 10.0.0.0/8 -Action Allow</code></pre>
+<p>${NEVER_PUBLIC.has(port)
+  ? `Change <code>10.0.0.0/8</code> to whatever your private range actually is. A firewall rule is the second line: the first is binding the service to a private interface, because a service that only listens on 127.0.0.1 cannot be reached however the firewall is configured.`
+  : `<code>10.0.0.0/8</code> stands in for a private range — substitute your own. Note that a firewall rule does not undo a service bound to <code>0.0.0.0</code>; it only stops packets reaching it, and a misconfigured or disabled firewall then exposes it immediately.`}</p>
 
 <h2>Quick reference</h2>
 <table><tbody>
