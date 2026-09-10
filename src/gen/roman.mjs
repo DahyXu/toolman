@@ -9,6 +9,58 @@ function toRoman(n) {
   return out;
 }
 
+// Mutation testing found this file had no build-time assertion of any kind —
+// 328 pages, and changing M from 1000 to 1100 produced a site where every
+// numeral above a thousand was wrong while the build stayed green. A round-trip
+// would not have caught it either: the map is self-consistent under that change,
+// so MCMXCIV round-trips fine and means the wrong number.
+//
+// What catches it is an anchor to values known from outside the map.
+{
+  const KNOWN = [
+    [1, 'I'], [4, 'IV'], [5, 'V'], [9, 'IX'], [10, 'X'], [14, 'XIV'],
+    [40, 'XL'], [50, 'L'], [90, 'XC'], [100, 'C'], [400, 'CD'], [500, 'D'],
+    [900, 'CM'], [1000, 'M'], [1994, 'MCMXCIV'], [2024, 'MMXXIV'], [3999, 'MMMCMXCIX'],
+  ];
+  const wrong = KNOWN.filter(([n, s]) => toRoman(n) !== s);
+  if (wrong.length) {
+    console.error(`\n✗ roman: ${wrong.length} numeral(s) that do not match the value they are known to have:`);
+    for (const [n, s] of wrong.slice(0, 6)) console.error(`    ${n} should be ${s}, this gives ${toRoman(n)}`);
+    process.exitCode = 1;
+  }
+
+  // The subtractive pairs are the whole reason the map is ordered the way it is.
+  // A map that lost them still round-trips and spells 4 as IIII.
+  const additive = [[4, 'IIII'], [9, 'VIIII'], [40, 'XXXX'], [90, 'LXXXX'], [400, 'CCCC'], [900, 'DCCCC']];
+  const lost = additive.filter(([n, bad]) => toRoman(n) === bad);
+  if (lost.length) {
+    console.error(`\n✗ roman: ${lost.length} value(s) spelled additively — the subtractive pairs have gone from the map`);
+    process.exitCode = 1;
+  }
+
+  // And every numeral this site generates has to read back as its own number,
+  // which catches an ordering mistake the anchors above might step over.
+  const value = (s) => {
+    const V = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    let total = 0;
+    for (let i = 0; i < s.length; i++) {
+      const here = V[s[i]], next = V[s[i + 1]];
+      total += next > here ? -here : here;
+    }
+    return total;
+  };
+  const broken = [];
+  for (let n = 1; n <= 3999; n++) {
+    const r = toRoman(n);
+    if (value(r) !== n) broken.push(`${n} → ${r} → ${value(r)}`);
+  }
+  if (broken.length) {
+    console.error(`\n✗ roman: ${broken.length} numeral(s) that do not read back as their own number:`);
+    for (const b of broken.slice(0, 6)) console.error('    ' + b);
+    process.exitCode = 1;
+  }
+}
+
 
 // Spell out the number, which is what "how do you say MCMXCIV" is really asking.
 const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',

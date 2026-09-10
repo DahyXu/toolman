@@ -44,6 +44,44 @@ export const LETTER_DRILLS = [
   ['Y', 0.404], ['Z', 0.413],
 ];
 
+// Mutation testing changed drill #1 from 0.2280" to 0.2508" and nothing here
+// complained, because #1 is not the answer for any of the 39 threads checked
+// against the published chart. A table can be wrong in the rows nobody looks up.
+//
+// The invariant that covers every row: a higher drill number is a smaller drill,
+// letters run the other way, and no two share a diameter.
+{
+  const bad = [];
+  const monotonic = (list, label, rising) => {
+    for (let i = 1; i < list.length; i++) {
+      const a = list[i - 1][1], b = list[i][1];
+      if (rising ? !(b > a) : !(b < a)) {
+        bad.push(`${label}: ${list[i - 1][0]} is ${a}" and ${list[i][0]} is ${b}", which is the wrong way round`);
+      }
+    }
+  };
+  monotonic(NUMBER_DRILLS, 'number drills', false);
+  monotonic(LETTER_DRILLS, 'letter drills', true);
+  const biggestNumber = Math.max(...NUMBER_DRILLS.map(([, d]) => d));
+  const smallestLetter = Math.min(...LETTER_DRILLS.map(([, d]) => d));
+  if (!(biggestNumber < smallestLetter)) {
+    bad.push(`the largest number drill is ${biggestNumber}" and the smallest letter drill is ${smallestLetter}", so the two series overlap`);
+  }
+  if (smallestLetter - biggestNumber > 0.02) {
+    bad.push(`the number and letter series are ${(smallestLetter - biggestNumber).toFixed(4)}" apart, which is a gap the real series does not have`);
+  }
+  const seen = new Map();
+  for (const [label, d] of [...NUMBER_DRILLS, ...LETTER_DRILLS]) {
+    if (seen.has(d)) bad.push(`${seen.get(d)} and ${label} are both ${d}"`);
+    seen.set(d, label);
+  }
+  if (bad.length) {
+    console.error(`\n✗ tap-drill: ${bad.length} problem(s) in the drill tables:`);
+    for (const b of bad.slice(0, 6)) console.error('    ' + b);
+    process.exitCode = 1;
+  }
+}
+
 // Fractional drills in 64ths, 1/64 to 1 inch.
 export const FRACTION_DRILLS = [];
 for (let i = 1; i <= 64; i++) {
