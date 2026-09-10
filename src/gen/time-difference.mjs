@@ -486,6 +486,56 @@ ${spans.map((x) => `<tr><td>${x.states.map((y) => `${y.aDst ? 'summer' : 'standa
 <p>${CITY_NOTE[a.id]}</p>
 <p>${CITY_NOTE[b.id]}</p>
 
+<h2>What ${spanWords(usual)} actually costs you</h2>
+${(() => {
+  // The overlap number is on the page already. What it means for the people
+  // arranging the call is not, and it is the reason anybody looks the pair up.
+  const shiftH = usual;
+  // Nine to five in A, expressed in B's clock.
+  const bStart = 9 + shiftH, bEnd = 17 + shiftH;
+  const wrap = (x) => ((x % 24) + 24) % 24;
+  const clock = (x) => hhmm(wrap(x) * 60);
+  // Who has to move, and by how much, if the other side will not.
+  const earlyForB = Math.max(0, 9 - bStart);
+  const lateForB = Math.max(0, bEnd - 17);
+  const parts = [];
+  if (overlap >= 4) {
+    parts.push(`<p><strong>This is an easy pair.</strong> ${overlap} hours of the working day are shared, which is enough for a standing meeting at a time neither side has to think about. ${hhmm(startA)}–${hhmm(endA)} in ${a.city} lands inside office hours at both ends.</p>`);
+  } else if (overlap > 0) {
+    parts.push(`<p><strong>The window is ${overlap} hour${overlap === 1 ? '' : 's'} wide and that is all there is.</strong> ${hhmm(startA)}–${hhmm(endA)} in ${a.city} is ${hhmm(startA + shift)}–${hhmm(endA + shift)} in ${b.city}, and anything outside it puts somebody at their desk when they are not meant to be. A pair this tight is worth putting in a calendar rather than agreeing each time.</p>`);
+  } else {
+    const gapToOpen = Math.min(Math.abs(earlyForB || 24), Math.abs(lateForB || 24));
+    parts.push(`<p><strong>There is no shared working hour at all.</strong> Nine to five in ${a.city} is ${clock(bStart)} to ${clock(bEnd)} in ${b.city}. Somebody has to be outside their working day, and the only question is who — so the useful thing is to decide that once rather than rediscover it every time.</p>`);
+    // "Take the edge of the working day" picked 4 PM in London for a call to
+    // Tokyo, which is midnight there, and offered 1 AM in London as the
+    // alternative. Both edges are bad when the gap is large; the good slot is
+    // wherever the two working days come closest, and that has to be searched
+    // for rather than assumed. London and Tokyo meet at 9 AM / 5 PM, which is
+    // the call time everybody who works that pair already uses.
+    const outsideBy = (h) => (h < 9 ? 9 - h : h > 17 ? h - 17 : 0);
+    let best = null;
+    for (let hA = 0; hA < 24; hA++) {
+      const hB = wrap(hA + shiftH);
+      const cost = outsideBy(hA) + outsideBy(hB);
+      // Ties go to the earlier hour in A, so the suggestion is stable rather
+      // than whichever the loop happened to reach first.
+      if (!best || cost < best.cost) best = { hA, hB, cost };
+    }
+    parts.push(best.cost === 0
+      ? `<p>The closest the two working days come is <strong>${clock(best.hA)} in ${a.city}</strong>, which is ${clock(best.hB)} in ${b.city} — both inside office hours, just barely. That is the slot to use, and it is the one people who work this pair already default to.</p>`
+      : `<p>The least painful slot is <strong>${clock(best.hA)} in ${a.city}</strong>, which is ${clock(best.hB)} in ${b.city}. That is ${best.cost === 1 ? 'an hour' : `${best.cost} hours`} outside somebody's working day and it is the smallest that gap gets — every other hour of the clock costs more.</p>`);
+  }
+  // The day boundary. Anything past about eight hours starts landing calls on a
+  // different date, and past twelve the two cities are routinely on different
+  // days during working hours.
+  if (Math.abs(usual) >= 8) {
+    const noonB = 12 + shiftH;
+    const crosses = noonB < 0 || noonB >= 24;
+    parts.push(`<p>At ${spanWords(usual)} the two are far enough apart that <strong>the date stops matching</strong>. Midday in ${a.city} is ${clock(noonB)}${crosses ? ` <strong>${noonB >= 24 ? 'the next day' : 'the previous day'}</strong>` : ' the same day'} in ${b.city}${crosses ? '' : ', but the ends of the working day do cross'}. "Tomorrow morning" means different things to the two of you, and a deadline given without a date attached will be missed by one side or the other.</p>`);
+  }
+  return parts.join('\n');
+})()}
+
 <h2>When they can both be at their desks</h2>
 ${overlap > 0 ? `<p>Nine-to-five in both cities overlaps for <strong>${overlap} hour${overlap === 1 ? '' : 's'}</strong> — ${hhmm(startA)} to ${hhmm(endA)} in ${a.city}, the same moment as ${hhmm(startA + shift)} to ${hhmm(endA + shift)} in ${b.city}.</p>` : `<p><strong>Nine-to-five in ${a.city} and nine-to-five in ${b.city} do not overlap at all.</strong> With ${spanWords(usual)} between them, one side is always outside working hours, and the practical question is which side takes the early start or the late finish rather than when to meet.</p>`}
 
