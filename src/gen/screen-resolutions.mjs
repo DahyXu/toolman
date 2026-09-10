@@ -109,6 +109,36 @@ export default async function () {
     phone: 'Phone', tablet: 'Tablet', cinema: 'Digital cinema', legacy: 'Legacy',
   };
 
+  // The two figures added to these pages are the kind that look plausible at any
+  // magnitude, so they are checked against relations they cannot satisfy if a
+  // factor is wrong. Doubling the frame rate has to double the data rate, and at
+  // a fixed resolution a bigger screen has coarser pixels and therefore has to be
+  // viewed from further away before they merge — a viewing distance that shrank
+  // with screen size would mean the pitch was inverted.
+  {
+    const bad = [];
+    const arcmin = Math.tan(Math.PI / (180 * 60));
+    for (const [w, h] of R) {
+      const rate = (fps) => w * h * 3 * fps;
+      if (Math.abs(rate(60) / rate(30) - 2) > 1e-9) bad.push(`${w}x${h}: doubling the frame rate does not double the data rate`);
+      const dist = (d) => ((d * 25.4) / Math.sqrt(w * w + h * h)) / 1000 / arcmin;
+      const small = dist(Math.min(...DIAGS)), large = dist(Math.max(...DIAGS));
+      if (!(large > small)) bad.push(`${w}x${h}: the viewing distance does not grow with screen size`);
+      // A 27-inch 1080p panel is about 82 PPI, which the eye resolves from a bit
+      // under a metre and a half. Anything outside a hand's breadth to twenty
+      // metres means the arcminute conversion has lost a factor of a thousand.
+      for (const d of DIAGS) {
+        const m = dist(d);
+        if (!(m > 0.1 && m < 20)) bad.push(`${w}x${h} at ${d} in: pixels merge beyond ${m.toFixed(2)} m, which is not a distance anyone sits at`);
+      }
+    }
+    if (bad.length) {
+      console.error(`\n✗ resolution: ${bad.length} page(s) with a data rate or viewing distance that cannot be right:`);
+      for (const b of bad.slice(0, 5)) console.error('    ' + b);
+      process.exitCode = 1;
+    }
+  }
+
   for (const [w, h, name, cat, note] of R) {
     const id = `${w}x${h}`;
     const r = ratio(w, h);
@@ -116,6 +146,10 @@ export default async function () {
     const mp = px / 1e6;
     const vs1080 = px / (1920 * 1080);
     const portrait = h > w;
+    const label = id;
+    // Three bytes a pixel is the uncompressed 8-bit RGB frame every codec is
+    // measured against.
+    const mbFrame = Math.round((w * h * 3) / 1e6 * 100) / 100;
 
     const siblings = R.filter((x) => x[3] === cat && `${x[0]}x${x[1]}` !== id);
     const nearest = R.filter((x) => `${x[0]}x${x[1]}` !== id)
@@ -158,6 +192,30 @@ export default async function () {
 <tr><td>Compared with 1080p</td><td>${px === 1920 * 1080 ? 'this is 1080p' : `${vs1080.toFixed(2)}× the pixels`}</td></tr>
 <tr><td>Compared with 4K UHD</td><td>${px === 3840 * 2160 ? 'this is 4K UHD' : `${(px / (3840 * 2160)).toFixed(2)}× the pixels`}</td></tr>
 </tbody></table>
+
+<h2>What ${label} costs to move and to store</h2>
+<p>A frame is width × height × three bytes of colour, before any compression touches it. At ${w.toLocaleString()} × ${h.toLocaleString()} that is <strong>${mbFrame} MB per frame</strong>, and video is frames per second:</p>
+<table><thead><tr><th>Frame rate</th><th>Uncompressed</th><th>An hour of it</th></tr></thead><tbody>
+${[24, 30, 60, 120].map((fps) => {
+  const bytesPerSec = w * h * 3 * fps;
+  const gbps = bytesPerSec / 1e9;
+  const tbHour = bytesPerSec * 3600 / 1e12;
+  return `<tr><td>${fps} fps</td><td>${gbps >= 1 ? `${+gbps.toFixed(2)} GB/s` : `${Math.round(bytesPerSec / 1e6)} MB/s`}</td><td>${+tbHour.toFixed(2)} TB</td></tr>`;
+}).join('')}
+</tbody></table>
+<p>Nobody ships that. It is the number codecs exist to get away from — a streamed ${label} feed runs at a few tens of megabits, which is a compression ratio of several hundred to one, and it is why a still frame from a stream looks worse than a photograph of the same scene.</p>
+
+<h2>How close you have to sit for ${label} to be worth it</h2>
+<p>The eye resolves about one arcminute of detail. Past a certain distance the pixels merge whatever the panel does, and a higher resolution stops being visible rather than stopping being better. That distance is the pixel pitch divided by the tangent of one arcminute:</p>
+<table><thead><tr><th>Screen</th><th>Pixels merge beyond</th></tr></thead><tbody>
+${[...DIAGS, 43, 55, 65, 75].map((d) => {
+  const pitchMm = (d * 25.4) / Math.sqrt(w * w + h * h);
+  const metres = pitchMm / 1000 / Math.tan(Math.PI / (180 * 60));
+  const feet = metres * 3.28084;
+  return `<tr><td>${d} in <span class="muted">${d >= 43 ? 'television' : 'monitor or laptop'}</span></td><td>${+metres.toFixed(2)} m <span class="muted">(${+feet.toFixed(1)} ft)</span></td></tr>`;
+}).join('')}
+</tbody></table>
+<p>Sitting further back than the figure for your screen, ${label} and the next resolution down look the same. That is the whole argument about 4K televisions in ordinary living rooms: the resolution is real and the seating position usually is not close enough to show it.</p>
 
 <h2>Pixel density at common screen sizes</h2>
 <p>A resolution on its own says nothing about sharpness — the same ${id} panel is dense on a laptop and coarse on a television. Density is the diagonal in pixels divided by the diagonal in inches.</p>
