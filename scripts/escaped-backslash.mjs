@@ -22,7 +22,10 @@ const dist = path.join(here, '..', 'dist');
 
 // A doubled backslash immediately before one of the characters that forms a
 // common escape sequence.
-const DOUBLED = /\\\\[abfnrtv0]/g;
+// The single-letter escapes were the whole class here, and 128 ASCII pages
+// were shipping a doubled `\\x41` outside it. A hex or unicode escape is the
+// same fault: two backslashes where a reader needs one.
+const DOUBLED = new RegExp("\\\\\\\\(?:[abfnrtv0]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})", 'g');
 
 // Where a doubled backslash is the correct thing to show.
 const INTENTIONAL = [
