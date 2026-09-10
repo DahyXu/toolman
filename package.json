@@ -13,6 +13,7 @@
     "setup": "node scripts/cf.mjs setup",
     "audit": "node scripts/dead-code.mjs && node scripts/paper-consistency.mjs && node scripts/resolution-consistency.mjs && node scripts/audit.mjs && node scripts/schema.mjs && node scripts/a11y.mjs && node scripts/contradiction.mjs && node scripts/float-leak.mjs && node scripts/escaped-backslash.mjs && node scripts/canonical-check.mjs && node scripts/inbound-links.mjs && node scripts/title-audit.mjs && node scripts/empty-sections.mjs && node scripts/standalone-answers.mjs && node scripts/rederive.mjs && node scripts/sitemap-check.mjs",
     "audit:full": "npm run audit && node scripts/depth.mjs && node scripts/similarity.mjs",
-    "check": "node build.mjs && npm run audit"
+    "check": "node build.mjs && npm run audit",
+    "check:checks": "node scripts/check-the-checks.mjs"
   }
 }

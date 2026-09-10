@@ -110,3 +110,9 @@ for (const x of examples) {
 console.log(total
   ? `\n✗ ${total} answer(s) that cannot be quoted without the page around them`
   : '\n✓ every answer restates what it is answering');
+
+// This printed ✗ and returned 0, so it sat in the audit chain unable to fail
+// it. The 774 answers opening "They do not overlap at all" were found by
+// reading the output, not by the build stopping — and anything bringing them
+// back would have passed just as quietly.
+process.exit(total === 0 ? 0 : 1);

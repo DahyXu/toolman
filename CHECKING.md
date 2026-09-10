@@ -753,3 +753,45 @@ sections that shipped at launch.
 `build.mjs` now fails when a section with its own hub and twenty or more pages
 is missing from the home page body. It caught one on its first run: the card
 written to fix the problem pointed at `/drill/` and the hub is `/drill-size/`.
+## Two checks in the audit chain could not fail it
+
+Four days of adding checks, and no check had ever been run against the fault it
+exists to find except by hand, one at a time, at the moment it was written.
+This project has already produced three that reported a clean site because they
+could not look — a regex whose backslashes were eaten into `[d.]+s*×s*`, a
+comparison evaluated where both the right and wrong formula agree, and a day
+count that stayed at 365 whether or not the rule fired. Each was found by
+accident.
+
+`scripts/check-the-checks.mjs` plants, for every check, the specific fault it
+claims to detect, runs it, and puts the file back. It found two things.
+
+**`standalone-answers.mjs` and `title-audit.mjs` have no `process.exit` at
+all.** They print rows marked ✗ and return 0. Both sit in the audit chain
+looking like checks. The 774 FAQ answers opening "They do not overlap at all"
+were found two days ago by reading the output — the build was green throughout,
+and anything that brought them back would have passed just as quietly.
+standalone-answers now exits 1 when it finds any. title-audit stays a report:
+its "20+ characters unused" rows are advisory and three sections trip them
+permanently, while the faults it looks like it would catch — missing titles,
+duplicates — are in audit.mjs, which does fail.
+
+### And a lesson about the harness itself
+
+The first run reported four checks broken. Three of those were the plant, not
+the check:
+
+- the JSON-LD is minified, so a plant matching `"@type": "FAQPage"` with a space
+  changed nothing;
+- `standalone-answers` reads the FAQPage JSON-LD rather than the rendered
+  `<div class="faq">`, so a planted div never reached it — and it only flags an
+  answer that shares *no* vocabulary with its question, so "They are 210 × 297
+  mm" is not the fault, it is the check working;
+- `rederive` samples twenty resistor pages spread across the section rather than
+  reading all 169, and the plant landed on one it never opens.
+
+**An edit that changes the file is not an edit that creates the fault.** The
+harness reports "PLANT FAILED" when the file comes back unchanged, which caught
+the first of those, and could not distinguish the other two from a blind check.
+Writing a plant requires knowing exactly what the check reads and what it
+considers a fault — which is most of the value of writing one at all.
