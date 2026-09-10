@@ -15,6 +15,23 @@ import { esc, faq, ring } from '../layout.mjs';
 const IN = 25.4;
 
 const METRIC = [5.5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 30, 32, 36];
+
+// Mutation testing moved 5.5 to 6.05 and the list kept building — out of
+// order, next to a 6, with nothing to say so. A spanner list is a series: it
+// ascends, and no two entries are the same size.
+{
+  const bad = [];
+  for (let i = 1; i < METRIC.length; i++) {
+    if (!(METRIC[i] > METRIC[i - 1])) bad.push(`${METRIC[i - 1]} mm is followed by ${METRIC[i]} mm`);
+  }
+  if (new Set(METRIC).size !== METRIC.length) bad.push(`${METRIC.length - new Set(METRIC).size} size(s) appear twice`);
+  if (bad.length) {
+    console.error(`
+✗ spanner: the metric list is not a rising series:`);
+    for (const b of bad.slice(0, 5)) console.error('    ' + b);
+    process.exitCode = 1;
+  }
+}
 const IMPERIAL = [[1, 4], [5, 16], [3, 8], [7, 16], [1, 2], [9, 16], [5, 8], [11, 16], [3, 4], [13, 16], [7, 8], [15, 16], [1, 1], [17, 16], [9, 8]];
 
 // Which bolt each spanner turns, from the metric thread section. Two figures

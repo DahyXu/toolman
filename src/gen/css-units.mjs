@@ -23,6 +23,25 @@ const U = [
     d: 'For font size, a percentage is relative to the parent element’s font size, so 100% equals 16 px at the default. Like em, percentages compound through nesting.' },
 ];
 
+// The direction check added earlier catches an inverted DPI formula and says
+// nothing about the size of the numbers. Mutation testing moved 96 to 105.6 and
+// every physical conversion on 60 pages went with it, silently. These two ratios
+// are definitions, not measurements: a CSS inch is 96 reference pixels and a
+// point is a seventy-second of an inch.
+{
+  const bad = [];
+  const px = (id) => (U.find((u) => u.id === id) || {}).px;
+  if (px('in') !== 96) bad.push(`a CSS inch is 96 px by definition, this table has ${px('in')}`);
+  if (Math.abs(px('pt') - 96 / 72) > 1e-12) bad.push(`a point is 96/72 px by definition, this table has ${px('pt')}`);
+  if (Math.abs(px('pc') - 16) > 1e-12) bad.push(`a pica is 12 points, so 16 px, this table has ${px('pc')}`);
+  if (Math.abs(px('cm') - 96 / 2.54) > 1e-9) bad.push(`a centimetre is 96/2.54 px, this table has ${px('cm')}`);
+  if (bad.length) {
+    console.error(`\n✗ css-units: ${bad.length} unit(s) whose ratio is not the defined one:`);
+    for (const b of bad) console.error('    ' + b);
+    process.exitCode = 1;
+  }
+}
+
 const COMMON = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96, 128];
 
 function fmt(n) {

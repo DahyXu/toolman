@@ -38,7 +38,11 @@ const PUBLISHED_TAP = { 2: 1.6, 2.5: 2.05, 3: 2.5, 4: 3.3, 5: 4.2, 6: 5.0, 8: 6.
   const bad = [];
   for (const [d, p] of THREADS.map((t) => [t[0], t[1]])) {
     const want = PUBLISHED_TAP[d];
-    if (want == null) continue;
+    // A missing published value used to skip the size. Mutation testing moved
+    // M2 to M2.2, the lookup came back undefined, and the check turned itself
+    // off rather than failing — which is how a table gains a size nobody has
+    // ever verified.
+    if (want == null) { bad.push(`M${d} has no published tapping drill to check against`); continue; }
     if (Math.abs(d - p - want) > 0.06) bad.push(`M${d}: ${d} − ${p} = ${(d - p).toFixed(2)}, published drill ${want}`);
   }
   if (bad.length) {
