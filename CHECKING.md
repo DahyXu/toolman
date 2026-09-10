@@ -795,3 +795,44 @@ harness reports "PLANT FAILED" when the file comes back unchanged, which caught
 the first of those, and could not distinguish the other two from a blind check.
 Writing a plant requires knowing exactly what the check reads and what it
 considers a fault — which is most of the value of writing one at all.
+## The same wrong shape three times in two days
+
+Three separate faults, all the same mistake — a ternary splitting something that
+has three cases into two:
+
+    firewall rules      public / never-public, and no case for a port meant to
+                        be public, so 443 was told to restrict itself to a
+                        private range
+    viewing distance    monitor / nothing, so a 65-inch television's 20° row
+                        was labelled "a desk distance" against four metres
+    URL encoding        unreserved / encode-it, and no case for reserved, so
+                        "/" was told it "has to be percent-encoded" when a
+                        slash in a path is doing its job
+
+Each was found by reading the rendered page, none by a check, and none would
+have been found by reading the source — the code looks correct because a ternary
+always looks correct. What gives it away is the output landing on a case the
+author did not picture.
+
+### Where the errors are, and are not
+
+Sweeping the sections that were built earlier and not touched since found
+nothing. One page each from spanner, oven, sandpaper, cidr and http, with every
+checkable figure recomputed:
+
+    11/16" is 17.4625 mm, 0.46 larger than 17          correct
+    M10 DIN 933 takes a 17 mm spanner                  correct, and matches
+                                                       the fastener data
+    /24 is 255.255.255.0 with 254 usable               correct
+    P220 is 68 µm, and 0.068 mm on the same page       consistent
+    gas mark 5 is 190°C, 374°F rounded to 375, fan 20  correct
+
+**Every fault found in two days was in something written in those two days.**
+Nothing older broke. That is worth knowing because it says where review time
+belongs: on the paragraph just written, not on a sweep of what already shipped.
+
+It also says something about the checks. They cover arithmetic — a figure that
+disagrees with the data behind it, a band that does not decode to its own value,
+a distance that shrinks when the screen grows. None of the three faults above is
+an arithmetic error. Every number in them is right; the sentence around the
+number is wrong, and only a reader notices that.
