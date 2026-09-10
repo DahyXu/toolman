@@ -114,6 +114,21 @@ export default async function () {
   const ALL = [...Array(128).keys()];
 
   for (const n of ALL) {
+    // The encodings a reader meets outside a terminal. Every one is derived
+    // from the code point rather than tabulated, and for ASCII they are all
+    // one byte — which is the point the last paragraph makes.
+    const uPad = '0x' + n.toString(16).toUpperCase().padStart(2, '0');
+    const u16 = '0x' + n.toString(16).toUpperCase().padStart(4, '0');
+    const pct = '%' + n.toString(16).toUpperCase().padStart(2, '0');
+    // RFC 3986 unreserved: letters, digits and four marks. Everything else
+    // either has a job in the syntax or is unsafe in transit.
+    const unreserved = /[A-Za-z0-9-._~]/.test(String.fromCharCode(n));
+    // Reserved characters have a job in the syntax — a slash separates path
+    // segments, an ampersand separates query parameters. They appear as
+    // themselves when doing that job and are encoded when they are data.
+    const reserved = ":/?#[]@!$&'()*+,;=".includes(String.fromCharCode(n));
+    const pctNeeded = !unreserved && !reserved;
+    const b64 = Buffer.from([n]).toString('base64');
     const ctrl = CONTROL[n];
     const display = ctrl ? ctrl[0] : glyph(n);
     const name = nameOf(n);
@@ -167,6 +182,18 @@ export default async function () {
 ${ctrlKey ? `<tr><td>Keyboard</td><td class="out">${ctrlKey}</td></tr>` : ''}
 <tr><td>Group</td><td>${groupOf(n)}</td></tr>
 </tbody></table>
+
+<h2>ASCII ${n} on the wire and in a URL</h2>
+<p>The same character has different spellings depending on what is carrying it, and three of them come up often enough to be worth having in one place.</p>
+<table><tbody>
+<tr><td>UTF-8</td><td class="out">${uPad} <span class="muted">— one byte, the same as the ASCII code</span></td></tr>
+<tr><td>UTF-16</td><td class="out">${u16} <span class="muted">— two bytes, high byte zero</span></td></tr>
+<p>${unreserved
+  ? `In a URL this character is <strong>unreserved</strong> and can appear as itself. Percent-encoding it to <code>${pct}</code> is still legal and means the same thing, which is why two URLs that look different can be the same URL.`
+  : reserved
+    ? `In a URL this character is <strong>reserved</strong>: it has a job in the syntax${n === 47 ? ' — the slash separates path segments' : n === 63 ? ' — the question mark begins the query string' : n === 35 ? ' — the hash begins the fragment' : n === 38 ? ' — the ampersand separates query parameters' : ''}. Doing that job it appears as itself; carrying data it becomes <code>${pct}</code>, and the difference between those two is the difference between a path of two segments and a path of one containing a slash.`
+    : `In a URL this character <strong>has to be percent-encoded</strong> as <code>${pct}</code>. The unreserved set is the letters, the digits and <code>- . _ ~</code>; the reserved set has a job in the syntax; everything else, this included, is unsafe in transit${n === 32 ? ' — and a space is the one people meet first, becoming <code>%20</code>, or <code>+</code> in a query string, which are not interchangeable outside one' : ''}.`}</p>
+<p>The UTF-8 row is the reason ASCII text needs no conversion: <strong>every ASCII byte is already valid UTF-8</strong> and encodes to itself. That is not true in the other direction — a UTF-8 byte above 127 is part of a multi-byte sequence and means nothing on its own — and it is why a file that opens correctly until the first accented character was read as ASCII when it was not.</p>
 
 <h2>What it is for</h2>
 <p>${what}</p>
