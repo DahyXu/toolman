@@ -196,7 +196,7 @@ ${rows.some(([s]) => /^(IV|IX|XL|XC|CD|CM)$/.test(s))
 
 ${FAQ.html}
 
-<p><a href="/roman-numeral-converter/">Convert any number →</a> · <a href="/roman/">Browse Roman numerals</a></p>`,
+<p><a href="/roman-numeral-converter/">Roman numeral converter</a> for any other number · <a href="/roman/">Browse Roman numerals</a></p>`,
     });
   }
 
