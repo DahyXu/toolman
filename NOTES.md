@@ -1,3 +1,36 @@
+## AI Overviews are the new answer widget, and they belong in the test
+
+Resistor pages sit on page one at 9.4 and almost nobody sees them, so the next
+field worth checking was the large, adjacent, fully computable one: what
+resistor an LED needs. R = (supply − forward voltage) ÷ current, per supply and
+LED colour — about thirty pages, no paid standard, no transcription.
+
+`what resistor for led 5v`, 2026-09-14:
+
+    top of page     AI Overview — "For a standard 5V power supply, a 220-ohm
+                    to 330-ohm resistor is the safest and most common choice",
+                    followed by recommendations by LED colour
+    results         Instructables, Reddit, RS Components, Kitronik,
+                    WeLoveLeds, DigiKey, Arduino forum, Electronics
+                    StackExchange, devonhubner.org
+
+The incumbents are weak — a personal blog is on page one. It is rejected anyway,
+for the reason unit conversions and hex colours were: **the question is
+answered above the results.** An AI Overview that gives the value and breaks it
+down by colour is doing what the calculator widget does for "40 c to f", and
+thirty pages under it would rank and not be clicked.
+
+The strength-of-incumbent test as recorded checked for classic answer boxes and
+not for these. It now has three questions, in order:
+
+1. Is the answer on the results page — a widget **or an AI Overview**?
+2. How strong is whoever is already there?
+3. Does the answer follow a rule this site can compute and check?
+
+The fields already built pass the first question on the queries that measured:
+`vancouver to london time difference` opens on 24 Time Zones with no AI Overview
+above it, which is consistent with that section being the one with volume.
+
 ## Correction: the sections reported as zero were not zero
 
 The entry below this one says resistor, capacitor and fastener "have produced
