@@ -191,9 +191,25 @@ function pairPage(a, b, all) {
 
   return {
     path,
-    title: `${a.ab} to ${b.ab} Converter — Time Zone Conversion | Toolman`,
+    title: (() => {
+      const bare = (z) => z.name.replace(/ Time$/, '');
+      const tries = [
+        `${a.ab} to ${b.ab} — ${a.name} to ${b.name}`,
+        `${a.ab} to ${b.ab} — ${bare(a)} to ${bare(b)}`,
+        `${a.ab} to ${b.ab} Converter — Time Zone Conversion`,
+      ];
+      const repeats = (t) => {
+        const words = t.toLowerCase().split(/[ 	—–-]+/).filter((w) => w.length > 3);
+        for (let n = 2; n <= 4; n++) {
+          const seen = new Set();
+          for (let k = 0; k + n <= words.length; k++) { const ph = words.slice(k, k + n).join(' '); if (seen.has(ph)) return true; seen.add(ph); }
+        }
+        return false;
+      };
+      return tries.find((t) => t.length <= 65 && !repeats(t)) || tries[tries.length - 1];
+    })(),
     desc: `Convert ${a.ab} to ${b.ab}. ${b.ab} is ${dirWord} ${a.ab}. Live converter, a 24-hour table and the best times to meet.`,
-    h1: `Convert ${a.ab} to ${b.ab}`,
+    h1: `Convert ${a.ab} (${a.name}) to ${b.ab} (${b.name})`,
     crumbs: [
       { name: 'Converters', path: '/convert/' },
       { name: 'Time zones', path: '/convert/time-zones/' },
