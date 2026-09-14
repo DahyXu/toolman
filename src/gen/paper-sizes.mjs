@@ -226,7 +226,7 @@ ${(() => { const q = pairOf(name); return q ? `<p>It is written <strong>${q.a}x$
 </tbody></table>
 
 <h2>${name} in pixels</h2>
-<p>Pixel dimensions depend entirely on the resolution you are working at — there is no single "pixel size" for a sheet of paper. <a href="/paper/${id}/pixels/">Every resolution, with file sizes and canvas setup →</a></p>
+<p>Pixel dimensions depend entirely on the resolution you are working at — there is no single "pixel size" for a sheet of paper. <a href="/paper/${id}/pixels/">${name} size in pixels</a> has every resolution, with file sizes and canvas setup.</p>
 <table><thead><tr><th>Resolution</th><th>Pixels</th><th>Use</th></tr></thead><tbody>
 <tr><td>72 DPI</td><td>${px(w, 72)} × ${px(h, 72)}</td><td>Screen preview only — far too coarse to print</td></tr>
 <tr><td>150 DPI</td><td>${px(w, 150)} × ${px(h, 150)}</td><td>Draft printing, internal documents</td></tr>
