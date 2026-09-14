@@ -1,3 +1,40 @@
+## Correction: the sections reported as zero were not zero
+
+The entry below this one says resistor, capacitor and fastener "have produced
+nothing yet". That was read from the query table, and it was wrong.
+
+Search Console withholds rare queries from the query table for privacy. A page
+that ranks for a handful of one-off searches contributes impressions to the
+totals and nothing to the list of queries, so a section can be ranking and look
+empty. Filtering the performance report by page URL instead reads the section
+directly, and for the 28 days to 2026-09-14:
+
+    section            impressions   avg position
+    time-difference        105           32
+    resistor                 5            9.4
+    fastener                 2           40
+    tap-drill                3           91
+    capacitor                1           81
+
+**Every new section is indexed and showing.** None is stuck at "discovered, not
+crawled", which is what the query table had implied for three of them. The
+difference between them is ranking and volume, not crawl — which changes what
+to do next entirely.
+
+Reading it by section:
+
+- **time-difference** is the one with volume: 105 impressions in its first week,
+  at 32. Moving it from 32 into the top ten is the largest click gain available
+  anywhere on the site, and it is a ranking problem on pages Google already has.
+- **resistor** is on page one at 9.4 and nearly nobody sees it. Its problem is
+  the opposite: the queries it wins are rare, so it needs more of them covered
+  rather than better placement on the ones it has.
+- **capacitor** and **tap-drill** are indexed and placed badly, at 81 and 91.
+
+The lesson, recorded with the others: **the query table is a sample of the
+common queries, not a census of the site.** A section's absence from it is not
+evidence the section is absent. Read sections by page filter.
+
 ## The first measurement after the crawl work: it landed, in one section
 
 Search Console re-read on 2026-09-14, the first reading since the sitemap was
