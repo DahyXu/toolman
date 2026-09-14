@@ -73,6 +73,66 @@ const CITIES = [
   ['nairobi', 'Nairobi', 'Kenya', 3, 'none'],
 ];
 
+// The IANA zone for each city. Two jobs.
+//
+// The page for "vancouver to london time difference" that ranks first opens with
+// the current time in both cities, day and date included — "Vancouver 11:57 PM
+// Sunday = London 7:57 AM Monday" — and these pages had no clock at all. A
+// browser with Intl and an IANA name gets the live time right through every
+// clock change without a line of offset arithmetic.
+//
+// And the same names let the build check the hand-written offsets and rules
+// above against the time-zone database. Mutation testing showed a table can be
+// wrong in rows nobody looks up; this looks up every row, on a winter date and a
+// summer date, against a source that is not this file.
+const IANA = {
+  london: 'Europe/London', dublin: 'Europe/Dublin', lisbon: 'Europe/Lisbon',
+  paris: 'Europe/Paris', berlin: 'Europe/Berlin', madrid: 'Europe/Madrid',
+  rome: 'Europe/Rome', amsterdam: 'Europe/Amsterdam', stockholm: 'Europe/Stockholm',
+  warsaw: 'Europe/Warsaw', athens: 'Europe/Athens', helsinki: 'Europe/Helsinki',
+  istanbul: 'Europe/Istanbul', moscow: 'Europe/Moscow', dubai: 'Asia/Dubai',
+  karachi: 'Asia/Karachi', delhi: 'Asia/Kolkata', dhaka: 'Asia/Dhaka',
+  bangkok: 'Asia/Bangkok', jakarta: 'Asia/Jakarta', singapore: 'Asia/Singapore',
+  'hong-kong': 'Asia/Hong_Kong', beijing: 'Asia/Shanghai', manila: 'Asia/Manila',
+  perth: 'Australia/Perth', tokyo: 'Asia/Tokyo', seoul: 'Asia/Seoul',
+  brisbane: 'Australia/Brisbane', sydney: 'Australia/Sydney', melbourne: 'Australia/Melbourne',
+  auckland: 'Pacific/Auckland', 'new-york': 'America/New_York', toronto: 'America/Toronto',
+  chicago: 'America/Chicago', 'mexico-city': 'America/Mexico_City', denver: 'America/Denver',
+  'los-angeles': 'America/Los_Angeles', vancouver: 'America/Vancouver', anchorage: 'America/Anchorage',
+  honolulu: 'Pacific/Honolulu', 'sao-paulo': 'America/Sao_Paulo', 'buenos-aires': 'America/Argentina/Buenos_Aires',
+  lima: 'America/Lima', lagos: 'Africa/Lagos', johannesburg: 'Africa/Johannesburg', nairobi: 'Africa/Nairobi',
+};
+
+{
+  const offsetAt = (tz, iso) => {
+    const part = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'longOffset' })
+      .formatToParts(new Date(iso)).find((x) => x.type === 'timeZoneName').value;
+    if (part === 'GMT') return 0;
+    const sign = part.includes('-') ? -1 : 1;
+    const digits = part.replace('GMT', '').replace('+', '').replace('-', '').split(':');
+    return sign * (Number(digits[0]) + Number(digits[1] || 0) / 60);
+  };
+  const bad = [];
+  for (const [id, city, , off, rule] of CITIES) {
+    const tz = IANA[id];
+    if (!tz) { bad.push(`${city} has no IANA zone`); continue; }
+    const jan = offsetAt(tz, '2026-01-15T12:00:00Z');
+    const jul = offsetAt(tz, '2026-07-15T12:00:00Z');
+    const south = rule === 'au' || rule === 'nz';
+    const wantWinter = off;
+    const wantSummer = rule === 'none' ? off : off + 1;
+    const gotWinter = south ? jul : jan;
+    const gotSummer = south ? jan : jul;
+    if (gotWinter !== wantWinter) bad.push(`${city}: standard offset is ${gotWinter} in the tz database, this table says ${off}`);
+    if (gotSummer !== wantSummer) bad.push(`${city}: summer offset is ${gotSummer} in the tz database, the "${rule}" rule gives ${wantSummer}`);
+  }
+  if (bad.length) {
+    console.error(`\n✗ time-difference: ${bad.length} city offset(s) that disagree with the time-zone database:`);
+    for (const b of bad.slice(0, 8)) console.error('    ' + b);
+    process.exitCode = 1;
+  }
+}
+
 const CITY_NOTE = {
   'london': `London is the reference the rest of the system is measured from: Greenwich sits inside the city, and UTC±0 is its winter time. It does not stay there — Britain moves to UTC+1 for seven months of the year, which is why "London is GMT" is wrong more often than it is right.`,
   'dublin': `Ireland is the only country whose summer time is legally the standard and whose winter time is the deviation — Irish Standard Time is UTC+1 and the clocks go *back* to UTC in October. The result is identical to Britain's and the legal description is inverted, which occasionally matters in contracts.`,
@@ -487,6 +547,27 @@ export default async function () {
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${gapWords(usual, a.city, b.city)}</strong></p>
 <p class="muted">${withAlias(a)}, ${a.country} is ${offStr(a.off)} · ${withAlias(b)}, ${b.country} is ${offStr(b.off)} — on standard time</p>
+<div class="tool" style="margin:.8em 0">
+  <div class="grid2">
+    <div><p class="muted" style="margin:0">Right now in ${esc(a.city)}</p><p class="big" style="margin:.1em 0" data-clock="${IANA[a.id]}">—</p><p class="muted" style="margin:0" data-date="${IANA[a.id]}"></p></div>
+    <div><p class="muted" style="margin:0">Right now in ${esc(b.city)}</p><p class="big" style="margin:.1em 0" data-clock="${IANA[b.id]}">—</p><p class="muted" style="margin:0" data-date="${IANA[b.id]}"></p></div>
+  </div>
+</div>
+<script>
+(function () {
+  function tick() {
+    var now = new Date();
+    document.querySelectorAll('[data-clock]').forEach(function (el) {
+      el.textContent = now.toLocaleTimeString('en-US', { timeZone: el.getAttribute('data-clock'), hour: 'numeric', minute: '2-digit' });
+    });
+    document.querySelectorAll('[data-date]').forEach(function (el) {
+      el.textContent = now.toLocaleDateString('en-US', { timeZone: el.getAttribute('data-date'), weekday: 'long', month: 'long', day: 'numeric' });
+    });
+  }
+  tick();
+  setInterval(tick, 30000);
+})();
+</script>
 
 ${varies ? `<h2>The gap is not the same all year</h2>
 <p>Every converter gives one number for this pair. That number is right for most of the year and wrong for part of it, because <strong>${clockLine(a)}</strong> and <strong>${clockLine(b)}</strong>.</p>
