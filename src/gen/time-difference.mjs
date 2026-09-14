@@ -133,6 +133,71 @@ const IANA = {
   }
 }
 
+// Where each city is. The results page for "vancouver to london time difference"
+// has an air-miles calculator and a flight search on it alongside the time
+// converters: a good share of the people asking about the gap are travelling
+// it. The distance between two cities is the one fact on a pair page that no
+// other pair shares — which matters, because 2,243 pages on one template came out
+// at 365 words a page that were not boilerplate.
+const COORDS = {
+  london: [51.5074, -0.1278], dublin: [53.3498, -6.2603], lisbon: [38.7223, -9.1393],
+  paris: [48.8566, 2.3522], berlin: [52.52, 13.405], madrid: [40.4168, -3.7038],
+  rome: [41.9028, 12.4964], amsterdam: [52.3676, 4.9041], stockholm: [59.3293, 18.0686],
+  warsaw: [52.2297, 21.0122], athens: [37.9838, 23.7275], helsinki: [60.1699, 24.9384],
+  istanbul: [41.0082, 28.9784], moscow: [55.7558, 37.6173], dubai: [25.2048, 55.2708],
+  karachi: [24.8607, 67.0011], delhi: [28.6139, 77.209], dhaka: [23.8103, 90.4125],
+  bangkok: [13.7563, 100.5018], jakarta: [-6.2088, 106.8456], singapore: [1.3521, 103.8198],
+  'hong-kong': [22.3193, 114.1694], beijing: [39.9042, 116.4074], manila: [14.5995, 120.9842],
+  perth: [-31.9505, 115.8605], tokyo: [35.6762, 139.6503], seoul: [37.5665, 126.978],
+  brisbane: [-27.4698, 153.0251], sydney: [-33.8688, 151.2093], melbourne: [-37.8136, 144.9631],
+  auckland: [-36.8485, 174.7633], 'new-york': [40.7128, -74.006], toronto: [43.6532, -79.3832],
+  chicago: [41.8781, -87.6298], 'mexico-city': [19.4326, -99.1332], denver: [39.7392, -104.9903],
+  'los-angeles': [34.0522, -118.2437], vancouver: [49.2827, -123.1207], anchorage: [61.2181, -149.9003],
+  honolulu: [21.3099, -157.8581], 'sao-paulo': [-23.5505, -46.6333], 'buenos-aires': [-34.6037, -58.3816],
+  lima: [-12.0464, -77.0428], lagos: [6.5244, 3.3792], johannesburg: [-26.2041, 28.0473],
+  nairobi: [-1.2921, 36.8219],
+};
+
+// Great-circle distance, in kilometres, on a sphere of the Earth's mean radius.
+const greatCircle = (a, b) => {
+  const [la1, lo1] = COORDS[a];
+  const [la2, lo2] = COORDS[b];
+  const r = Math.PI / 180;
+  const h = Math.sin(((la2 - la1) * r) / 2) ** 2
+    + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin(((lo2 - lo1) * r) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+};
+
+{
+  const bad = [];
+  for (const [id, city] of CITIES) {
+    if (!COORDS[id]) bad.push(`${city} has no coordinates`);
+  }
+  // Anchored to published figures rather than checked against itself: a
+  // coordinate with its sign flipped still gives a symmetric, well-formed
+  // distance, and a wrong one.
+  const KNOWN = [
+    ['london', 'new-york', 5570], ['london', 'sydney', 16990],
+    ['new-york', 'los-angeles', 3940], ['tokyo', 'sydney', 7820],
+    ['paris', 'berlin', 877], ['singapore', 'hong-kong', 2590],
+  ];
+  for (const [a, b, km] of KNOWN) {
+    const d = greatCircle(a, b);
+    if (Math.abs(d - km) > km * 0.01 + 10) bad.push(`${a} to ${b} is ${Math.round(d)} km here and about ${km} km published`);
+  }
+  // Nothing on the planet is further apart than half its circumference.
+  for (const [a] of CITIES) for (const [b] of CITIES) {
+    if (a !== b && COORDS[a] && COORDS[b] && greatCircle(a, b) > Math.PI * 6371 + 1) {
+      bad.push(`${a} to ${b} comes out longer than half the Earth`);
+    }
+  }
+  if (bad.length) {
+    console.error(`\n✗ time-difference: ${bad.length} problem(s) with the city coordinates:`);
+    for (const x of bad.slice(0, 6)) console.error('    ' + x);
+    process.exitCode = 1;
+  }
+}
+
 const CITY_NOTE = {
   'london': `London is the reference the rest of the system is measured from: Greenwich sits inside the city, and UTC±0 is its winter time. It does not stay there — Britain moves to UTC+1 for seven months of the year, which is why "London is GMT" is wrong more often than it is right.`,
   'dublin': `Ireland is the only country whose summer time is legally the standard and whose winter time is the deviation — Irish Standard Time is UTC+1 and the clocks go *back* to UTC in October. The result is identical to Britain's and the legal description is inverted, which occasionally matters in contracts.`,
@@ -639,6 +704,25 @@ ${(() => {
 
 <h2>When they can both be at their desks</h2>
 ${overlap > 0 ? `<p>Nine-to-five in both cities overlaps for <strong>${overlap} hour${overlap === 1 ? '' : 's'}</strong> — ${hhmm(startA)} to ${hhmm(endA)} in ${a.city}, the same moment as ${hhmm(startA + shift)} to ${hhmm(endA + shift)} in ${b.city}.</p>` : `<p><strong>Nine-to-five in ${a.city} and nine-to-five in ${b.city} do not overlap at all.</strong> With ${spanWords(usual)} between them, one side is always outside working hours, and the practical question is which side takes the early start or the late finish rather than when to meet.</p>`}
+
+<h2>How far apart ${esc(a.city)} and ${esc(b.city)} are</h2>
+${(() => {
+  const km = greatCircle(a.id, b.id);
+  const miles = km * 0.621371;
+  // A long-haul airliner cruises at about 830 km/h; half an hour covers the
+  // climb, descent and taxi that a straight division leaves out. It is the time
+  // in the air on a direct routing, not a timetable.
+  const hours = km / 830 + 0.5;
+  const h = Math.floor(hours), m = Math.round((hours - h) * 60 / 5) * 5;
+  const flight = m === 60 ? `${h + 1} hours` : `${h} hour${h === 1 ? '' : 's'}${m ? ` ${m} minutes` : ''}`;
+  const crossings = Math.abs(usual);
+  return `<p>The shortest path over the Earth's surface between the two is <strong>${Math.round(km).toLocaleString('en-US')} km</strong> (${Math.round(miles).toLocaleString('en-US')} miles). ${km > 15000 ? `That is beyond the range of almost every airliner in service, so in practice this journey is made with at least one stop, and the time in the air alone comes to around <strong>${flight}</strong>.` : km > 3000 ? `Flown along that line, an airliner at cruising speed takes roughly <strong>${flight}</strong> in the air — actual routings add to it, and whether a nonstop service exists depends on the airlines rather than the distance.` : `That is a short flight — about <strong>${flight}</strong> in the air along that line.`}</p>
+<p>${crossings >= 5
+  ? `Over that distance you cross ${spanWords(usual)} of clock, which is where jet lag comes from: the body shifts by about an hour a day, so ${spanWords(usual)} takes most people ${Math.ceil(crossings)} days or so to absorb. ${usual > 0 ? `Flying east to ${esc(b.city)} is the harder direction — you lose the hours and have to fall asleep earlier than your body wants.` : `Flying west to ${esc(b.city)} is the easier direction — you gain the hours, and staying up later comes more naturally than going to bed early.`}`
+  : crossings >= 1
+    ? `A gap of ${spanWords(usual)} is small enough that most people adjust within a day or two, and short enough that it rarely disrupts a trip.`
+    : `The two keep the same clock for most of the year, so there is no jet lag to speak of whatever the distance.`}</p>`;
+})()}
 
 <h2>${a.city} to ${b.city}, hour by hour</h2>
 <table><thead><tr><th>${a.city}</th><th>${b.city}</th></tr></thead><tbody>
