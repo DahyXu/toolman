@@ -1,3 +1,51 @@
+## The first measurement after the crawl work: it landed, in one section
+
+Search Console re-read on 2026-09-14, the first reading since the sitemap was
+reordered, the widget-answered pages taken out of it and the new sections linked
+from the home page body. Chrome had not been running, which is why the extension
+could not connect for four days; starting it from the command line fixed that.
+
+**Impressions have doubled.** The last seven days carry 3,530 — about 500 a day,
+against about 250 a day across the 28 days read on 2026-09-06. Position 53.5,
+from 55.8. Clicks: 5 all-time, 1 in the week. Search Console also flagged
+/paper/a4/ on its own as up 914% in impressions.
+
+Classifying the week's 1,000 queries by section says where the growth went:
+
+    time-difference     56 queries    64 impressions   avg position 40.8
+    zone abbreviations  27            99                            62.2
+    metric drill sizes   7            13                            39.2
+    resistor              0
+    capacitor             0
+    fastener              0
+
+**The time-difference section was built on 2026-09-07 and is ranking for 56
+distinct queries a week later**, averaging position 40.8 against a site average
+of 54.8. `time difference nyc to sydney` is at 10. That section is the one whose
+pages were moved to the first sitemap shard and whose 45 most-searched pairs
+were put on its hub two clicks from home. The abbreviation pairs moved to shard 1
+show `cest to ict` at 6 and `gst to ist` at 9.
+
+Resistor, capacitor and fastener, built the day before and not reordered the
+same way, have produced nothing yet. One week and one sample is not proof that
+the reordering is why — but it is the difference between the sections that did
+and did not appear, and it is the first number this site has had that points in
+any direction at all.
+
+### And the queries say what to write
+
+The time-difference queries are not phrased the way the pages are:
+
+    time difference nyc to sydney              — page says New York
+    uk vancouver time difference               — page says London
+    new york ireland time difference           — page says Dublin
+
+People type the short form and the country. Those pages now carry NYC, LA, UK,
+HK, CDMX, Joburg and the rest beside the city name, in the page and in the
+description — except where the short form is the country already on the line,
+because "Dublin (Ireland), Ireland" says the searched word twice. São Paulo gets
+"Sao Paulo", because nobody types ã.
+
 ## What Google crawled and then refused
 
 The index report caught up on 2026-09-09 and finally shows the real state. The

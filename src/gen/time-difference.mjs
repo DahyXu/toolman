@@ -130,6 +130,26 @@ const RULE = {
   none: null,
 };
 
+// The names people actually type, taken from Search Console a week after this
+// section went live. "time difference nyc to sydney" ranked tenth, "uk
+// vancouver time difference" 36th and "new york ireland time difference" 38th
+// — against pages that said New York, London and Dublin and never NYC, UK or
+// Ireland. Country pairs have their own pages; these are the short forms that
+// land on the city pages anyway. São Paulo is here because nobody types ã.
+const CITY_ALIAS = {
+  'new-york': 'NYC', 'los-angeles': 'LA', 'london': 'UK', 'dublin': 'Ireland',
+  'sao-paulo': 'Sao Paulo', 'hong-kong': 'HK', 'mexico-city': 'CDMX',
+  'johannesburg': 'Joburg', 'delhi': 'New Delhi', 'beijing': 'China',
+  'tokyo': 'Japan', 'seoul': 'Korea', 'dubai': 'UAE', 'singapore': 'SG',
+};
+const withAlias = (r) => {
+  const alias = CITY_ALIAS[r.id];
+  // A short form that is the country itself is already on the page — "Dublin
+  // (Ireland), Ireland" says the searched word twice.
+  if (!alias || r.country.replace(/^the /, '').toLowerCase() === alias.toLowerCase()) return r.city;
+  return `${r.city} (${alias})`;
+};
+
 const rows = CITIES.map(([id, city, country, off, rule]) => ({ id, city, country, off, rule }));
 
 // Every rule named on a city has to exist, or the page describes a clock change
@@ -458,7 +478,7 @@ export default async function () {
     pages.push({
       path: `/time-difference/${id}/`,
       title: title.length <= 65 ? title : `${a.city} to ${b.city} Time Difference`,
-      desc: `${gapWords(usual, a.city, b.city)} for most of the year. ${varies ? 'The gap changes when the clocks do — here is when, and by how much.' : 'Neither city changes its clocks, so the gap holds all year.'} With a conversion table and the working-hours overlap.`,
+      desc: `${gapWords(usual, withAlias(a), withAlias(b))} for most of the year. ${varies ? 'The gap changes when the clocks do — here is when, and by how much.' : 'Neither city changes its clocks, so the gap holds all year.'} With a conversion table and the working-hours overlap.`,
       h1: `Time difference between ${a.city} and ${b.city}`,
       crumbs: [
         { name: 'Time differences', path: '/time-difference/' },
@@ -466,7 +486,7 @@ export default async function () {
       ],
       jsonld: [FAQ.schema],
       body: `<p class="big" style="font-size:1.6rem;margin:.3em 0"><strong>${gapWords(usual, a.city, b.city)}</strong></p>
-<p class="muted">${a.city}, ${a.country} is ${offStr(a.off)} · ${b.city}, ${b.country} is ${offStr(b.off)} — on standard time</p>
+<p class="muted">${withAlias(a)}, ${a.country} is ${offStr(a.off)} · ${withAlias(b)}, ${b.country} is ${offStr(b.off)} — on standard time</p>
 
 ${varies ? `<h2>The gap is not the same all year</h2>
 <p>Every converter gives one number for this pair. That number is right for most of the year and wrong for part of it, because <strong>${clockLine(a)}</strong> and <strong>${clockLine(b)}</strong>.</p>
