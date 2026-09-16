@@ -177,7 +177,7 @@ ${rows.map((r) => {
 <p>A joist's strength goes with the cube of its depth, so the difference between a nominal 10 and its actual ${frac(actual(10))} inches is not cosmetic — it is about ${Math.round((1 - Math.pow(actual(10) / 10, 3)) * 100)}% of the bending stiffness. Published span tables are written in actual dimensions for that reason, and a calculation done with the number on the label overstates what the timber will carry.</p>
 <p>Plywood and sheet goods follow a different convention again: a sheet sold as ¾ inch is commonly 23/32, and one sold as ½ inch is 15/32. The shortfall is small and it is not covered by the rule above, so a ¾ sheet in a ¾ dado is a loose fit rather than a tight one.</p>
 
-<p><a href="/convert/">Unit converters</a> · <a href="/paper/">Paper sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
+<p><a href="/nominal/">Why nominal sizes are never the real size</a> — lumber is one of six trades that do this. <a href="/convert/">Unit converters</a> · <a href="/paper/">Paper sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
   });
 
   return pages;

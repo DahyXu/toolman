@@ -223,7 +223,7 @@ height = width / r</code></pre>
 <p>The number is the diagonal of the <em>panel</em>, corner to corner, and it does not include the bezel or the frame. A 55-inch television is ${w55} inches wide as a picture and typically an inch or two wider as an object, which matters for a recess or a cabinet and not for anything else.</p>
 <p>Mounting needs more than the width. Allow for the bracket's depth, for cables leaving the back, and for the screen being roughly ${h55} inches tall before any stand. Manufacturers publish the "with stand" and "without stand" dimensions separately because the two differ by more than people expect.</p>
 
-<p><a href="/resolution/">Screen resolutions</a> — the pixel side of the same question. <a href="/paper/">Paper sizes</a> — the same reference for print.</p>`,
+<p><a href="/resolution/">Screen resolutions</a> — the pixel side of the same question. <a href="/nominal/">Nominal sizes in six trades</a> — why a 21:9 panel is not 21:9. <a href="/paper/">Paper sizes</a> — the same reference for print.</p>`,
   });
 
   return pages;

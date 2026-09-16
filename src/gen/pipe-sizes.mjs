@@ -176,7 +176,7 @@ ${rows.map((r) => `<tr${r.isMeasurement ? ' style="font-weight:600"' : ''}><td><
 <p>A schedule number sets the wall thickness, and therefore the bore, for a given NPS. <strong>The outside diameter does not change with it.</strong> That is the whole point of the system: a fitting cut for NPS 2 threads onto schedule 10, 40 or 80 pipe alike, because they are all ${rows.find((r) => r.id === '2').od} mm on the outside and differ only inside.</p>
 <p>So when a size is being checked against a fitting, measure the outside. When it is being checked against a flow rate, the bore is the number, and the schedule has to be known before it can be looked up.</p>
 
-<p><a href="/thread/">Metric threads</a> · <a href="/lumber/">Lumber sizes</a> — the same nominal-versus-actual problem in timber. <a href="/convert/">Unit converters</a></p>`,
+<p><a href="/thread/">Metric threads</a> · <a href="/lumber/">Lumber sizes</a> — the same nominal-versus-actual problem in timber. <a href="/nominal/">Nominal sizes in six trades</a> — pipe is the worst of them. <a href="/convert/">Unit converters</a></p>`,
   });
 
   return pages;

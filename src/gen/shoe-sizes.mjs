@@ -91,7 +91,7 @@ ${women.map((r) => `<tr><td><strong>${lbl(r.us)}</strong></td><td>${lbl(r.uk)}</
 <p>A shoe size describes the last — the wooden or plastic form the shoe is built around — and every maker has its own lasts. Two brands can differ by a full size at the same nominal number, and the same brand can differ between a running shoe and a boot. Width is a separate dimension that most sizing ignores entirely.</p>
 <p>So: use the centimetre figure to find the right row, then check the maker's own chart, and treat any single number with suspicion. This page will get you to within half a size, which is as far as any conversion honestly goes.</p>
 
-<p><a href="/convert/">Unit converters</a> · <a href="/ring-size/">Ring sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
+<p><a href="/nominal/">Nominal sizes that are not measurements</a> — shoe sizing is the one that never was one. <a href="/convert/">Unit converters</a> · <a href="/ring-size/">Ring sizes</a> · <a href="/bed-size/">Bed sizes</a></p>`,
   });
 
   return pages;

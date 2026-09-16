@@ -235,7 +235,7 @@ ${rows.map((r) => `<tr><td><a href="/awg/${r.slug}/">${r.label}</a></td><td>${f(
 <p>It also explains the sizes below 1. A wire that needed no reduction is 0, one thicker still is 00, then 000 and 0000 — written 1/0 through 4/0 and pronounced "one aught" to "four aught". There is no negative gauge because there was no way to count backwards through dies that were never used.</p>
 <p>The exponent falls out of the same process: ${f(Math.pow(92, 6 / 39), 3)} is 92<sup>6/39</sup>, which is why six gauges doubles the diameter, and squaring it is why three gauges doubles the area. Those two facts are the only ones worth memorising, because everything else in the chart can be reconstructed from them.</p>
 
-<p><a href="/convert/">Unit converters</a> · <a href="/battery/">Battery sizes</a> · <a href="/lumber/">Lumber sizes</a></p>`,
+<p><a href="/nominal/">Nominal sizes that measure nothing</a> — gauge is the odd one, it counts rather than measures. <a href="/convert/">Unit converters</a> · <a href="/battery/">Battery sizes</a> · <a href="/lumber/">Lumber sizes</a></p>`,
   });
 
   return pages;

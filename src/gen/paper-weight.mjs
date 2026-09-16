@@ -234,7 +234,7 @@ ${GRADES.filter((g) => (LB_VALUES[g.id] || []).length).map((g) => `<p><strong>${
 <h2>Weight is not thickness</h2>
 <p>Two sheets at the same gsm can differ noticeably in thickness, because gsm measures mass and thickness depends on how much air is in the sheet. An uncoated bulky stock is thicker than a compressed glossy one at the same weight — sometimes by half again. Printers quote thickness separately, in microns or in points, and a paper specified only by gsm can still arrive feeling wrong.</p>
 
-<p><a href="/paper/">Paper sizes</a> · <a href="/convert/">Unit converters</a></p>`,
+<p><a href="/nominal/">Nominal sizes across six trades</a> — paper is the one where the same number means two things. <a href="/paper/">Paper sizes</a> · <a href="/convert/">Unit converters</a></p>`,
   });
 
   return pages;
