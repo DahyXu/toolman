@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SITE, CATEGORIES } from './src/site.mjs';
 import { page, esc } from './src/layout.mjs';
 import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
+import { toolIcon, checkIcons } from './src/icons.mjs';
 
 // The card for the time-zone section quoted 848 conversions, written when
 // there were 848. There are now 1,686. A count typed into prose drifts away
@@ -53,6 +54,7 @@ for (const f of fs.readdirSync(toolsDir).filter((f) => f.endsWith('.mjs')).sort(
   tools.push(t);
 }
 tools.sort((a, b) => (b.weight || 0) - (a.weight || 0) || a.title.localeCompare(b.title));
+checkIcons(tools);
 
 const bySlug = new Map(tools.map((t) => [t.slug, t]));
 
@@ -79,7 +81,7 @@ function relatedBlock(slugs) {
   const list = (slugs || []).map((s) => bySlug.get(s)).filter(Boolean);
   if (!list.length) return '';
   return `<h2>Related tools</h2><ul class="cards">${list
-    .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
+    .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
     .join('')}</ul>`;
 }
 
@@ -285,7 +287,7 @@ for (const c of Object.values(CATEGORIES)) {
   if (!list.length) continue;
   const section = `<p class="muted">${esc(c.desc)} All tools run locally in your browser.</p>
 <ul class="cards">${list
-    .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
+    .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
     .join('')}</ul>${CATEGORY_BODY[c.slug] || ''}${CATEGORY_EXTRA[c.slug] || ''}`;
 
   if (c.slug === 'convert') {
@@ -321,7 +323,7 @@ const allToolsBody = Object.values(CATEGORIES)
     const list = tools.filter((t) => t.cat === c.slug);
     if (!list.length) return '';
     return `<h2 id="${c.slug}">${esc(c.name)}</h2><ul class="cards">${list
-      .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
+      .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
       .join('')}</ul>`;
   })
   .join('');
@@ -347,7 +349,7 @@ write('/', page({
 </div>
 <h2>Popular tools</h2>
 <ul class="cards">${featured
-    .map((t) => `<li><a href="/${t.slug}/"><b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
+    .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
     .join('')}</ul>
 ${allToolsBody}
 <h2>Popular lookups</h2>
@@ -612,7 +614,14 @@ for (const u of urls) {
       .slice(html.indexOf('<body>'))
       .replace(/<header[\s\S]*?<\/header>/g, '')
       .replace(/<nav[\s\S]*?<\/nav>/g, '')
-      .replace(/<footer[\s\S]*?<\/footer>/g, '');
+      .replace(/<footer[\s\S]*?<\/footer>/g, '')
+      // The scroll box around every table is presentation, the same way the
+      // stylesheet in the head is. Adding it changed the markup of 12,608
+      // pages without changing a word on any of them, and hashing it stamped
+      // the whole site as modified on one build — which is the exact thing the
+      // paragraph above exists to prevent, arriving through the body instead of
+      // the head. Unwrap it before hashing so the shell is invisible here.
+      .replace(/<div class="tw">(<table[\s\S]*?<\/table>)<\/div>/g, '$1');
     hash = crypto.createHash('sha1').update(body).digest('hex').slice(0, 16);
   } catch { /* page written outside dist, fall through to today's date */ }
   const prev = prevStamps[u];

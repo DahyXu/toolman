@@ -98,6 +98,90 @@ export default async function () {
 
 <h2>The nearest ${r.kind === 'metric' ? 'imperial' : 'metric'} size</h2>
 <p><strong>${other.label}</strong> is ${f2(other.mm)} mm — ${f2(gap)} mm ${other.mm > r.mm ? 'larger' : 'smaller'} than ${r.label}.</p>
+${(() => {
+  // The page's whole argument is a fraction of a millimetre: the tool is a
+  // little wider than the head, so it bears on six corners instead of six
+  // flats, and the corners lose. A number that small does not land as a
+  // number — "0.38 mm" reads as nothing — but the same gap drawn around a hex
+  // is immediately a tool that does not fit.
+  //
+  // Both shapes are drawn from the two millimetre figures the table below
+  // prints, at one shared scale, so the picture cannot overstate the gap.
+  // Labels stay in HTML underneath rather than inside the viewBox, because
+  // text inside an SVG scales with the drawing and goes unreadable on a phone.
+  // A hexagon is taller than it is wide across the flats: the corner-to-corner
+  // measurement is 2/√3 of it, about 15% more. Scaling by across-flats put the
+  // points of every hexagon outside the viewBox and clipped them flat, so the
+  // scale is set by the corner measurement, which is the one that has to fit.
+  const AC = 96;                                  // corner to corner, in the box
+  const S = AC / (Math.max(r.mm, other.mm) * 2 / Math.sqrt(3));
+  const af = r.mm * S;                            // head, across flats
+  const jaw = other.mm * S;                       // tool opening
+  const R = af / Math.sqrt(3);                    // hex circumradius
+  const pts = [30, 90, 150, 210, 270, 330]
+    .map((d) => {
+      const a = d * Math.PI / 180;
+      return `${(100 + R * Math.cos(a)).toFixed(2)},${(60 + R * Math.sin(a)).toFixed(2)}`;
+    }).join(' ');
+  const jawHalf = jaw / 2;
+  const slack = (jaw - af) / 2;
+  // The hexagon and both jaw faces have to be inside the box. Scaling by the
+  // across-flats figure put every hexagon's points 26 units outside it, and a
+  // clipped hexagon still looks like a drawing — it reads as a shape with flat
+  // ends, which is a different part.
+  {
+    const halfH = R;                       // corner to centre, vertically
+    const right = 100 + jawHalf + 9;       // outer edge of the far jaw face
+    const left = 100 - jawHalf - 9;
+    if (60 - halfH < 0 || 60 + halfH > 120 || left < 0 || right > 200) {
+      console.error(`\n✗ spanner ${r.label}: the drawing does not fit its box (hex ${(60 - halfH).toFixed(1)}–${(60 + halfH).toFixed(1)} of 0–120, jaw ${left.toFixed(1)}–${right.toFixed(1)} of 0–200)`);
+      process.exitCode = 1;
+    }
+  }
+  // The caption reads off the same three flags the prose above it does, rather
+  // than a threshold of its own. The first version drew its own conclusion from
+  // the pixel gap and ended up telling the reader there was "nothing to see" on
+  // a pair the paragraph above called impossible to fit.
+  // At this scale a millimetre is about six pixels, and every gap on this page
+  // is a fraction of one: 0.30 mm between 1/2 inch and 13 mm comes out under a
+  // single pixel. The first version shaded those slivers and the caption
+  // pointed at them, and there was nothing there to point at — the drawing
+  // could not tell the three verdicts apart, so it was decoration claiming to
+  // be evidence.
+  //
+  // Which is the fact worth drawing. The gap that rounds a bolt off is too
+  // small to see, and that is exactly why people try it. So the gap gets its
+  // own magnified strip underneath, labelled with its magnification, in the way
+  // an engineering drawing carries a detail view.
+  const DETAIL_MM = 2.2;                               // window either side of the contact
+  const M = 176 / DETAIL_MM;                           // px per mm in the detail strip
+  const mag = Math.round(M / S);                       // how many times larger than above
+  const cx = 100;                                      // centre of the detail strip
+  const headEdge = cx;                                 // the flat sits at the centre
+  const jawEdge = cx + (other.mm - r.mm) / 2 * M;      // jaw face, offset by half the gap
+  const dy = 138, dh = 22;
+  const detail = `<rect x="12" y="${dy}" width="176" height="${dh}" rx="3" fill="var(--code)"/>
+  <rect x="12" y="${dy}" width="${(headEdge - 12).toFixed(2)}" height="${dh}" fill="var(--acc)" fill-opacity=".18"/>
+  <line x1="${headEdge}" y1="${dy}" x2="${headEdge}" y2="${dy + dh}" stroke="var(--acc)" stroke-width="2"/>
+  <line x1="${jawEdge.toFixed(2)}" y1="${dy}" x2="${jawEdge.toFixed(2)}" y2="${dy + dh}" stroke="var(--fg2)" stroke-width="2"/>
+  ${toolBigger && !swap ? `<rect x="${headEdge}" y="${dy}" width="${(jawEdge - headEdge).toFixed(2)}" height="${dh}" fill="var(--err)" fill-opacity=".5"/>` : ''}`;
+  const verdict = swap
+    ? `The strip below magnifies the contact ${mag}×, and even there the ${f2(gap)} mm is a hairline. That is why these two substitute for each other.`
+    : toolBigger
+      ? `The strip below magnifies the contact ${mag}×. The shaded band is the ${f2(gap)} mm of slack — invisible at real size, which is exactly why the substitution looks safe, and enough for the jaw to reach the corners.`
+      : `The strip below magnifies the contact ${mag}×. The jaw face falls inside the flat: ${esc(other.label)} is ${f2(gap)} mm too small to go on at all.`;
+  return `<figure class="draw">
+<svg viewBox="0 0 200 172" width="100%" role="img" aria-label="A ${r.label} hex head against a ${other.label} opening, drawn to scale, with the contact magnified ${mag} times">
+  <rect x="${(100 - jawHalf - 9).toFixed(2)}" y="16" width="9" height="88" rx="2" fill="none" stroke="var(--fg2)" stroke-width="2"/>
+  <rect x="${(100 + jawHalf).toFixed(2)}" y="16" width="9" height="88" rx="2" fill="none" stroke="var(--fg2)" stroke-width="2"/>
+  <polygon points="${pts}" fill="var(--acc)" fill-opacity=".18" stroke="var(--acc)" stroke-width="2"/>
+  <line x1="${(100 + af / 2).toFixed(2)}" y1="112" x2="${headEdge}" y2="${dy}" stroke="var(--line)"/>
+  <line x1="${(100 + jawHalf).toFixed(2)}" y1="112" x2="188" y2="${dy}" stroke="var(--line)"/>
+  ${detail}
+</svg>
+<figcaption>A ${esc(r.label)} head against a ${esc(other.label)} opening, both to the same scale. ${verdict}</figcaption>
+</figure>`;
+})()}
 ${swap
         ? `<p>That is close enough to be interchangeable. ${f2(gap)} mm is well inside the manufacturing tolerance of the fastener, and the two will feel identical in use.</p>`
         : risky

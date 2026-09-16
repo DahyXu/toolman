@@ -227,6 +227,61 @@ export default async function () {
     return `<span style="display:inline-block;padding:.15em .6em;margin-right:.3em;border:1px solid #8888;border-radius:3px;background:${bg};color:${fg}">${esc(colour)}</span>${label ? ` <span class="muted">${label}</span>` : ''}`;
   };
 
+  // The page already prints the colour words on coloured chips, which tells a
+  // reader who knows the code what they already knew and tells a reader holding
+  // the part nothing: they are looking at a cylinder with rings on it, not at a
+  // row of labels. Draw the component.
+  //
+  // This is the one page on the site where the picture *is* the answer. Somebody
+  // arrives having typed the colours they can see, and the thing they most need
+  // to check is whether the rings in their hand sit in the order the page means
+  // — including which end to start from, which is the mistake the colour words
+  // cannot show and a drawing can.
+  //
+  // Band colours come from the same `swatch` map the chips use, so the drawing
+  // and the words cannot drift apart. The body keeps its own beige in both
+  // themes because a resistor is an object being depicted rather than an element
+  // of the page, and recolouring it for dark mode would make it a different part.
+  const RESISTOR_BODY = '#d8c39c';
+  const resistorSvg = (bands) => {
+    const X = [56, 78, 100, 172];
+    const W = 13;
+    const rings = bands.map((c, i) => {
+      const [bg] = swatch[c];
+      return `<rect x="${X[i]}" y="12" width="${W}" height="40" fill="${bg}"/>`;
+    }).join('');
+    return `<figure class="draw">
+<svg viewBox="0 0 240 64" width="100%" role="img" aria-label="A resistor with ${bands.length} bands: ${bands.join(', ')}">
+  <line x1="0" y1="32" x2="44" y2="32" stroke="#9aa3ad" stroke-width="3"/>
+  <line x1="196" y1="32" x2="240" y2="32" stroke="#9aa3ad" stroke-width="3"/>
+  <rect x="40" y="12" width="160" height="40" rx="10" fill="${RESISTOR_BODY}"/>
+  ${rings}
+  <rect x="40" y="12" width="160" height="40" rx="10" fill="none" stroke="#00000022"/>
+</svg>
+<figcaption class="muted">Read left to right, starting from the end where the bands are crowded. The lone band at the far end is the tolerance.</figcaption>
+</figure>`;
+  };
+
+  {
+    const bad = [];
+    // A band the drawing cannot colour would come out as the body, silently
+    // turning a four-band resistor into a three-band one in the picture while
+    // the words beside it still say four.
+    for (const r of rows) {
+      for (const c of [r.b1, r.b2, r.mult, 'gold']) {
+        if (!swatch[c]) bad.push(`${fmt(r.ohms)}: no swatch for "${c}"`);
+        else if (swatch[c][0].toLowerCase() === RESISTOR_BODY.toLowerCase()) {
+          bad.push(`${fmt(r.ohms)}: the "${c}" band is the same colour as the body and would be invisible`);
+        }
+      }
+    }
+    if (bad.length) {
+      console.error(`\n✗ resistor drawing: ${bad.length} problem(s):`);
+      for (const b of bad.slice(0, 5)) console.error('    ' + b);
+      process.exitCode = 1;
+    }
+  }
+
   const ids = rows.map((r) => r.id);
 
   for (const r of rows) {
@@ -291,8 +346,9 @@ export default async function () {
         { name: fmt(ohms), path: `/resistor/${id}/` },
       ],
       jsonld: [FAQ.schema],
-      body: `<p style="font-size:1.3rem;margin:.4em 0">${bands4.map((c) => band(c, '')).join('')}</p>
+      body: `${resistorSvg(bands4)}
 <p class="big" style="font-size:1.8rem;margin:.2em 0"><strong>${fmt(ohms)}</strong> <span class="muted">±${tol}%</span></p>
+<p style="font-size:1.05rem;margin:.4em 0">${bands4.map((c) => band(c, '')).join('')}</p>
 <p class="muted">${esc(words)} — four bands, read from the end with the bands closest to it.</p>
 
 <table><tbody>

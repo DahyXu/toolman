@@ -560,10 +560,32 @@ export default async function () {
       && RULE[a.rule].hemisphere === RULE[b.rule].hemisphere;
 
     // Working-hours overlap, computed on the usual gap.
+    //
+    // Clamping A's nine-to-five against B's without wrapping the day was wrong
+    // for 62 pairs, all of them far apart: for Bangkok and Honolulu it made
+    // B's working day run 26:00–34:00 on A's clock, so the clamp returned a
+    // negative width and the page said the two share no working hour at all.
+    // They share one. Bangkok 9 AM is 4 PM the previous day in Honolulu, and
+    // both are at their desks. The drawing added below computes the same
+    // quantity independently and disagreed, which is how this surfaced.
+    //
+    // B's day is checked at each position it can occupy relative to A's — a day
+    // behind, the same day, a day ahead. Only one can intersect: the two pieces
+    // of a wrapped eight-hour span are separated by sixteen hours, so both
+    // reaching an eight-hour window would need the span to start after 25:00.
     const shift = usual * 60;
-    const startA = Math.max(9 * 60, 9 * 60 - shift);
-    const endA = Math.min(17 * 60, 17 * 60 - shift);
-    const overlap = Math.max(0, endA - startA) / 60;
+    const overlapWindow = (() => {
+      let best = { s: 0, e: 0, len: 0 };
+      for (const k of [-24, 0, 24]) {
+        const s = Math.max(9, 9 - usual + k);
+        const e = Math.min(17, 17 - usual + k);
+        if (e - s > best.len) best = { s, e, len: e - s };
+      }
+      return best;
+    })();
+    const overlap = Math.max(0, overlapWindow.len);
+    const startA = overlap > 0 ? overlapWindow.s * 60 : 9 * 60;
+    const endA = overlap > 0 ? overlapWindow.e * 60 : 17 * 60;
 
     const FAQ = faq([
       {
@@ -704,6 +726,65 @@ ${(() => {
 
 <h2>When they can both be at their desks</h2>
 ${overlap > 0 ? `<p>Nine-to-five in both cities overlaps for <strong>${overlap} hour${overlap === 1 ? '' : 's'}</strong> — ${hhmm(startA)} to ${hhmm(endA)} in ${a.city}, the same moment as ${hhmm(startA + shift)} to ${hhmm(endA + shift)} in ${b.city}.</p>` : `<p><strong>Nine-to-five in ${a.city} and nine-to-five in ${b.city} do not overlap at all.</strong> With ${spanWords(usual)} between them, one side is always outside working hours, and the practical question is which side takes the early start or the late finish rather than when to meet.</p>`}
+${(() => {
+  // The whole question this page gets asked is "when can we both be awake for
+  // this", and the answer is a shape: two working days slid past each other by
+  // the gap. The table further down has every hour in it and makes the reader
+  // do that sliding in their head, one row at a time. Drawn once, the overlap
+  // is the part that lights up, and the case where nothing lights up reads just
+  // as fast — which is the answer for a third of these pairs.
+  //
+  // Twenty-four cells on one shared axis: column h is the same instant in both
+  // rows, labelled with each city's own local hour. Cells rather than an SVG so
+  // the hour ticks stay real text at the reader's own size; the earlier attempt
+  // at a drawing on /nominal/ put its labels inside a viewBox and they scaled
+  // down to seven pixels on a phone.
+  // Drawn as continuous spans rather than 24 hour-cells. The cell version was
+  // wrong for every half-hour zone: India is UTC+5:30, so London and Delhi
+  // share three and a half hours, and a grid of whole hours can only round that
+  // to four. The assertion below caught it on 40-odd pairs — Delhi, Kathmandu,
+  // Adelaide, Tehran — where the picture would have quietly claimed half an
+  // hour more overlap than the sentence above it.
+  //
+  // Positions are percentages of the 24-hour axis, so a :30 or :45 offset lands
+  // exactly where it belongs.
+  const WORK_FROM = 9, WORK_TO = 17;
+  // B's working day, expressed on A's clock, can run past midnight at either
+  // end, in which case it is drawn as the two pieces it actually is.
+  const spanOn = (from, to) => {
+    const s = ((from % 24) + 24) % 24;
+    const e = s + (to - from);
+    return e <= 24 ? [[s, e]] : [[s, 24], [0, e - 24]];
+  };
+  const aSpans = [[WORK_FROM, WORK_TO]];
+  const bSpans = spanOn(WORK_FROM - usual, WORK_TO - usual);
+  const overlapSpans = [];
+  for (const [bs, be] of bSpans) {
+    const s = Math.max(bs, WORK_FROM);
+    const e = Math.min(be, WORK_TO);
+    if (e > s) overlapSpans.push([s, e]);
+  }
+  const bothCount = overlapSpans.reduce((n, [s, e]) => n + (e - s), 0);
+  const bar = (spans, cls) => spans
+    .map(([s, e]) => `<i class="${cls}" style="left:${(s / 24 * 100).toFixed(3)}%;width:${((e - s) / 24 * 100).toFixed(3)}%"></i>`)
+    .join('');
+  // The paragraph above this drawing states the overlap in words and the
+  // drawing states it in cells. They are computed separately — the prose from
+  // clock arithmetic on minutes, the cells from an hour-by-hour walk — so if
+  // they ever disagree one of them is lying to the reader, and a picture that
+  // contradicts the sentence beside it is worse than no picture.
+  if (bothCount !== overlap) {
+    console.error(`\n✗ time-difference ${a.id}-${b.id}: the text says ${overlap} shared hour(s), the drawing shows ${bothCount}`);
+    process.exitCode = 1;
+  }
+  const ticks = [0, 6, 12, 18].map((h) => `<span style="left:${(h / 24 * 100).toFixed(2)}%">${String(h).padStart(2, '0')}</span>`).join('');
+  return `<figure class="draw tl">
+<div class="tlrow"><span class="tlname">${esc(a.city)}</span><div class="tltrack">${bar(aSpans, 'on')}${bar(overlapSpans, 'both')}</div></div>
+<div class="tlrow"><span class="tlname">${esc(b.city)}</span><div class="tltrack">${bar(bSpans, 'on')}${bar(overlapSpans, 'both')}</div></div>
+<div class="tlrow"><span class="tlname"></span><div class="tlaxis">${ticks}</div></div>
+<figcaption>One day across, marked in ${esc(a.city)} time. The pale bars are each city's nine-to-five and the solid one is ${bothCount ? `the ${bothCount === Math.round(bothCount) ? bothCount : bothCount.toFixed(1)} hour${bothCount === 1 ? '' : 's'} they share` : 'the hours they share, of which there are none'}. ${esc(b.city)}'s bar sits where its working day falls on ${esc(a.city)}'s clock${bSpans.length > 1 ? ', split because it runs past midnight there' : ''}.</figcaption>
+</figure>`;
+})()}
 
 <h2>How far apart ${esc(a.city)} and ${esc(b.city)} are</h2>
 ${(() => {

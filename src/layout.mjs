@@ -126,6 +126,20 @@ function fitDesc(d) {
   return out;
 }
 
+// Every table gets its own horizontal scroll box.
+//
+// A four-column table needs more than 375 pixels however the columns are sized,
+// and when it cannot have them it widens the page instead: /convert/ came out
+// 486 pixels wide on a phone, so the whole document scrolled sideways and every
+// paragraph on it ran off the screen. One table pushed the entire page.
+//
+// Wrapping here rather than in each generator means the 21,690 tables already
+// written are covered, and so is the next one somebody adds. There are no
+// nested tables anywhere in the output, which is what makes the plain
+// non-greedy match safe.
+const wrapTables = (html) =>
+  String(html).replace(/<table(?:\s[^>]*)?>[\s\S]*?<\/table>/g, (m) => `<div class="tw">${m}</div>`);
+
 export function page(o) {
   const url = SITE.origin + o.path;
   const crumbs = o.crumbs || [];
@@ -207,7 +221,7 @@ ${o.head || ''}
 <main class="wrap">
 ${crumbHtml}
 ${o.h1 ? `<h1>${esc(o.h1)}</h1>` : ''}
-${o.body}
+${wrapTables(o.body)}
 </main>
 <footer class="site">
   <div class="wrap">
