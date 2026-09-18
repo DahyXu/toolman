@@ -64,6 +64,8 @@ const ICONS = {
   spark: P('<path d="M10 2.5 11.7 7 16 8.7 11.7 10.4 10 15 8.3 10.4 4 8.7 8.3 7Z"/><path d="M15.4 13.4 16 15l1.6.6-1.6.6-.6 1.6-.6-1.6L13.2 15.6l1.6-.6Z"/>'),
   // fingerprint-ish id — uuid
   id: P('<rect x="2.5" y="4.5" width="15" height="11" rx="2"/><circle cx="7.2" cy="9.4" r="1.9"/><path d="M4.4 13.6c.5-1.3 1.6-2 2.8-2s2.3.7 2.8 2"/><path d="M12.4 8.6h3.2M12.4 11.4h3.2"/>'),
+  // two sheets becoming one — merging spreadsheets on a shared column
+  merge: P('<rect x="2" y="3" width="7.5" height="9" rx="1.5"/><path d="M2 6h7.5M5.2 3v9"/><rect x="10.5" y="3" width="7.5" height="9" rx="1.5"/><path d="M10.5 6h7.5M14.2 3v9"/><path d="M10 15.5h4.6M12.8 13.7l1.8 1.8-1.8 1.8"/>'),
 };
 
 // Which glyph each tool gets. A tool with no entry falls back to its category's,
@@ -97,6 +99,7 @@ const BY_SLUG = {
   'image-compressor': 'compress',
   'qr-code-generator': 'qr',
   'ai-token-counter': 'spark',
+  'excel-vlookup': 'merge',
 };
 
 const BY_CAT = { dev: 'braces', text: 'lines', convert: 'percent', image: 'image', ai: 'spark' };
