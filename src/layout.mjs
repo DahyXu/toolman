@@ -140,6 +140,78 @@ function fitDesc(d) {
 const wrapTables = (html) =>
   String(html).replace(/<table(?:\s[^>]*)?>[\s\S]*?<\/table>/g, (m) => `<div class="tw">${m}</div>`);
 
+// A page whose job is a widget should open on the widget. The long-form
+// explanation under it — formula, background, FAQ — is kept in the document
+// for the readers and crawlers who want it, but folded into one panel so the
+// page does not read as an essay with a tool on top. Sections that are mostly
+// links (related tools, other conversions) stay open: they are navigation.
+//
+// Only pages that lead with a widget or a card grid are touched. A reference
+// page whose prose *is* the answer has neither before its first heading.
+const plain = (h) => String(h)
+  .replace(/<script[\s\S]*?<\/script>/g, '')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&[a-z#0-9]+;/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const count = (h, re) => (h.match(re) || []).length;
+const balanced = (h) =>
+  count(h, /<div[\s>]/g) === count(h, /<\/div>/g) &&
+  count(h, /<details[\s>]/g) === count(h, /<\/details>/g);
+
+// A list of questions reads better as one line each, opened on demand.
+function accordion(html) {
+  return html.replace(/<div class="faq">([\s\S]*?)<\/div>/g, (m, inner) => {
+    if (/<div[\s>]/.test(inner)) return m;
+    const parts = inner.split(/(?=<h3[\s>])/).filter((x) => x.trim());
+    if (!parts.length || !parts.every((p) => /^<h3[^>]*>[\s\S]*?<\/h3>/.test(p))) return m;
+    return `<div class="faq">${parts
+      .map((p) => {
+        const [, q, a] = /^<h3[^>]*>([\s\S]*?)<\/h3>([\s\S]*)$/.exec(p);
+        return `<details><summary><h3>${q}</h3></summary><div class="ans">${a}</div></details>`;
+      })
+      .join('')}</div>`;
+  });
+}
+
+export function fold(body) {
+  body = accordion(String(body));
+  const re = /<h2[\s>]/g;
+  let at = -1;
+  let m;
+  while ((m = re.exec(body))) {
+    if (balanced(body.slice(0, m.index))) { at = m.index; break; }
+  }
+  if (at < 0) return body;
+  const head = body.slice(0, at);
+  if (!/class="(?:tool|cards)[" ]/.test(head)) return body;
+  const sections = body.slice(at).split(/(?=<h2[\s>])/);
+  // Every section has to stand on its own, or moving it would break the markup.
+  if (!sections.every(balanced)) return body;
+  const keep = [];
+  const hide = [];
+  for (const sec of sections) {
+    const text = plain(sec.replace(/<h2[\s\S]*?<\/h2>/, ''));
+    const linked = plain((sec.match(/<a\s[\s\S]*?<\/a>/g) || []).join(' '));
+    (text.length && linked.length >= text.length * 0.6 ? keep : hide).push(sec);
+  }
+  if (!hide.length) return body;
+  const titles = hide.map((s) => plain((/<h2[^>]*>([\s\S]*?)<\/h2>/.exec(s) || [])[1] || '')).filter(Boolean);
+  const label = titles.some((t) => /frequently asked/i.test(t)) ? 'Guide &amp; FAQ' : 'More details';
+  return `${head}<details class="more"><summary><span class="more-t">${label}</span><span class="more-s">${esc(titles.join(' · '))}</span></summary><div class="more-b">${hide.join('')}</div></details>${keep.join('')}`;
+}
+
+// Every widget opens with the same one-line promise, so the reader sees it at
+// the moment they are about to paste or drop something in. It is injected here
+// rather than written into each tool so the generated pages that carry a
+// widget say it too. The wording is about the reader's input, not about the
+// page making no requests at all: Cloudflare's analytics beacon still counts
+// the page view, and the privacy page says so.
+export const LOCK = '<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.5 4 4.8v4.6c0 3.9 2.5 6.9 6 8.1 3.5-1.2 6-4.2 6-8.1V4.8z"/><path d="m7.3 10 1.9 1.9 3.6-3.7"/></svg>';
+export const SAFE = `<div class="safe">${LOCK}<b>Runs on your device</b><span>nothing is uploaded</span><a href="/privacy/#verify">How to check</a></div>`;
+// The lookbehind skips result cards that a script builds from a string literal.
+const safeStrip = (html) => String(html).replace(/(?<!['"+])<div class="tool(?: [^"]*)?"[^>]*>/, (m) => m + SAFE);
+
 export function page(o) {
   const url = SITE.origin + o.path;
   const crumbs = o.crumbs || [];
@@ -206,7 +278,8 @@ export function page(o) {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/site.webmanifest">
 <style>${CSS}</style>
-<script>try{var t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var t=localStorage.getItem('tm-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+(function(){function o(){var h=location.hash.slice(1),e=h&&document.getElementById(decodeURIComponent(h));for(;e;e=e.parentElement)if(e.tagName==='DETAILS')e.open=true}addEventListener('DOMContentLoaded',o);addEventListener('hashchange',o)})()</script>
 <script type="application/ld+json">${JSON.stringify(ld.length === 1 ? ld[0] : ld)}</script>
 ${o.head || ''}
 </head>
@@ -214,21 +287,25 @@ ${o.head || ''}
 <header class="site">
   <div class="wrap bar">
     <a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14.7 6.3a4 4 0 0 1-5.3 5.3l-5.6 5.6a2 2 0 1 0 2.8 2.8l5.6-5.6a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.1-2.1z"/></svg><span>${SITE.name}</span></a>
+    <a class="local" href="/privacy/#verify" title="Every tool runs in your browser. Your files and text are never uploaded.">${LOCK}<span>100% local</span></a>
     <nav class="mainnav">${navHtml()}</nav>
+    <form class="hsearch" action="/search/" role="search"><input type="search" name="q" placeholder="Search…" aria-label="Search tools and reference pages" autocomplete="off"></form>
+    <a class="sicon" href="/search/" aria-label="Search"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4.5 4.5"/></svg></a>
     <button class="theme" type="button" aria-label="Toggle theme" data-theme-toggle>◐</button>
   </div>
 </header>
 <main class="wrap">
 ${crumbHtml}
 ${o.h1 ? `<h1>${esc(o.h1)}</h1>` : ''}
-${wrapTables(o.body)}
+${wrapTables(safeStrip(o.fold === false ? o.body : fold(o.body)))}
 </main>
 <footer class="site">
   <div class="wrap">
-    <p><strong>${SITE.name}</strong> — ${SITE.tagline}. Everything runs locally in your browser; your data never leaves your device.</p>
+    <p class="fsafe">${LOCK}<span><strong>Your data never leaves your device.</strong> Every ${SITE.name} tool runs in your browser: no uploads, no accounts, no server-side processing. <a href="/privacy/#verify">How to check</a></span></p>
+    <details class="fref"><summary>Reference library</summary>
     <nav class="links" aria-label="Reference sections">
       <a href="/convert/">Converters</a><a href="/cooking/">Cooking</a><a href="/oven/">Oven temps</a><a href="/color/">Colors</a><a href="/http/">HTTP codes</a><a href="/port/">Ports</a><a href="/cron/">Cron</a><a href="/time-difference/">Time differences</a><a href="/chmod/">Permissions</a><a href="/cidr/">CIDR</a><a href="/ascii/">ASCII</a><a href="/file/">File formats</a><a href="/paper/">Paper sizes</a><a href="/resolution/">Screen resolutions</a><a href="/screen-size/">Screen sizes</a><a href="/bed-size/">Bed sizes</a><a href="/lumber/">Lumber sizes</a><a href="/battery/">Battery sizes</a><a href="/awg/">Wire gauge</a><a href="/resistor/">Resistor colours</a><a href="/capacitor/">Capacitor codes</a><a href="/thread/">Metric threads</a><a href="/tap-drill/">Tap drill sizes</a><a href="/drill-size/">Drill sizes</a><a href="/fastener/">Fastener standards</a><a href="/tyre/">Tyre sizes</a><a href="/ring-size/">Ring sizes</a><a href="/bakeware/">Baking tins</a><a href="/paper-weight/">Paper weight</a><a href="/bedding/">Bedding sizes</a><a href="/shoe-size/">Shoe sizes</a><a href="/door-size/">Door sizes</a><a href="/sandpaper/">Sandpaper grit</a><a href="/spanner/">Spanner sizes</a><a href="/pipe/">Pipe sizes</a><a href="/screw/">Screw sizes</a><a href="/brick/">Brick sizes</a><a href="/password-length/">Password length</a><a href="/knitting-needle/">Knitting needles</a><a href="/roman/">Roman numerals</a>
-    </nav>
+    </nav></details>
     <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
   </div>
 </footer>

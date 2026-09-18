@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SITE, CATEGORIES } from './src/site.mjs';
-import { page, esc } from './src/layout.mjs';
+import { page, esc, LOCK, SAFE } from './src/layout.mjs';
 import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
 import { toolIcon, checkIcons } from './src/icons.mjs';
 
@@ -111,7 +111,7 @@ for (const t of tools) {
     crumbs: [{ name: cat.name, path: `/${cat.slug}/` }, { name: t.title, path: `/${t.slug}/` }],
     jsonld: ld,
     head: t.head || '',
-    body: `<p class="muted intro">${t.intro || t.desc}</p>
+    body: `<p class="lead">${t.short || t.intro || t.desc}</p>
 ${t.body}
 ${t.about || ''}
 ${faqBlock(t.faq)}
@@ -285,7 +285,7 @@ const categorySection = {};
 for (const c of Object.values(CATEGORIES)) {
   const list = tools.filter((t) => t.cat === c.slug);
   if (!list.length) continue;
-  const section = `<p class="muted">${esc(c.desc)} All tools run locally in your browser.</p>
+  const section = `<p class="lead">${esc(c.desc)}</p>
 <ul class="cards">${list
     .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
     .join('')}</ul>${CATEGORY_BODY[c.slug] || ''}${CATEGORY_EXTRA[c.slug] || ''}`;
@@ -338,23 +338,25 @@ write('/tools/', page({
 }));
 
 // ---------- home ----------
-const featured = tools.filter((t) => t.weight >= 8);
 write('/', page({
   title: `${SITE.name} — ${tools.length} Free Online Tools That Run in Your Browser`,
   desc: SITE.description,
   path: '/',
   body: `<div class="hero">
-<h1>Free online tools that respect your data</h1>
-<p>${tools.length} developer, text, image and conversion tools. Everything runs locally in your browser — nothing is uploaded, nothing is stored, no sign-up needed.</p>
+<p class="badge">${LOCK}100% in your browser</p>
+<h1>Online tools that never upload your data</h1>
+<p>Files, text and keys are processed on your own device. No server ever sees them.</p>
+<form class="bigsearch" action="/search/" role="search"><input type="search" name="q" placeholder="json, compress image, px to rem…" aria-label="Search tools and reference pages" autocomplete="off"><button class="primary" type="submit">Search</button></form>
+<ul class="pledge">
+<li><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="10" rx="1.5"/><path d="M7 17h6M10 13.5V17"/></svg><b>Processed locally</b><span>Your browser does the work</span></li>
+<li><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13V4M6.5 7.5 10 4l3.5 3.5M4 13v2.5h12V13"/><path d="M3 3l14 14"/></svg><b>Zero uploads</b><span>No server receives your files</span></li>
+<li><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5a11 11 0 0 1 15 0M5 10.5a7 7 0 0 1 10 0M7.7 13.3a3 3 0 0 1 4.6 0"/><circle cx="10" cy="16" r=".8" fill="currentColor"/><path d="M3 3l14 14"/></svg><b>Works offline</b><span>Load once, then cut the network</span></li>
+<li><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="3"/><path d="M4 17c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"/><path d="M3 3l14 14"/></svg><b>No sign-up</b><span>No account, no tracking cookies</span></li>
+</ul>
 </div>
-<h2>Popular tools</h2>
-<ul class="cards">${featured
-    .map((t) => `<li><a href="/${t.slug}/">${toolIcon(t.slug, t.cat)}<b>${esc(t.title)}</b><span>${esc(t.short || t.desc)}</span></a></li>`)
-    .join('')}</ul>
 ${allToolsBody}
 <h2>Popular lookups</h2>
-<p class="muted">The specific answers people search for most often.</p>
-<ul class="linklist">
+<ul class="chips">
 <li><a href="/convert/5-feet-to-centimeters/">5 feet in cm</a></li>
 <li><a href="/convert/180-pounds-to-kilograms/">180 lbs in kg</a></li>
 <li><a href="/convert/1-kilograms-to-pounds/">1 kg in lbs</a></li>
@@ -397,7 +399,7 @@ ${allToolsBody}
 <li><a href="/ascii/0/">ASCII 0 (NUL)</a></li>
 </ul>
 <h2>Reference libraries</h2>
-<ul class="cards">
+<ul class="cards compact">
 <li><a href="/convert/"><b>Unit converter</b><span>1,000+ conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
 <li><a href="/color/"><b>Color codes</b><span>600+ HEX colors with RGB, HSL, CMYK, contrast ratios and matching palettes.</span></a></li>
 <li><a href="/convert/css-units/"><b>CSS units</b><span>px, rem, em, pt and more — with an adjustable root font size.</span></a></li>
@@ -441,13 +443,6 @@ ${allToolsBody}
 <li><a href="/brick/"><b>Brick sizes</b><span>Format, coursing and bricks per square metre — where "sixty" comes from.</span></a></li>
 <li><a href="/password-length/"><b>Password length</b><span>What each length is worth in bits and in time, and where the useful range ends.</span></a></li>
 <li><a href="/knitting-needle/"><b>Knitting needles</b><span>US, UK and mm — two scales that run in opposite directions and meet once.</span></a></li>
-</ul>
-
-<h2>Why ${SITE.name}?</h2>
-<ul>
-<li><strong>Private by design.</strong> Every tool is pure client-side JavaScript. Your text, code and images never leave your device.</li>
-<li><strong>Fast.</strong> Static pages, no frameworks, no trackers. Most tools are usable in under a second.</li>
-<li><strong>Free, forever.</strong> No accounts, no paywalls, no watermarks, no daily limits.</li>
 </ul>`,
 }));
 
@@ -488,6 +483,14 @@ write('/privacy/', page({
   h1: 'Privacy policy',
   crumbs: [{ name: 'Privacy', path: '/privacy/' }],
   body: `<p><em>Last updated: ${new Date().toISOString().slice(0, 10)}</em></p>
+
+<h2 id="verify">Check it yourself</h2>
+<ol class="steps">
+<li><span><b>Open a tool</b> and let the page finish loading.</span></li>
+<li><span><b>Turn off Wi-Fi</b> or switch on airplane mode.</span></li>
+<li><span><b>Use the tool.</b> It keeps working, because nothing it does needs a server.</span></li>
+</ol>
+<p class="muted">Prefer proof on screen? Open your browser's developer tools, go to the Network tab, and use a tool: no request carries your input.</p>
 
 <h2>Short version</h2>
 <p>Everything you type, paste or open in a tool on this site is processed by JavaScript running inside your own browser. None of it is sent anywhere, because there is no server-side processing and no backend to send it to. You can verify this: load any tool, disconnect from the network, and it will keep working.</p>
@@ -621,7 +624,13 @@ for (const u of urls) {
       // the whole site as modified on one build — which is the exact thing the
       // paragraph above exists to prevent, arriving through the body instead of
       // the head. Unwrap it before hashing so the shell is invisible here.
-      .replace(/<div class="tw">(<table[\s\S]*?<\/table>)<\/div>/g, '$1');
+      .replace(/<div class="tw">(<table[\s\S]*?<\/table>)<\/div>/g, '$1')
+      // The same goes for folding the long-form sections under a tool into a
+      // collapsible panel and the FAQ into an accordion: the words did not move.
+      .replace(/<details><summary>(<h3>[\s\S]*?<\/h3>)<\/summary><div class="ans">([\s\S]*?)<\/div><\/details>/g, '$1$2')
+      .replace(/<details class="more"><summary>[\s\S]*?<\/summary><div class="more-b">([\s\S]*?)<\/div><\/details>(?=[\s\S]*<\/main>)/, '$1')
+      // And the one-line "runs on your device" strip every widget now opens with.
+      .replace(SAFE, '');
     hash = crypto.createHash('sha1').update(body).digest('hex').slice(0, 16);
   } catch { /* page written outside dist, fall through to today's date */ }
   const prev = prevStamps[u];
