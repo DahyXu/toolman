@@ -50,7 +50,7 @@ p.intro{margin:0 0 4px;font-size:1rem}
 p.lead{margin:0 0 4px;font-size:1rem;color:var(--fg2);max-width:62ch}
 /* header / footer */
 header.site{border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:20}
-.bar{display:flex;align-items:center;gap:18px;height:56px}
+.bar{display:flex;align-items:center;gap:14px;height:56px}
 .brand{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--fg);font-size:1.05rem;letter-spacing:-.02em;flex:none}
 .brand svg{color:var(--acc)}
 .brand:hover{text-decoration:none}
@@ -58,7 +58,7 @@ header.site{border-bottom:1px solid var(--line);background:var(--bg2);position:s
 .mainnav::-webkit-scrollbar{display:none}
 .mainnav a{color:var(--fg2);font-size:.9rem;white-space:nowrap;padding:6px 10px;border-radius:8px}
 .mainnav a:hover{color:var(--fg);background:var(--code);text-decoration:none}
-.hsearch{flex:none;width:200px}
+.hsearch{flex:none;width:160px}
 .hsearch input[type=search]{padding:6px 14px;border-radius:99px;background:var(--code);border-color:transparent;font-size:.9rem;min-height:0}
 .sicon,.theme{display:inline-grid;place-items:center}
 .sicon{display:none;width:34px;height:34px;border-radius:99px;border:1px solid var(--line);color:var(--fg2);flex:none}
@@ -78,6 +78,7 @@ header.site{border-bottom:1px solid var(--line);background:var(--bg2);position:s
   .mainnav{order:3;flex-basis:100%;margin:0 -10px}
   .hsearch{display:none}
   .sicon{display:inline-grid}
+  .mainnav a.navwish{order:-1}
 }
 footer.site{border-top:1px solid var(--line);background:var(--bg2);padding:22px 0;color:var(--fg2);font-size:.86rem}
 footer.site p{margin:.4em 0}
@@ -185,6 +186,26 @@ details.more[open] .more-s{display:none}
 .cards.compact{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
 .cards.compact a{padding:10px 12px}
 .cards.compact span{-webkit-line-clamp:1}
+.mainnav a.navwish{display:inline-flex;align-items:center;gap:5px;color:#b7791f}
+:root[data-theme=dark] .mainnav a.navwish{color:#ffd66b}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .mainnav a.navwish{color:#ffd66b}}
+/* The way to the wish wall: three little tags swinging on a night-sky card. */
+.wishcta{display:flex;align-items:center;gap:16px;margin:22px 0;padding:16px 20px;border-radius:16px;color:#e8ecff;
+  background:radial-gradient(90% 120% at 90% 0%,#2c3d86 0%,transparent 60%),linear-gradient(135deg,#0a1230,#23285a);box-shadow:var(--shadow2)}
+.wishcta:hover{text-decoration:none;color:#fff}
+.wishcta:hover .wc-go{transform:translateX(4px)}
+.wc-tags{display:flex;gap:6px;flex:none;height:46px;align-items:flex-start;border-top:2px solid #c89b62;padding:0 4px;border-radius:40%/6px}
+.wc-tags i{display:block;width:16px;height:22px;margin-top:12px;border-radius:3px 3px 5px 5px;position:relative;transform-origin:50% -12px;animation:sway 3.6s ease-in-out infinite alternate}
+.wc-tags i::before{content:"";position:absolute;left:50%;top:-12px;width:1px;height:12px;background:#e8d5b2}
+.wc-tags i:nth-child(1){background:#ffe28a}
+.wc-tags i:nth-child(2){background:#ffc4d6;margin-top:18px;animation-delay:-1.2s}
+.wc-tags i:nth-child(3){background:#b9f0d6;animation-delay:-2.3s}
+.wc-t{flex:1;display:flex;flex-direction:column;line-height:1.35}
+.wc-t b{font-size:1rem}
+.wc-t span{font-size:.85rem;color:#aeb8e6}
+.wc-go{font-size:1.3rem;color:#ffd66b;transition:transform .15s}
+@keyframes sway{from{transform:rotate(-2.6deg)}to{transform:rotate(2.6deg)}}
+@media(prefers-reduced-motion:reduce){.wc-tags i{animation:none}}
 .chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:12px 0}
 .chips li{margin:0}
 .chips a{display:inline-block;padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--bg2);color:var(--fg);font-size:.86rem}

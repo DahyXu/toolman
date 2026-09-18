@@ -60,7 +60,8 @@ export function faq(list) {
 const navHtml = () =>
   Object.values(CATEGORIES)
     .map((c) => `<a href="/${c.slug}/">${esc(c.name.replace(' Tools', '').replace('Converters', 'Convert'))}</a>`)
-    .join('');
+    .join('') +
+  '<a class="navwish" href="/wishes/"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M12 2.5l2.4 6.6 6.6 2.4-6.6 2.4L12 20.5l-2.4-6.6L3 11.5l6.6-2.4z" fill="currentColor"/></svg>Wishes</a>';
 
 /**
  * Render a full HTML page.
@@ -306,7 +307,7 @@ ${wrapTables(safeStrip(o.fold === false ? o.body : fold(o.body)))}
     <nav class="links" aria-label="Reference sections">
       <a href="/convert/">Converters</a><a href="/cooking/">Cooking</a><a href="/oven/">Oven temps</a><a href="/color/">Colors</a><a href="/http/">HTTP codes</a><a href="/port/">Ports</a><a href="/cron/">Cron</a><a href="/time-difference/">Time differences</a><a href="/chmod/">Permissions</a><a href="/cidr/">CIDR</a><a href="/ascii/">ASCII</a><a href="/file/">File formats</a><a href="/paper/">Paper sizes</a><a href="/resolution/">Screen resolutions</a><a href="/screen-size/">Screen sizes</a><a href="/bed-size/">Bed sizes</a><a href="/lumber/">Lumber sizes</a><a href="/battery/">Battery sizes</a><a href="/awg/">Wire gauge</a><a href="/resistor/">Resistor colours</a><a href="/capacitor/">Capacitor codes</a><a href="/thread/">Metric threads</a><a href="/tap-drill/">Tap drill sizes</a><a href="/drill-size/">Drill sizes</a><a href="/fastener/">Fastener standards</a><a href="/tyre/">Tyre sizes</a><a href="/ring-size/">Ring sizes</a><a href="/bakeware/">Baking tins</a><a href="/paper-weight/">Paper weight</a><a href="/bedding/">Bedding sizes</a><a href="/shoe-size/">Shoe sizes</a><a href="/door-size/">Door sizes</a><a href="/sandpaper/">Sandpaper grit</a><a href="/spanner/">Spanner sizes</a><a href="/pipe/">Pipe sizes</a><a href="/screw/">Screw sizes</a><a href="/brick/">Brick sizes</a><a href="/password-length/">Password length</a><a href="/knitting-needle/">Knitting needles</a><a href="/roman/">Roman numerals</a>
     </nav></details>
-    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/search/">Search</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
+    <p class="links"><a href="/">Home</a><a href="/tools/">All tools</a><a href="/wishes/">Wish wall</a><a href="/search/">Search</a><a href="/about/">About</a><a href="/privacy/">Privacy</a></p>
   </div>
 </footer>
 <script>(function(){var k='tm-theme';document.addEventListener('click',function(e){var b=e.target.closest('[data-theme-toggle]');if(!b)return;var d=document.documentElement,n=d.dataset.theme==='dark'?'light':'dark';d.dataset.theme=n;try{localStorage.setItem(k,n)}catch(_){}});})();</script>

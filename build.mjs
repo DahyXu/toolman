@@ -6,6 +6,10 @@ import { SITE, CATEGORIES } from './src/site.mjs';
 import { page, esc, LOCK, SAFE } from './src/layout.mjs';
 import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
 import { toolIcon, checkIcons } from './src/icons.mjs';
+import { wishPage } from './src/wishes/index.mjs';
+
+// A card that sends people from the tool lists to the wish wall.
+const WISH_CTA = `<a class="wishcta" href="/wishes/"><span class="wc-tags" aria-hidden="true"><i></i><i></i><i></i></span><span class="wc-t"><b>Missing a tool?</b><span>Hang a wish on the wall</span></span><span class="wc-go" aria-hidden="true">→</span></a>`;
 
 // The card for the time-zone section quoted 848 conversions, written when
 // there were 848. There are now 1,686. A count typed into prose drifts away
@@ -334,7 +338,7 @@ write('/tools/', page({
   path: '/tools/',
   h1: 'All tools',
   crumbs: [{ name: 'All tools', path: '/tools/' }],
-  body: `<p class="muted">Every tool here runs entirely in your browser. Nothing is uploaded to a server.</p>${allToolsBody}`,
+  body: `<p class="muted">Every tool here runs entirely in your browser. Nothing is uploaded to a server.</p>${allToolsBody}${WISH_CTA}`,
 }));
 
 // ---------- home ----------
@@ -355,6 +359,7 @@ write('/', page({
 </ul>
 </div>
 ${allToolsBody}
+${WISH_CTA}
 <h2>Popular lookups</h2>
 <ul class="chips">
 <li><a href="/convert/5-feet-to-centimeters/">5 feet in cm</a></li>
@@ -446,6 +451,19 @@ ${allToolsBody}
 </ul>`,
 }));
 
+// ---------- wish wall ----------
+write('/wishes/', page({
+  title: `Wish Wall — Tell Us Which Tool to Build Next | ${SITE.name}`,
+  desc: `Which free browser tool should ${SITE.name} build next? Hang your wish on the wall, heart the ideas you want too, and see which ones have already been built.`,
+  path: '/wishes/',
+  h1: 'Wish wall',
+  crumbs: [{ name: 'Wish wall', path: '/wishes/' }],
+  fold: false,
+  head: wishPage.head,
+  body: wishPage.body,
+  script: wishPage.script,
+}));
+
 // ---------- static content pages ----------
 write('/about/', page({
   title: `About ${SITE.name}`,
@@ -508,11 +526,15 @@ write('/privacy/', page({
 <h2>Hosting</h2>
 <p>The site is static files served from Cloudflare's network. As with any web host, Cloudflare processes request metadata such as your IP address, user agent and the URL requested, in order to deliver the page and to protect the service from abuse. That processing is governed by Cloudflare's own privacy documentation, and we do not receive or store those logs.</p>
 
+<h2 id="wishes">The wish wall</h2>
+<p>The <a href="/wishes/">wish wall</a> is the one part of the site that sends anything you type to a server, and it is marked as public where you write. A wish you hang there is stored in a Cloudflare D1 database and shown to every visitor. Please keep personal details out of it.</p>
+<p>To stop spam and to count one heart per person, the wall stores a salted, one-way hash of your IP address alongside the hearts you give. The address itself is not stored, and the rate-limit records are deleted after a day. Which wishes you have hearted is also remembered in your browser's <code>localStorage</code>. Wishes that are abusive, off-topic or contain personal data may be removed.</p>
+
 <h2>What we do not do</h2>
 <ul>
 <li>No accounts, sign-ups, or email collection. There is nothing to register for.</li>
-<li>No file uploads. There is no upload endpoint.</li>
-<li>No selling or sharing of data, because none is collected.</li>
+<li>No file uploads. No tool has an upload endpoint; the wish wall accepts only the short text you choose to post there.</li>
+<li>No selling or sharing of data.</li>
 <li>No advertising, and therefore no advertising identifiers.</li>
 <li>No paid tier, so no payment processing and no billing records.</li>
 </ul>
