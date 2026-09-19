@@ -166,7 +166,7 @@
 
   // ---- layout ----
   function metrics() {
-    var W = ropes.clientWidth;
+    var W = Math.max(ropes.clientWidth, 300);
     var narrow = W < 560;
     var slot = narrow ? 150 : 178;
     var n = Math.max(2, Math.floor((W - 12) / slot));
@@ -394,15 +394,20 @@
     if (wishes) render();
   });
   $('#wmore button').addEventListener('click', function () { shown += PAGE; render(); });
-  var lastW = 0, t;
-  addEventListener('resize', function () {
+  // Redraw whenever the wall itself changes width. Watching the wall rather
+  // than the window also catches a page laid out while hidden, where the first
+  // measurement is zero and every tag would land on a rope a few pixels long.
+  var lastW = ropes.clientWidth, t;
+  function relayout() {
     clearTimeout(t);
     t = setTimeout(function () {
-      if (ropes.clientWidth === lastW) return;
-      lastW = ropes.clientWidth;
+      var w = ropes.clientWidth;
+      if (w === lastW || w < 120) return;
+      lastW = w;
       if (wishes) render(); else skeleton();
-    }, 150);
-  });
-  lastW = ropes.clientWidth;
+    }, 120);
+  }
+  if (window.ResizeObserver) new ResizeObserver(relayout).observe(ropes);
+  else addEventListener('resize', relayout);
   fetchWishes();
 })();
