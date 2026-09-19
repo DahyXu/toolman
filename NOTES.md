@@ -3731,3 +3731,26 @@ and a value after --check (use `--username x --password x --check 1`; it does
 not log in). `reddit-search.js` only browses and returns no result list, and
 `reddit-post-list-update.js` extracts 0 posts from a search page, so scan
 subreddits sorted by new. Reddit's public .json endpoints are blocked for curl.
+
+## 2026-09-19 — Reddit, building standing on u/DahyXiaoXu
+
+Account 3 days old, karma 4. Two answers with no link, both on threads under
+two hours old:
+
+- r/arduino, "Arduino resets after some time with some code but not others"
+  (t1_paq82fl): SRAM exhaustion on a Nano (display buffer plus String heap
+  fragmentation) and brown-out from the load MOSFET's ground current.
+- r/linuxquestions, "Systemd service won't run on boot but works fine when
+  started manually" (t1_paq9kma): power-profiles-daemon, tuned or TLP
+  overwriting the governor and EPP after the oneshot unit runs. Run through
+  the humanizer skill before posting, at the user's request; do that for every
+  comment from now on.
+
+Two a day is the pace for an account this young. Still holding the
+r/SideProject post until karma is above about 50.
+
+Skill notes: `reddit-comment.js` can report success without submitting. The
+first r/linuxquestions attempt returned success, but the comment was missing
+from the thread and the profile, and on retry the composer still held the full
+399 characters. The first r/arduino attempt crashed mid-run and the browser
+lost the tab. Always confirm with `reddit-post-detail.js` after commenting.
