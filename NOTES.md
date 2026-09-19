@@ -3707,3 +3707,27 @@ Two real bugs found and fixed during the build:
 
 Baseline impressions at launch: 1 over the trailing three months, and that one
 belongs to the previous owner of the domain.
+
+## 2026-09-19 — Reddit, second account, no link yet
+
+Logged-in account is now u/DahyXiaoXu (created 2026-09-16, karma 4 at the
+start of the session). Scanned the newest posts in homelab, HomeNetworking,
+AskElectronics, excel, Machinists, Metalworking, 3Dprinting, selfhosted,
+AskBaking, linuxquestions, AskElectricians and electricians. None had a fresh
+question that one of our pages answers better than the replies already there:
+the r/excel merge question was really about keeping cell comments, which our
+merge tool does not do, and the electrical threads are safety questions that
+already had dozens of answers.
+
+Given what happened to u/DahyCC, the user chose to build standing first. Posted
+one answer with no link on r/AskElectronics, "Is a PicKit 3 still useful for
+learning microcontrollers in 2026?" (t3_1wkc7of), pointing out that an Uno can
+be programmed bare metal through its registers. It shows in the thread
+publicly. Hold the r/SideProject QR post in PROMOTION.md until the account is a
+week or two old with karma above about 50.
+
+Skill notes: `reddit-login.js --check` still requires --username/--password
+and a value after --check (use `--username x --password x --check 1`; it does
+not log in). `reddit-search.js` only browses and returns no result list, and
+`reddit-post-list-update.js` extracts 0 posts from a search page, so scan
+subreddits sorted by new. Reddit's public .json endpoints are blocked for curl.
