@@ -1,3 +1,45 @@
+## 2026-09-24 — every Search Console issue read, and what was actually ours
+
+Went through the whole property: indexing, sitemaps, manual actions, security,
+HTTPS, enhancements, messages. Manual actions and security: none. HTTPS 29/0,
+breadcrumbs 28 valid / 0 invalid. Indexed 3,180, not indexed 5,760.
+
+The only reasons attributed to **网站** rather than **Google 系统** were three
+URLs, and none of them is on this site:
+
+    404  https://www.toolman.top/api/collect/batch
+    404  https://www.toolman.top/api/search
+    401  https://www.toolman.top/api/videos
+
+www is a different machine (124.71.58.246, Caddy) serving an internal tool,
+短视频爆款知识库, whose home page Google had indexed. Its API answering 404/401
+is correct, so there was nothing to fix in the responses. What was wrong is that
+an internal tool was in the index at all. Fixed at the edge: a Cloudflare
+response-header transform rule, `www internal tool: noindex`, sets
+`X-Robots-Tag: noindex, nofollow` on every `https://www.toolman.top/*`
+response. Verified by curl on /, /api/search and /api/videos; the apex carries
+no such header. The three rows will age out as Google recrawls; validation was
+not started because the status codes are still, correctly, 404 and 401.
+
+The project's API token cannot touch rulesets (Authentication error 10000), so
+this had to be done in the dashboard.
+
+The four red `sitemap-N.xml` rows from launch day are gone. They *can* be
+removed: open the row's detail page and use the ⋮ at its top right. CHECKING.md
+said otherwise and has been corrected. The sitemap list is now five green rows.
+
+The overview's "impressions down 99%" on `/convert/minus-40-celsius-to-fahrenheit/`
+is not a fault. Its 376 impressions came from `40 celsius to fahrenheit`,
+`40c to f` and similar — queries about **plus** 40, which has its own page
+(`/convert/40-celsius-to-fahrenheit/`, 104°F). Google was showing the wrong
+page and stopped. The GSC page list also still shows
+`/convert/37minus-5-celsius-to-fahrenheit/`; that slug bug was fixed long ago
+and the URL 301s to `/convert/37-5-celsius-to-fahrenheit/`.
+
+The 5,288 discovered and 471 crawled-but-not-indexed are Google's decisions.
+Samples checked (eest-to-cet, time-difference/moscow, port/5432, utc-to-ist):
+200, self-canonical, `index,follow`.
+
 ## AI Overviews are the new answer widget, and they belong in the test
 
 Resistor pages sit on page one at 9.4 and almost nobody sees them, so the next

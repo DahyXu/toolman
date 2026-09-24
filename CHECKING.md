@@ -58,18 +58,20 @@ next to it: **上次读取时间 blank** (no read ever completed, so this is not
 recent failure) and **已发现的网页 0 on every row, index included**. Nothing had
 ever reached Google through a sitemap.
 
-Search Console has no delete for a submitted sitemap — the row's ⋮ menu holds
-only two greyed-out "view indexing" links — and resubmitting the same URL is
-accepted silently without a fetch. The fix is a URL it has never failed on. The
+The list row's ⋮ menu holds only two greyed-out "view indexing" links, which
+looks like there is no delete. There is one: click the row itself to open the
+sitemap's detail page, and the ⋮ at the top right of *that* page has
+**移除站点地图**. Resubmitting the same URL is accepted silently without a fetch. The fix is a URL it has never failed on. The
 children now live at `/sitemaps/pages-N.xml`; all four were read within seconds
 and reported 2,000 / 2,000 / 2,000 / 884 pages discovered. The old paths still
 serve the same bytes so a retry gets a 200.
 
-The four original red rows cannot be removed and will stay in the list forever.
-They now point at files nothing references.
+The four original red rows were removed that way on 24 September; the list is
+now the index and its four children, all green.
 
 **Never submit a sitemap to Search Console before it is deployed.** The 404 is
-recorded against that URL and there is no way to clear it.
+recorded against that URL and Google does not retry it on its own; the only
+cleanup is removing the row from its detail page.
 
 ## Reddit
 
