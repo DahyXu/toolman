@@ -7,6 +7,7 @@ import { page, esc, LOCK, SAFE } from './src/layout.mjs';
 import { Z as TZ_ZONES } from './src/gen/timezones.mjs';
 import { toolIcon, checkIcons } from './src/icons.mjs';
 import { wishPage } from './src/wishes/index.mjs';
+import { keep } from './src/prune.mjs';
 
 // A card that sends people from the tool lists to the wish wall.
 const WISH_CTA = `<a class="wishcta" href="/wishes/"><span class="wc-tags" aria-hidden="true"><i></i><i></i><i></i></span><span class="wc-t"><b>Missing a tool?</b><span>Hang a wish on the wall</span></span><span class="wc-go" aria-hidden="true">→</span></a>`;
@@ -15,9 +16,10 @@ const WISH_CTA = `<a class="wishcta" href="/wishes/"><span class="wc-tags" aria-
 // there were 848. There are now 1,686. A count typed into prose drifts away
 // from the thing it counts, so it is derived from the same table the pages
 // are generated from — pairs of zones whose offsets differ, which is exactly
-// the rule the generator uses.
+// the rule the generator uses — and, since the October 2026 prune, only the
+// pairs whose page is still built.
 const ZONE_PAIR_COUNT = TZ_ZONES.reduce((n, a) =>
-  n + TZ_ZONES.filter((b) => b !== a && b.off !== a.off).length, 0);
+  n + TZ_ZONES.filter((b) => b !== a && b.off !== a.off && keep(`/convert/${a.id}-to-${b.id}/`)).length, 0);
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root, 'dist');
@@ -25,18 +27,121 @@ const dist = path.join(root, 'dist');
 const written = [];
 const pageMeta = [];
 const collisions = [];
+// Pages are held until every generator has run, because whether a link is
+// dead is only known once the whole set of kept pages is. See src/prune.mjs.
+const pending = [];
+const dropped = new Set();
 function write(urlPath, html) {
+  if (!keep(urlPath)) { dropped.add(urlPath); return; }
   // Two generators writing the same URL silently loses one of them, and the
   // built output looks fine — the only symptom is a page that is thinner than
   // the code says it should be. Surface it instead.
   if (written.includes(urlPath)) collisions.push(urlPath);
   const t = /<title>([^<]*)<\/title>/.exec(html);
   if (t) pageMeta.push({ title: t[1], path: urlPath });
-  const rel = urlPath === '/' ? 'index.html' : path.join(urlPath.replace(/^\/|\/$/g, ''), 'index.html');
-  const file = path.join(dist, rel);
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, html);
+  pending.push([urlPath, html]);
   written.push(urlPath);
+}
+
+// A link to a page that is no longer built is unlinked rather than left to
+// 404: a list item that is nothing but that link goes, and a link inside a
+// sentence or a table cell keeps its words and loses the anchor. An anchor's
+// contents may not cross into another anchor or list item, or the lazy match
+// would run on to the next one that happens to fit.
+const DEAD_LI = /<li\b[^>]*>\s*<a\b[^>]*\bhref="(\/[^"#?]*)[^"]*"[^>]*>(?:(?!<\/?(?:li|a)\b)[\s\S])*<\/a>\s*<\/li>/g;
+const DEAD_A = /<a\b[^>]*\bhref="(\/[^"#?]*)[^"]*"[^>]*>((?:(?!<\/?a\b)[\s\S])*)<\/a>/g;
+function unlinkDropped(html) {
+  const dead = (p) => dropped.has(p.endsWith('/') ? p : p + '/');
+  return html
+    .replace(DEAD_LI, (m, p) => (dead(p) ? '' : m))
+    .replace(DEAD_A, (m, p, inner) => (dead(p) ? inner : m))
+    // A heading over a list that was every link in it now heads nothing.
+    .replace(/<h([23])>[^<]*<\/h\1>\s*<ul\b[^>]*>\s*<\/ul>/g, '')
+    .replace(/<ul\b[^>]*>\s*<\/ul>/g, '');
+}
+// A page kept because Google showed it may have been linked only from pages
+// that are now gone — a value page reached from its unit pair, a country pair
+// reached from another country pair. Walk the kept pages from the home page
+// and give anything left stranded a link from the nearest hub above it.
+function relinkStranded() {
+  const html = new Map(pending.map(([u, h]) => [u, unlinkDropped(h)]));
+  const outOf = (h) => [...h.replace(/<script[\s\S]*?<\/script>/g, '')
+    .matchAll(/href="(\/[^"#?]*)"/g)].map((m) => m[1]);
+  const reached = new Set(['/']);
+  for (let frontier = ['/']; frontier.length;) {
+    const next = [];
+    for (const u of frontier)
+      for (const v of outOf(html.get(u) || ''))
+        if (!reached.has(v) && html.has(v)) { reached.add(v); next.push(v); }
+    frontier = next;
+  }
+  const titleOf = new Map(pageMeta.map((m) => [m.path, m.title.replace(/\s*[—|]\s*Toolman.*$/, '').replace(/\s*\|.*$/, '').trim()]));
+  // Value-page titles write 5000 where the hub's own prose writes 5,000; the
+  // list is grouped the hub's way so one page does not use both.
+  const label = (u) => (titleOf.get(u) || u).replace(/\b\d{4,}\b/g, (n) => Number(n).toLocaleString('en-US'));
+  const byHub = new Map();
+  for (const u of html.keys()) {
+    if (reached.has(u)) continue;
+    let hub = u;
+    do hub = hub.replace(/[^/]+\/$/, ''); while (hub !== '/' && !reached.has(hub));
+    if (!byHub.has(hub)) byHub.set(hub, []);
+    byHub.get(hub).push(u);
+  }
+  for (const [hub, list] of byHub) {
+    list.sort();
+    const block = `<h2>More pages in this section</h2>\n<ul class="linklist">${list
+      .map((u) => `<li><a href="${u}">${label(u)}</a></li>`).join('')}</ul>\n`;
+    html.set(hub, html.get(hub).replace('</main>', block + '</main>'));
+  }
+
+  // The same loss leaves other pages linked from their hub and nothing else —
+  // an ingredient page whose amount pages are gone, a city page whose pairs
+  // are. scripts/inbound-links.mjs fails on that. Each such page gets a link
+  // from its neighbour under the same parent, in a ring, so every one of them
+  // gains a second way in. The three sections that check leaves thin on purpose
+  // are left alone here too.
+  const LEFT_THIN = new Set(['convert', 'roman', 'color']);
+  const inbound = new Map([...html.keys()].map((u) => [u, new Set()]));
+  for (const [u, h] of html) {
+    const body = h.replace(/<header[\s\S]*?<\/header>|<nav[\s\S]*?<\/nav>|<footer[\s\S]*?<\/footer>/g, ' ');
+    for (const m of body.matchAll(/href="(\/[^"#?]*)"/g)) {
+      const v = m[1].endsWith('/') ? m[1] : m[1] + '/';
+      if (v !== u && inbound.has(v)) inbound.get(v).add(u);
+    }
+  }
+  const parentOf = (u) => u.replace(/[^/]+\/$/, '');
+  const thinBy = new Map();
+  for (const [u, from] of inbound) {
+    if (u === '/' || from.size !== 1 || LEFT_THIN.has(u.split('/')[1])) continue;
+    const p = parentOf(u);
+    if (!thinBy.has(p)) thinBy.set(p, []);
+    thinBy.get(p).push(u);
+  }
+  for (const [p, list] of thinBy) {
+    list.sort();
+    const siblings = [...html.keys()].filter((v) => v !== p && parentOf(v) === p).sort();
+    list.forEach((u, i) => {
+      let from = list.length > 1 ? list[(i + list.length - 1) % list.length] : siblings.find((v) => v !== u);
+      if (!from || inbound.get(u).has(from)) from = siblings.find((v) => v !== u && !inbound.get(u).has(v));
+      if (!from) return;
+      const block = `<h2>See also</h2>\n<ul class="linklist"><li><a href="${u}">${label(u)}</a></li></ul>\n`;
+      html.set(from, html.get(from).includes('<h2>See also</h2>\n<ul class="linklist">')
+        ? html.get(from).replace('<h2>See also</h2>\n<ul class="linklist">', `<h2>See also</h2>\n<ul class="linklist"><li><a href="${u}">${label(u)}</a></li>`)
+        : html.get(from).replace('</main>', block + '</main>'));
+    });
+  }
+  return html;
+}
+
+function flush() {
+  const html = relinkStranded();
+  for (const [urlPath] of pending) {
+    const rel = urlPath === '/' ? 'index.html' : path.join(urlPath.replace(/^\/|\/$/g, ''), 'index.html');
+    const file = path.join(dist, rel);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, html.get(urlPath));
+  }
+  console.log(`prune: ${pending.length.toLocaleString()} pages built, ${dropped.size.toLocaleString()} not built`);
 }
 
 function copyDir(from, to) {
@@ -319,7 +424,14 @@ if (fs.existsSync(genDir)) {
     genPages = genPages.concat(out);
   }
 }
-for (const p of genPages) write(p.path, page(p));
+// Every built /convert/ page that converts one unit to another — not the pages
+// for a single value such as 40 °C — less the time-zone pairs, which the home
+// page counts on their own card.
+const UNIT_PAGE_COUNT = genPages.filter((p) => /^\/convert\/(?!(minus-)?\d)[^/]+-to-[^/]+\/$/.test(p.path) && keep(p.path)).length - ZONE_PAIR_COUNT;
+for (const p of genPages) {
+  if (!keep(p.path)) { dropped.add(p.path); continue; }
+  write(p.path, page(p));
+}
 
 // ---------- all tools index ----------
 const allToolsBody = Object.values(CATEGORIES)
@@ -405,7 +517,7 @@ ${WISH_CTA}
 </ul>
 <h2>Reference libraries</h2>
 <ul class="cards compact">
-<li><a href="/convert/"><b>Unit converter</b><span>1,000+ conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
+<li><a href="/convert/"><b>Unit converter</b><span>${UNIT_PAGE_COUNT.toLocaleString()} conversions across length, weight, temperature, volume, data, speed and more.</span></a></li>
 <li><a href="/color/"><b>Color codes</b><span>600+ HEX colors with RGB, HSL, CMYK, contrast ratios and matching palettes.</span></a></li>
 <li><a href="/convert/css-units/"><b>CSS units</b><span>px, rem, em, pt and more — with an adjustable root font size.</span></a></li>
 <li><a href="/convert/time-zones/"><b>Time zones</b><span>${ZONE_PAIR_COUNT.toLocaleString()} conversions between EST, PST, UTC, CET, IST, JST and more.</span></a></li>
@@ -612,6 +724,8 @@ if(p){$('#q').value=p}
 run();
 `,
 }));
+
+flush();
 
 // ---------- sitemap + robots ----------
 const now = new Date().toISOString().slice(0, 10);
@@ -901,8 +1015,11 @@ const newestIn = (chunk) => chunk.reduce((m, u) => {
 // A sitemap index whose children all carry the same date is either a site
 // that genuinely changed everywhere at once or a bug. On a 13,000-page site
 // with seven shards it is the bug, and it is invisible in the output.
+// With two shards it proves nothing: the October 2026 prune changed the links
+// on most of the 2,590 pages that remain, so both shards honestly carry the
+// date of that build, and two dates agreeing is ordinary.
 const stampCheck = () => {
-  if (chunks.length < 2) return;
+  if (chunks.length < 3) return;
   const dates = new Set(chunks.map(newestIn));
   if (dates.size === 1) {
     console.error(`\n✗ sitemap: all ${chunks.length} shards report the same lastmod (${[...dates][0]}), which is what stamping the build date looked like`);
@@ -935,4 +1052,4 @@ if (collisions.length) {
   for (const c of [...new Set(collisions)]) console.error('    ' + c);
   process.exitCode = 1;
 }
-console.log(`built ${urls.length} pages (${tools.length} tools, ${genPages.length} generated)`);
+console.log(`built ${urls.length} pages (${tools.length} tools, ${genPages.filter((p) => keep(p.path)).length} generated)`);

@@ -1,4 +1,5 @@
 import { esc, faq } from '../layout.mjs';
+import { keep } from '../prune.mjs';
 
 // All factors expressed in CSS pixels, at the CSS reference of 96 dpi
 // and the browser default root font size of 16 px.
@@ -150,10 +151,10 @@ ${anyRel ? `<p>Because ${a.rel && b.rel ? 'both units are' : (a.rel ? a.sym : b.
 
 ${FAQ.html}
 
-${VALUE_PAIRS.some(([x, y]) => x === a.id && y === b.id) ? `
+${VALUE_PAIRS.some(([x, y]) => x === a.id && y === b.id) && builtValues(a.id, b.id).length ? `
 <h2>Common ${A} values in ${B}</h2>
 <p>Each of these has its own page with the working, the value at other font sizes and the neighbouring conversions.</p>
-<ul class="linklist">${valuesFor(a.id, b.id).map((v) => `<li><a href="/convert/${v}-${a.id}-to-${b.id}/">${v}${A} to ${B}</a></li>`).join('')}</ul>
+<ul class="linklist">${builtValues(a.id, b.id).map((v) => `<li><a href="/convert/${v}-${a.id}-to-${b.id}/">${v}${A} to ${B}</a></li>`).join('')}</ul>
 ` : ''}
 <h2>Related CSS unit conversions</h2>
 <ul class="linklist">${siblings}</ul>
@@ -189,6 +190,9 @@ const valuesFor = (aId, bId) => {
 // two most common overrides in design systems; 20 and 24 are what a visitor who
 // has raised their browser's default font size is actually running.
 const ROOTS = [14, 16, 18, 20, 24];
+
+// The value pages still built after the October 2026 prune (src/prune.mjs).
+const builtValues = (a, b) => valuesFor(a, b).filter((v) => keep(`/convert/${v}-${a}-to-${b}/`));
 
 function valuePage(a, b, v, all) {
   const k = a.px / b.px;

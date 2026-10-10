@@ -108,7 +108,9 @@ function render(){
     const cp=ch.codePointAt(0);
     const bs=[...enc.encode(ch)];
     const label=cp===32?'space':cp===10?'LF':cp===13?'CR':cp===9?'tab':ch;
-    const link=cp<128?'<a href="/ascii/'+cp+'/">'+String(cp)+'</a>':String(cp);
+    // The per-code ASCII pages were removed in the October 2026 prune, so the
+    // code is plain text now rather than a link to a page that 404s.
+    const link=String(cp);
     return '<tr><td class="out">'+label.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</td><td>'+link+
       '</td><td class="out">'+(up?hx(cp).toUpperCase():'0x'+pad(cp.toString(16),2))+
       '</td><td class="out">'+pad(cp.toString(2),8)+

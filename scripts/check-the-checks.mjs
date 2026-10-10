@@ -57,13 +57,14 @@ const PLANTS = [
   },
   {
     script: 'scripts/escaped-backslash.mjs',
-    file: 'dist/ascii/65/index.html',
-    break: (s) => s.split("\\x41").join("\\\\x41"),
+    // ASCII 65 and 10 were not kept in the October 2026 prune; 49 and 54 were.
+    file: 'dist/ascii/49/index.html',
+    break: (s) => s.split("\\x31").join("\\\\x31"),
     fault: 'a doubled hex escape — the class this check missed on 128 pages',
   },
   {
     script: 'scripts/escaped-backslash.mjs',
-    file: 'dist/ascii/10/index.html',
+    file: 'dist/ascii/54/index.html',
     break: (s) => s.replace('</main>', '<p><code>printf "\\\\n"</code></p></main>'),
     fault: 'a doubled escape sequence',
   },

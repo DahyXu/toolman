@@ -1,3 +1,59 @@
+## 2026-10-10 — the spam update took the site out, and 13,036 pages became 2,850
+
+Search Console, 28 days to 2026-10-06: 18 clicks, 9,800 impressions — nearly
+all before 26 September. From 9/15 to 9/25 the site drew 600–800 impressions a
+day; from 9/27 it drew 0–5. Nothing was wrong on the site's side:
+
+    manual actions            none
+    indexed                   3,220 (unchanged; site: still lists the pages)
+    responses                 200, index,follow, self-canonical, browser and Googlebot UA alike
+    crawl host status         green
+    www noindex rule          on www only; the apex carries no X-Robots-Tag
+
+Google's September 2026 spam update began rolling out on 24 September and
+finished on 8 October. Pages still indexed but no longer shown, two days after
+the rollout started and with no manual action, is what an algorithmic,
+site-wide demotion looks like. The likeliest policy is scaled content: about
+11,000 of the 13,036 pages were built in three weeks by putting a table into
+a template.
+
+### What was cut
+
+`src/prune.mjs` decides which generated pages are built. Kept:
+
+- every page with at least one impression in the three months before the drop
+  (`src/data/gsc-pages.txt`, 1,000 rows read from the page report);
+- every tool, category and section hub, and the small reference sections whole
+  (ports, drill sizes, HTTP codes, resistors…) — each page there is a distinct
+  thing, not a number put into the same sentence;
+- in the large sections: city pages and the featured pairs, ingredient pages,
+  paper size pages, CSS named colours, converter categories and the pairs
+  between each category's everyday units.
+
+    section            before    after
+    convert             5,647       667
+    time-difference     2,243       172
+    cooking             1,398       187
+    color               1,052       218
+    paper                 663       139
+    roman                 328        15
+    ascii                 258         5
+    whole site         13,036     2,850
+
+Pages not kept are not built and 404. Every link to one is unlinked at build
+time (a list item that is only that link is removed); kept pages that were
+reached only through removed ones are listed on the nearest hub, and pages left
+with one inbound link get a second from a neighbour. Counts in prose ("1,982
+city pairs", "934+ conversions", the home page cards) are now derived from what
+is built, not from the tables. `npm run audit` and `check:checks` pass.
+
+### What to expect
+
+Recovery from a spam-update demotion is not quick. Google's guidance is that
+improvements can take months to be recognised, often not until a later update.
+Near-zero impressions for weeks after this deploy is not evidence it failed.
+Do not add template sections in the meantime.
+
 ## 2026-09-24 — every Search Console issue read, and what was actually ours
 
 Went through the whole property: indexing, sitemaps, manual actions, security,

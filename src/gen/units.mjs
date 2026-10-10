@@ -1,7 +1,15 @@
 import { valueIndex, tempIndex } from './common-values.mjs';
 import { CATS, TEMPS, toK, fromK, plural } from '../data/units.mjs';
 import { esc, faq } from '../layout.mjs';
+import { keep } from '../prune.mjs';
+import { Z as TZ } from './timezones.mjs';
 
+// "Swap units" goes to the reverse pair's page. Where the prune left that page
+// unbuilt, the button would lead to a 404, so it is left out instead.
+const withReverse = (html, rev) => (keep(`/convert/${rev}/`)
+  ? html.replace('PAIR_REVERSE', rev)
+  : html.replace('<button data-swap>Swap units</button>', '')
+    .replace(/\n[^\n]*\[data-swap\][^\n]*/, ''));
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const title = (s) => s.split(' ').map((w) => (w.length > 2 || w === 'to' ? cap(w) : w)).join(' ');
 
@@ -74,7 +82,7 @@ function pairPage({ catKey, catName, from, to, factorText, formula, inverseFormu
     .map((s) => `<li><a href="/convert/${s.id}/">${esc(s.label)}</a></li>`)
     .join('');
 
-  const widget = converterWidget(fromP, toP, jsFwd, jsBack).replace('PAIR_REVERSE', `${to.id}-to-${from.id}`);
+  const widget = withReverse(converterWidget(fromP, toP, jsFwd, jsBack), `${to.id}-to-${from.id}`);
 
   const FAQ = faq([
     { q: `How many ${toP} are in a ${from.name}?`,
@@ -232,16 +240,19 @@ export default async function ({ categorySection = {} } = {}) {
       }));
     }
 
-    catIndex.push({ key: catKey, name: cat.name, count: pairs.length, units: us });
+    // Counted from what is built, not from the table: most pairs were not
+    // kept in the October 2026 prune (src/prune.mjs).
+    const built = pairs.filter(([x, y]) => keep(`/convert/${x.id}-to-${y.id}/`)).length;
+    catIndex.push({ key: catKey, name: cat.name, count: built, units: us });
 
     // category hub
     pages.push({
       path: `/convert/${catKey}/`,
       title: `${cat.name} Converter — Free Online ${cat.name} Conversion | Toolman`,
-      desc: `Convert between ${us.map((u) => plural(u)).slice(0, 6).join(', ')} and more. ${pairs.length} free ${cat.name.toLowerCase()} converters with formulas and conversion tables.`,
+      desc: `Convert between ${us.map((u) => plural(u)).slice(0, 6).join(', ')} and more. ${built} free ${cat.name.toLowerCase()} converters with formulas and conversion tables.`,
       h1: `${cat.name} converters`,
       crumbs: [{ name: 'Converters', path: '/convert/' }, { name: cat.name, path: `/convert/${catKey}/` }],
-      body: `<p class="muted">${pairs.length} direct conversions between ${us.length} ${cat.name.toLowerCase()} units. Every page includes a live converter, the formula and a full conversion table.</p>
+      body: `<p class="muted">${built} conversions between ${us.length} ${cat.name.toLowerCase()} units. Every page includes a live converter, the formula and a full conversion table.</p>
 <h2>Units covered</h2>
 <table><thead><tr><th>Unit</th><th>Symbol</th><th>In ${cat.base}s</th></tr></thead><tbody>
 ${us.map((u) => `<tr><td>${esc(cap(u.name))}</td><td>${esc(u.sym)}</td><td>${fmtG(u.f)}</td></tr>`).join('')}
@@ -276,7 +287,7 @@ ${CAT_NOTES[catKey] || ''}`,
       h1: `Convert ${a.name} to ${b.name}`,
       crumbs: [{ name: 'Converters', path: '/convert/' }, { name: 'Temperature', path: '/convert/temperature/' }, { name: `${a.name} to ${b.name}`, path: `/convert/${a.id}-to-${b.id}/` }],
       body: `<p class="muted">Enter a temperature in ${a.name} to see it in ${b.name}. Conversion runs in your browser.</p>
-${converterWidget(a.name + ' (' + a.sym + ')', b.name + ' (' + b.sym + ')', `function(v){return ${jsF}}`, `function(v){return ${jsB}}`).replace('PAIR_REVERSE', `${b.id}-to-${a.id}`)}
+${withReverse(converterWidget(a.name + ' (' + a.sym + ')', b.name + ' (' + b.sym + ')', `function(v){return ${jsF}}`, `function(v){return ${jsB}}`), `${b.id}-to-${a.id}`)}
 <h2>${a.name} to ${b.name} formula</h2>
 <pre><code>${esc(b.sym)} = ${esc(jsF.replace(/v/g, a.sym))}</code></pre>
 <p>Temperature scales differ in both their zero point and their degree size, so a conversion needs a multiplication <em>and</em> an offset — unlike length or weight, where a single factor is enough.</p>
@@ -337,12 +348,16 @@ ${(tempIndex.get(`${a.id}-to-${b.id}`) || []).length ? `<h2>Common ${a.name} to 
 <h2>Doing it in your head</h2>
 <p>To go from Celsius to Fahrenheit, <strong>double it and add 30</strong>. That is exact at 10&nbsp;°C and within 4 degrees anywhere between &minus;10&nbsp;°C and 30&nbsp;°C, which covers ordinary weather. It drifts badly at the extremes — at 100&nbsp;°C it is out by 18 degrees — so use the real formula for anything that matters. Going the other way, subtract 30 and halve.</p>`,
   });
-  catIndex.push({ key: 'temperature', name: 'Temperature', count: tPairs.length });
-  catIndex.push({ key: 'css-units', name: 'CSS Units', count: 72 });
-  catIndex.push({ key: 'time-zones', name: 'Time Zones', count: 848 });
+  catIndex.push({ key: 'temperature', name: 'Temperature', count: tPairs.filter(([x, y]) => keep(`/convert/${x.id}-to-${y.id}/`)).length });
+  // The CSS and time-zone pairs are generated elsewhere; count the ones built.
+  const builtPairs = (ids, ok = () => true) => ids.reduce((n, a) =>
+    n + ids.filter((b) => b !== a && ok(a, b) && keep(`/convert/${a}-to-${b}/`)).length, 0);
+  const offOf = new Map(TZ.map((z) => [z.id, z.off]));
+  catIndex.push({ key: 'css-units', name: 'CSS Units', count: builtPairs(['px', 'rem', 'em', 'pt', 'pc', 'in', 'cm', 'mm', 'percent']) });
+  catIndex.push({ key: 'time-zones', name: 'Time Zones', count: builtPairs(TZ.map((z) => z.id), (a, b) => offOf.get(a) !== offOf.get(b)) });
 
   // ---- master hub ----
-  const total = pages.filter((p) => /-to-/.test(p.path)).length;
+  const total = pages.filter((p) => /-to-/.test(p.path) && keep(p.path)).length;
   pages.push({
     path: '/convert/',
     title: `Unit Converter — ${total}+ Free Online Conversions | Toolman`,

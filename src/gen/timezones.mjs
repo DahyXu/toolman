@@ -1,6 +1,7 @@
 import { esc, faq } from '../layout.mjs';
 
 import TZD from '../data/timezone-detail.mjs';
+import { keep } from '../prune.mjs';
 
 // Fixed-offset zone abbreviations. Each abbreviation denotes one specific
 // offset, so these conversions are exact — no daylight-saving ambiguity.
@@ -337,14 +338,16 @@ export default async function () {
   const pairs = [];
   for (const a of Z) for (const b of Z) if (a !== b && a.off !== b.off) pairs.push([a, b]);
   for (const [a, b] of pairs) pages.push(pairPage(a, b, Z));
+  // Most pairs were not kept in the October 2026 prune; count what is built.
+  const built = pairs.filter(([a, b]) => keep(`/convert/${a.id}-to-${b.id}/`)).length;
 
   pages.push({
     path: '/convert/time-zones/',
-    title: `Time Zone Converter — ${pairs.length} Conversions | Toolman`,
+    title: `Time Zone Converter — ${built} Conversions | Toolman`,
     desc: 'Convert between EST, PST, CST, GMT, UTC, CET, IST, JST, AEST and more, with 24-hour conversion tables and meeting-time overlap for each pair.',
     h1: 'Time zone converters',
     crumbs: [{ name: 'Converters', path: '/convert/' }, { name: 'Time zones', path: '/convert/time-zones/' }],
-    body: `<p class="muted">${pairs.length} time zone conversions. Each page has a live converter, a full 24-hour table and the working-hours overlap between the two zones.</p>
+    body: `<p class="muted">${built} time zone conversions. Each page has a live converter, a full 24-hour table and the working-hours overlap between the two zones.</p>
 <h2>Zones covered</h2>
 <table><thead><tr><th>Abbreviation</th><th>Offset</th><th>Name</th></tr></thead><tbody>
 ${Z.map((z) => `<tr><td><strong>${z.ab}</strong></td><td>${offStr(z.off)}</td><td>${esc(z.name)}</td></tr>`).join('')}

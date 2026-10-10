@@ -1,4 +1,6 @@
 import { esc, faq, ring } from '../layout.mjs';
+// prune.mjs imports this module too; keep() is only called once both have loaded.
+import { keep } from '../prune.mjs';
 
 // `london to new york time difference` has no Google widget. Page one is
 // 24 Time Zones, Savvy Time and World Time Buddy — the same mid-tier converters
@@ -24,7 +26,7 @@ import { esc, faq, ring } from '../layout.mjs';
 //   au   first Sunday in October → first Sunday in April   (southern summer)
 //   nz   last Sunday in September→ first Sunday in April   (southern summer)
 //   none no daylight saving at all
-const CITIES = [
+export const CITIES = [
   ['london', 'London', 'the United Kingdom', 0, 'eu'],
   ['dublin', 'Dublin', 'Ireland', 0, 'eu'],
   ['lisbon', 'Lisbon', 'Portugal', 0, 'eu'],
@@ -484,6 +486,25 @@ const hhmm = (mins) => {
   return `${h12}:${String(mm).padStart(2, '0')} ${h24 < 12 ? 'AM' : 'PM'}`;
 };
 const dayNote = (mins) => (mins < 0 ? ' (previous day)' : mins >= 1440 ? ' (next day)' : '');
+
+export const FEATURED = [
+  ['london', 'new-york'], ['london', 'los-angeles'], ['london', 'tokyo'],
+  ['london', 'sydney'], ['london', 'delhi'], ['london', 'singapore'],
+  ['london', 'dubai'], ['london', 'hong-kong'], ['london', 'toronto'],
+  ['new-york', 'london'], ['new-york', 'los-angeles'], ['new-york', 'tokyo'],
+  ['new-york', 'delhi'], ['new-york', 'paris'], ['new-york', 'sydney'],
+  ['new-york', 'sao-paulo'], ['new-york', 'beijing'], ['new-york', 'dubai'],
+  ['los-angeles', 'new-york'], ['los-angeles', 'tokyo'], ['los-angeles', 'london'],
+  ['los-angeles', 'sydney'], ['los-angeles', 'delhi'], ['los-angeles', 'beijing'],
+  ['tokyo', 'london'], ['tokyo', 'new-york'], ['tokyo', 'singapore'],
+  ['delhi', 'london'], ['delhi', 'new-york'], ['delhi', 'singapore'],
+  ['delhi', 'dubai'], ['delhi', 'sydney'],
+  ['sydney', 'london'], ['sydney', 'new-york'], ['sydney', 'singapore'],
+  ['singapore', 'london'], ['singapore', 'new-york'],
+  ['dubai', 'london'], ['dubai', 'delhi'],
+  ['paris', 'new-york'], ['berlin', 'new-york'], ['toronto', 'london'],
+  ['beijing', 'new-york'], ['hong-kong', 'london'], ['sao-paulo', 'london'],
+];
 
 export default async function () {
   const pages = [];
@@ -990,7 +1011,7 @@ ${others.map((O) => {
       { name: 'Time differences', path: '/time-difference/' },
       { name: 'By country', path: '/time-difference/country/' },
     ],
-    body: `<p>${COUNTRIES.length * (COUNTRIES.length - 1)} country pairs. Where a country spans more than one offset, the page gives every combination instead of answering for one city.</p>
+    body: `<p>${pages.filter((p) => p.path.startsWith('/time-difference/country/') && / to /.test(p.crumbs[p.crumbs.length - 1].name) && keep(p.path)).length} country pairs have a page here. Where a country spans more than one offset, the page gives every combination instead of answering for one city.</p>
 <h2>The countries that do not have one answer</h2>
 <table><thead><tr><th>Country</th><th>Offsets here</th><th>Cities</th></tr></thead><tbody>
 ${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) => `<tr><td><strong>${esc(c.name)}</strong></td><td>${[...new Set(c.cities.map((x) => x.off))].map(offStr).join(', ')}</td><td>${c.cities.map((x) => esc(x.city)).join(', ')}</td></tr>`).join('')}
@@ -1014,24 +1035,6 @@ ${COUNTRIES.filter((c) => new Set(c.cities.map((x) => x.off)).size > 1).map((c) 
 // what "what time is it there" is usually about. Every one is checked against
 // the generated set below, so a renamed city fails the build rather than
 // leaving a dead link on the section's front page.
-const FEATURED = [
-  ['london', 'new-york'], ['london', 'los-angeles'], ['london', 'tokyo'],
-  ['london', 'sydney'], ['london', 'delhi'], ['london', 'singapore'],
-  ['london', 'dubai'], ['london', 'hong-kong'], ['london', 'toronto'],
-  ['new-york', 'london'], ['new-york', 'los-angeles'], ['new-york', 'tokyo'],
-  ['new-york', 'delhi'], ['new-york', 'paris'], ['new-york', 'sydney'],
-  ['new-york', 'sao-paulo'], ['new-york', 'beijing'], ['new-york', 'dubai'],
-  ['los-angeles', 'new-york'], ['los-angeles', 'tokyo'], ['los-angeles', 'london'],
-  ['los-angeles', 'sydney'], ['los-angeles', 'delhi'], ['los-angeles', 'beijing'],
-  ['tokyo', 'london'], ['tokyo', 'new-york'], ['tokyo', 'singapore'],
-  ['delhi', 'london'], ['delhi', 'new-york'], ['delhi', 'singapore'],
-  ['delhi', 'dubai'], ['delhi', 'sydney'],
-  ['sydney', 'london'], ['sydney', 'new-york'], ['sydney', 'singapore'],
-  ['singapore', 'london'], ['singapore', 'new-york'],
-  ['dubai', 'london'], ['dubai', 'delhi'],
-  ['paris', 'new-york'], ['berlin', 'new-york'], ['toronto', 'london'],
-  ['beijing', 'new-york'], ['hong-kong', 'london'], ['sao-paulo', 'london'],
-];
 {
   const have = new Set(pairs.map(([a, b]) => `${a.id}-${b.id}`));
   const dead = FEATURED.filter(([a, b]) => !have.has(`${a}-${b}`));
@@ -1042,7 +1045,7 @@ const FEATURED = [
   }
 }
 const featuredHtml = `<h2>The pairs people look up most</h2>
-<p>Every pair has its own page; these are the ones asked for most often, and each says what the gap is and the weeks it is something else.</p>
+<p>These are the pairs asked for most often. Each has its own page saying what the gap is and the weeks it is something else.</p>
 <ul class="cols">${FEATURED.filter(([a, b]) => rows.some((r) => r.id === a) && rows.some((r) => r.id === b)).map(([a, b]) => {
   const A = rows.find((r) => r.id === a), B = rows.find((r) => r.id === b);
   return `<li><a href="/time-difference/${a}-${b}/">${esc(A.city)} to ${esc(B.city)}</a></li>`;
@@ -1057,7 +1060,7 @@ const featuredHtml = `<h2>The pairs people look up most</h2>
     desc: `The time difference between ${rows.length} major cities, both ways. Each pair gives the usual gap, the weeks when it is different because the two places change their clocks on different dates, and the working-hours overlap.`,
     h1: 'Time differences between cities',
     crumbs: [{ name: 'Time differences', path: '/time-difference/' }],
-    body: `<p>${pairs.length.toLocaleString()} city pairs, each with the usual difference, an hour-by-hour table and the overlap between nine-to-five in both places.</p>
+    body: `<p>${pairs.filter(([a, b]) => keep(`/time-difference/${a.id}-${b.id}/`)).length.toLocaleString()} city pairs have a page here, each with the usual difference, an hour-by-hour table and the overlap between nine-to-five in both places.</p>
 
 <h2>The number every converter leaves out</h2>
 <p>The difference between two cities is usually quoted as one number, and for most pairs it is one number for most of the year. It is not one number all year. <strong>The European Union changes its clocks on the last Sunday in March and the United States on the second Sunday</strong>, so for the fortnight between them London and New York are four hours apart rather than five — and a standing call moves by an hour with nobody touching it. Each pair page says which gaps apply and why.</p>
