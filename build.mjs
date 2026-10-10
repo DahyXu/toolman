@@ -1003,6 +1003,17 @@ ${c.map((u) => `<url><loc>${SITE.origin}${u}</loc><lastmod>${lastmodOf(u)}</last
   // instead of another 404.
   fs.writeFileSync(path.join(dist, `sitemap-${i + 1}.xml`), xml);
 });
+
+// Before the October 2026 prune there were six shards. Deleting pages-3 to
+// pages-6 did not take them off toolman.top: Pages kept serving its cached
+// copies, listing 8,000 URLs that now 404, and purging the zone cache did not
+// reach them (the pages.dev host already returned 404). Writing a file at the
+// same path replaces that copy, so the retired shards are published empty.
+// Remove this once Search Console no longer lists them (2026-10-10).
+for (let i = chunks.length; i < 6; i++) {
+  fs.writeFileSync(path.join(dist, 'sitemaps', `pages-${i + 1}.xml`),
+    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>\n');
+}
 // The newest lastmod of the URLs a shard actually contains. Stamping every
 // child with today's date told Google all seven shards changed every day,
 // including the two that had not changed all week — which is the same as
